@@ -24,13 +24,13 @@ include(
 )
 
 include(
-    ":shared:shared-kernel",
     ":shared:shared-events",
+    ":shared:shared-kernel",
+    ":shared:shared-observability",
     ":shared:shared-security",
     ":shared:shared-tenancy",
-    ":shared:shared-web",
     ":shared:shared-test",
-    ":shared:shared-observability"
+    ":shared:shared-web"
 )
 
 include(
