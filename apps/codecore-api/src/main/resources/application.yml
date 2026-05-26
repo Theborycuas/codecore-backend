@@ -6,6 +6,10 @@ spring:
   profiles:
     active: local
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+
 server:
   port: 8080
 
