@@ -35,10 +35,10 @@ include(
 
 include(
     ":platform:platform-postgres",
-    ":platform:platform-redis",
-    ":platform:platform-kafka",
-    ":platform:platform-r2dbc",
     ":platform:platform-webflux",
+    ":platform:platform-r2dbc",
+    ":platform:platform-kafka",
+    ":platform:platform-redis",
     ":platform:platform-security",
     ":platform:platform-telemetry"
 )
