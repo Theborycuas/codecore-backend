@@ -8,7 +8,7 @@ pluginManagement {
         mavenCentral()
     }
 
-    includeBuild("build-logic")
+    includeBuild("build-logic/convention")
 }
 
 dependencyResolutionManagement {
