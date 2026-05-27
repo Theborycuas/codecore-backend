@@ -6,9 +6,15 @@ spring:
   profiles:
     active: local
 
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/db_codecore
+    username: codecore
+    password: codecore0803861400
+
+  flyway:
+    url: jdbc:postgresql://localhost:5432/db_codecore
+    user: codecore
+    password: codecore0803861400
 
 server:
   port: 8080

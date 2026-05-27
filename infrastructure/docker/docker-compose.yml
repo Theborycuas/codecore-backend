@@ -1,0 +1,47 @@
+services:
+
+  postgres:
+
+    image: postgres:16-alpine
+
+    container_name: codecore-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: db_codecore
+      POSTGRES_USER: codecore
+      POSTGRES_PASSWORD: codecore0803861400
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - codecore-network
+
+  redis:
+
+    image: redis:7-alpine
+
+    container_name: codecore-redis
+
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+    networks:
+      - codecore-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  codecore-network:
