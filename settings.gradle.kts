@@ -43,12 +43,8 @@ include(
     ":platform:platform-telemetry"
 )
 
-include(
-    ":modules:identity-access-management:identity-domain",
-    ":modules:identity-access-management:identity-application",
-    ":modules:identity-access-management:identity-infrastructure",
-    ":modules:identity-access-management:identity-contract"
-)
+include(":modules:identity-access-management")
+
 
 include(
     ":modules:tenant-management:tenant-domain",

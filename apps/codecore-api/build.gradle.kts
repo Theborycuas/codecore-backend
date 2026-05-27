@@ -20,6 +20,12 @@ dependencies {
     implementation(projects.platform.platformRedis)
     implementation(projects.platform.platformKafka)
     implementation(projects.platform.platformTelemetry)
+    
+
+    // =========================
+    // Modules
+    // =========================
+    implementation(projects.modules.identityAccessManagement)
 
     // =========================
     // Testing
