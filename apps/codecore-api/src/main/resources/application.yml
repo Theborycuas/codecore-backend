@@ -7,12 +7,12 @@ spring:
     active: local
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/db_codecore
+    url: r2dbc:postgresql://localhost:5433/db_codecore
     username: codecore
     password: codecore0803861400
 
   flyway:
-    url: jdbc:postgresql://localhost:5432/db_codecore
+    url: jdbc:postgresql://localhost:5433/db_codecore
     user: codecore
     password: codecore0803861400
 
