@@ -14,7 +14,10 @@ spring:
   flyway:
     url: jdbc:postgresql://localhost:5433/db_codecore
     user: codecore
-    password: codecore0803861400
+    password: codecore0803861400  
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 server:
   port: 8080
