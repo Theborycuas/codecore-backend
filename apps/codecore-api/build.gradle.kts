@@ -31,4 +31,9 @@ dependencies {
     // Testing
     // =========================
     testImplementation(projects.shared.sharedTest)
+
+    // Flyway usa JDBC (spring.flyway.url); R2DBC es solo para acceso reactivo en runtime.
+    // En Spring Boot 3.x no existe spring-boot-starter-flyway (solo desde Boot 4).
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 }
