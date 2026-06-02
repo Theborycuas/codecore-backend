@@ -2,7 +2,6 @@ package com.codecore.iam.infrastructure.persistence.repository;
 
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.configuration.IamModuleConfiguration;
-import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.CredentialId;
@@ -11,14 +10,12 @@ import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
-import org.flywaydb.core.Flyway;
+import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
+import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
@@ -27,34 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataR2dbcTest
 @Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, BCryptPasswordHasher.class})
-class R2dbcIdentityRepositoryIT {
-
-    private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("db_codecore")
-            .withUsername("codecore")
-            .withPassword("codecore0803861400");
-
-    static {
-        POSTGRES.start();
-        Flyway.configure()
-                .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
-                .locations("classpath:db/migration")
-                .load()
-                .migrate();
-    }
-
-    @DynamicPropertySource
-    static void registerR2dbcProperties(DynamicPropertyRegistry registry) {
-        registry.add(
-                "spring.r2dbc.url",
-                () -> "r2dbc:postgresql://%s:%d/%s".formatted(
-                        POSTGRES.getHost(),
-                        POSTGRES.getMappedPort(5432),
-                        POSTGRES.getDatabaseName())
-        );
-        registry.add("spring.r2dbc.username", POSTGRES::getUsername);
-        registry.add("spring.r2dbc.password", POSTGRES::getPassword);
-    }
+class R2dbcIdentityRepositoryIT extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private IdentityRepository identityRepository;

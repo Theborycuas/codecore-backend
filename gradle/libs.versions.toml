@@ -34,6 +34,8 @@ spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-s
 
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 
+spring-security-crypto = { module = "org.springframework.security:spring-security-crypto" }
+
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
