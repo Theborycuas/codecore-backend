@@ -1,5 +1,5 @@
 plugins {
-    id("codecore.java-conventions")
+    id("codecore.spring-boot-library")
 }
 
 dependencies {
