@@ -7,24 +7,21 @@ import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
-import com.codecore.iam.domain.valueobject.Username;
 
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Identity aggregate root — authentication identity and credential ownership.
+ * Identity aggregate root — tenant-scoped authentication identity (email-first).
+ * Lifecycle is governed solely by {@link IdentityStatus}.
  */
 public final class Identity extends AggregateRoot {
 
     private final IdentityId id;
     private final EmailAddress email;
-    private final Username username;
     private IdentityStatus status;
     private Credential credential;
-    private boolean locked;
-    private boolean enabled;
     private Instant lastLoginAt;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -33,11 +30,8 @@ public final class Identity extends AggregateRoot {
             IdentityId id,
             TenantId tenantId,
             EmailAddress email,
-            Username username,
             IdentityStatus status,
             Credential credential,
-            boolean locked,
-            boolean enabled,
             Instant lastLoginAt,
             Instant createdAt,
             Instant updatedAt,
@@ -46,11 +40,8 @@ public final class Identity extends AggregateRoot {
         super(tenantId, version);
         this.id = Objects.requireNonNull(id, "id");
         this.email = Objects.requireNonNull(email, "email");
-        this.username = Objects.requireNonNull(username, "username");
         this.status = Objects.requireNonNull(status, "status");
         this.credential = credential;
-        this.locked = locked;
-        this.enabled = enabled;
         this.lastLoginAt = lastLoginAt;
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
@@ -64,10 +55,6 @@ public final class Identity extends AggregateRoot {
         return email;
     }
 
-    public Username username() {
-        return username;
-    }
-
     public IdentityStatus status() {
         return status;
     }
@@ -76,12 +63,15 @@ public final class Identity extends AggregateRoot {
         return Optional.ofNullable(credential);
     }
 
-    public boolean locked() {
-        return locked;
-    }
-
-    public boolean enabled() {
-        return enabled;
+    /**
+     * Convenience view of email verification derived from {@link #status()} only.
+     * <p>
+     * <strong>Source of truth:</strong> {@link IdentityStatus}, not {@code iam.iam_user.email_verified}.
+     * The database column is a persisted projection for SQL/reporting; never use
+     * {@code entity.getEmailVerifiedProjection()} (or similar) to drive domain rules.
+     */
+    public boolean isEmailVerified() {
+        return status != IdentityStatus.PENDING_VERIFICATION;
     }
 
     public Instant lastLoginAt() {
@@ -106,10 +96,10 @@ public final class Identity extends AggregateRoot {
     }
 
     public void validateAuthenticationEligibility() {
-        if (!enabled) {
+        if (status == IdentityStatus.DISABLED) {
             throw new AuthenticationNotPermittedException("Identity is disabled");
         }
-        if (locked || status.isLocked()) {
+        if (status == IdentityStatus.LOCKED) {
             throw new AuthenticationNotPermittedException("Identity is locked");
         }
         if (status == IdentityStatus.PENDING_VERIFICATION) {
@@ -133,31 +123,35 @@ public final class Identity extends AggregateRoot {
     }
 
     public void lockAccount() {
-        this.locked = true;
         this.status = IdentityStatus.LOCKED;
         touch();
         bumpVersion();
     }
 
     public void unlockAccount() {
-        this.locked = false;
         this.status = IdentityStatus.ACTIVE;
         touch();
         bumpVersion();
     }
 
     public void disable() {
-        this.enabled = false;
         this.status = IdentityStatus.DISABLED;
         touch();
         bumpVersion();
     }
 
     public void enable() {
-        this.enabled = true;
         this.status = IdentityStatus.ACTIVE;
         touch();
         bumpVersion();
+    }
+
+    public void markEmailVerified() {
+        if (this.status == IdentityStatus.PENDING_VERIFICATION) {
+            this.status = IdentityStatus.ACTIVE;
+            touch();
+            bumpVersion();
+        }
     }
 
     public void requirePasswordReset() {
