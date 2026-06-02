@@ -14,6 +14,12 @@ dependencies {
 
     implementation(projects.platform.platformR2dbc)
 
+    implementation(projects.platform.platformWebflux)
+
+    implementation(libs.spring.boot.starter.webflux)
+
+    implementation(libs.spring.boot.starter.validation)
+
     implementation(libs.spring.security.crypto)
 
     testImplementation(projects.shared.sharedTest)
