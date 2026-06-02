@@ -14,7 +14,10 @@ dependencies {
 
     implementation(projects.platform.platformR2dbc)
 
+    implementation("org.springframework.security:spring-security-crypto")
+
     testImplementation(projects.shared.sharedTest)
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(libs.reactor.test)
 

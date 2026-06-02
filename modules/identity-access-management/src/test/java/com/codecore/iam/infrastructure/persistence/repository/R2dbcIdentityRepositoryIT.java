@@ -2,6 +2,7 @@ package com.codecore.iam.infrastructure.persistence.repository;
 
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.configuration.IamModuleConfiguration;
+import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.CredentialId;
@@ -25,7 +26,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataR2dbcTest
-@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class})
+@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, BCryptPasswordHasher.class})
 class R2dbcIdentityRepositoryIT {
 
     private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
