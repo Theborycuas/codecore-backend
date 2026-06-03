@@ -7,6 +7,7 @@ import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.infrastructure.persistence.mapper.IamIdentityTenantMembershipMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamTenantMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,11 @@ public class IamModuleConfiguration {
     @Bean
     public IamTenantMapper iamTenantMapper() {
         return new IamTenantMapper();
+    }
+
+    @Bean
+    public IamIdentityTenantMembershipMapper iamIdentityTenantMembershipMapper() {
+        return new IamIdentityTenantMembershipMapper();
     }
 
     @Bean
