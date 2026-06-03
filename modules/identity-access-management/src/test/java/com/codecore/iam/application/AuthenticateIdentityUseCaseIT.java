@@ -19,6 +19,8 @@ import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.infrastructure.security.JwtTokenProvider;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         IamModuleConfiguration.class,
         IamAuthenticationConfiguration.class,
         R2dbcIdentityRepository.class,
+        R2dbcTenantRepository.class,
         BCryptPasswordHasher.class,
         JwtTokenProvider.class
 })

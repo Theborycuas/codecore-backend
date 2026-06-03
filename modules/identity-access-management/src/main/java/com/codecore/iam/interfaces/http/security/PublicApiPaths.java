@@ -24,6 +24,9 @@ public final class PublicApiPaths {
         if (method == HttpMethod.POST && "/api/v1/identities".equals(path)) {
             return true;
         }
+        if (method == HttpMethod.POST && "/api/v1/tenants".equals(path)) {
+            return true;
+        }
         return false;
     }
 }

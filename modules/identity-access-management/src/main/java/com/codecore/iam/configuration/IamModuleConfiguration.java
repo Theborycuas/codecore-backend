@@ -1,9 +1,13 @@
 package com.codecore.iam.configuration;
 
+import com.codecore.iam.application.CreateTenantUseCaseImpl;
 import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
+import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.infrastructure.persistence.mapper.IamTenantMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +26,20 @@ public class IamModuleConfiguration {
     }
 
     @Bean
+    public IamTenantMapper iamTenantMapper() {
+        return new IamTenantMapper();
+    }
+
+    @Bean
     public RegisterIdentityUseCase registerIdentityUseCase(
             IdentityRepository identityRepository,
             PasswordHasher passwordHasher
     ) {
         return new RegisterIdentityUseCaseImpl(identityRepository, passwordHasher);
+    }
+
+    @Bean
+    public CreateTenantUseCase createTenantUseCase(TenantRepository tenantRepository) {
+        return new CreateTenantUseCaseImpl(tenantRepository);
     }
 }

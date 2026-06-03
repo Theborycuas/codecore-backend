@@ -1,6 +1,7 @@
 package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
+import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
@@ -19,6 +20,11 @@ public class IamHttpExceptionHandler {
 
     @ExceptionHandler(IdentityAlreadyExistsException.class)
     public Mono<ResponseEntity<Void>> handleDuplicate(IdentityAlreadyExistsException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(TenantAlreadyExistsException.class)
+    public Mono<ResponseEntity<Void>> handleTenantDuplicate(TenantAlreadyExistsException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 

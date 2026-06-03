@@ -10,6 +10,7 @@ import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataR2dbcTest
-@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, BCryptPasswordHasher.class})
+@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, R2dbcTenantRepository.class, BCryptPasswordHasher.class})
 class R2dbcIdentityRepositoryIT extends AbstractPostgresIntegrationTest {
 
     @Autowired
