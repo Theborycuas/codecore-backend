@@ -1,0 +1,15 @@
+# Production profile — all sensitive values must come from the environment (Docker/Kubernetes).
+spring:
+  r2dbc:
+    url: ${SPRING_R2DBC_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  flyway:
+    url: ${SPRING_FLYWAY_URL}
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}

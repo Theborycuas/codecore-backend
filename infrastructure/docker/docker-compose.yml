@@ -8,13 +8,16 @@ services:
 
     restart: unless-stopped
 
+    env_file:
+      - ../../.env
+
     environment:
-      POSTGRES_DB: db_codecore
-      POSTGRES_USER: codecore
-      POSTGRES_PASSWORD: codecore0803861400
+      POSTGRES_DB: ${POSTGRES_DB:-db_codecore}
+      POSTGRES_USER: ${POSTGRES_USER:-codecore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5433}:5432"
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -31,7 +34,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
 
     volumes:
       - redis_data:/data

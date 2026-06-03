@@ -1,0 +1,11 @@
+# Test profile for codecore-api (IAM integration tests use Testcontainers + module test resources).
+management:
+  endpoint:
+    health:
+      show-details: never
+
+security:
+  jwt:
+    secret: codecore-test-jwt-secret-key-minimum-32-characters-long!!
+    issuer: codecore-test
+    expiration: 900s

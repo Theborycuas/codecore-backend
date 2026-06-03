@@ -37,3 +37,25 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 }
+
+/**
+ * Loads codecore-backend/.env into the bootRun process (Spring Boot does not read .env by itself).
+ */
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    val dotEnv = rootProject.layout.projectDirectory.file(".env").asFile
+    if (dotEnv.exists()) {
+        dotEnv.readLines()
+            .asSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() && !it.startsWith("#") }
+            .mapNotNull { line ->
+                val separator = line.indexOf('=')
+                if (separator <= 0) {
+                    null
+                } else {
+                    line.substring(0, separator).trim() to line.substring(separator + 1).trim()
+                }
+            }
+            .forEach { (key, value) -> environment(key, value) }
+    }
+}

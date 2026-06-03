@@ -1,0 +1,16 @@
+# Development profile — local Docker PostgreSQL (default port 5433) and .env overrides.
+spring:
+  r2dbc:
+    url: ${SPRING_R2DBC_URL:r2dbc:postgresql://localhost:5433/db_codecore}
+    username: ${POSTGRES_USER:codecore}
+    password: ${POSTGRES_PASSWORD}
+
+  flyway:
+    url: ${SPRING_FLYWAY_URL:jdbc:postgresql://localhost:5433/db_codecore}
+    user: ${POSTGRES_USER:codecore}
+    password: ${POSTGRES_PASSWORD}
+
+security:
+  jwt:
+    # Set JWT_SECRET in .env for local signing; fallback only for dev convenience (PASO 11.0).
+    secret: ${JWT_SECRET:codecore-local-dev-secret-key-minimum-32-characters!!}

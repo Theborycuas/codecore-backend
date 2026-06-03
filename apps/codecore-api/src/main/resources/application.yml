@@ -1,40 +1,29 @@
 spring:
-
   application:
     name: codecore-api
 
   profiles:
-    active: local
-
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5433/db_codecore
-    username: codecore
-    password: codecore0803861400
+    # Override with SPRING_PROFILES_ACTIVE (e.g. from .env). Gradle bootRun loads codecore-backend/.env.
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
   flyway:
-    url: jdbc:postgresql://localhost:5433/db_codecore
-    user: codecore
-    password: codecore0803861400  
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
 
 server:
-  port: 8080
-
-security:
-  jwt:
-    secret: ${JWT_SECRET:codecore-local-dev-secret-key-minimum-32-characters!!}
-    issuer: codecore-api
-    expiration: 900s
+  port: ${SERVER_PORT:8081}
 
 management:
-
   endpoints:
     web:
       exposure:
         include: health,info,prometheus
-
   endpoint:
     health:
-      show-details: always
+      show-details: ${MANAGEMENT_HEALTH_SHOW_DETAILS:always}
+
+security:
+  jwt:
+    issuer: ${JWT_ISSUER:codecore-api}
+    expiration: ${JWT_EXPIRATION:900s}
