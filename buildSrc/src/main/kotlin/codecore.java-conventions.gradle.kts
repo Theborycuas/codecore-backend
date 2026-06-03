@@ -1,3 +1,4 @@
+import com.codecore.gradle.WindowsDirectoryDeleter
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -37,6 +38,14 @@ tasks.withType<Test>().configureEach {
             TestLogEvent.SKIPPED,
             TestLogEvent.FAILED
         )
+    }
+
+    if (WindowsDirectoryDeleter.isWindows()) {
+        doFirst {
+            WindowsDirectoryDeleter.deleteRecursively(
+                layout.buildDirectory.dir("test-results/${name}").get().asFile
+            )
+        }
     }
 }
 
