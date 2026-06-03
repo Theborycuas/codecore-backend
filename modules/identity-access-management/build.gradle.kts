@@ -22,6 +22,10 @@ dependencies {
 
     implementation(libs.spring.security.crypto)
 
+    implementation(libs.jjwt.api)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
+
     testImplementation(projects.shared.sharedTest)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

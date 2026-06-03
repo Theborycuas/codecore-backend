@@ -1,0 +1,5 @@
+security:
+  jwt:
+    secret: codecore-test-jwt-secret-key-minimum-32-characters-long!!
+    issuer: codecore-test
+    expiration: 900s

@@ -1,10 +1,12 @@
 package com.codecore.iam.application;
 
 import com.codecore.iam.application.command.AuthenticationCommand;
-import com.codecore.iam.application.dto.AuthenticationResult;
+import com.codecore.iam.application.dto.AccessTokenClaims;
+import com.codecore.iam.application.dto.AuthenticationResponse;
 import com.codecore.iam.application.port.in.AuthenticateIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.application.port.out.TokenProvider;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
@@ -17,7 +19,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 
 /**
- * Validates tenant-scoped credentials against persisted identity — no tokens or sessions.
+ * Validates credentials and issues an access JWT via {@link TokenProvider} — no sessions or refresh tokens.
  */
 public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseCase {
 
@@ -26,14 +28,20 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
 
     private final IdentityRepository identityRepository;
     private final PasswordHasher passwordHasher;
+    private final TokenProvider tokenProvider;
 
-    public AuthenticateIdentityUseCaseImpl(IdentityRepository identityRepository, PasswordHasher passwordHasher) {
+    public AuthenticateIdentityUseCaseImpl(
+            IdentityRepository identityRepository,
+            PasswordHasher passwordHasher,
+            TokenProvider tokenProvider
+    ) {
         this.identityRepository = Objects.requireNonNull(identityRepository, "identityRepository");
         this.passwordHasher = Objects.requireNonNull(passwordHasher, "passwordHasher");
+        this.tokenProvider = Objects.requireNonNull(tokenProvider, "tokenProvider");
     }
 
     @Override
-    public Mono<AuthenticationResult> execute(AuthenticationCommand command) {
+    public Mono<AuthenticationResponse> execute(AuthenticationCommand command) {
         return Mono.defer(() -> {
             Objects.requireNonNull(command, "command");
             Objects.requireNonNull(command.tenantId(), "tenantId");
@@ -50,7 +58,7 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
         });
     }
 
-    private Mono<AuthenticationResult> authenticate(Identity identity, String rawPassword) {
+    private Mono<AuthenticationResponse> authenticate(Identity identity, String rawPassword) {
         if (identity.status() != IdentityStatus.ACTIVE) {
             return Mono.error(new IdentityNotAllowedToAuthenticateException(NOT_ALLOWED_MESSAGE));
         }
@@ -62,11 +70,14 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
             return Mono.error(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE));
         }
 
-        return Mono.just(new AuthenticationResult(
-                identity.id(),
-                identity.tenantId(),
-                identity.email(),
-                identity.status()
+        return Mono.fromCallable(() -> tokenProvider.generateAccessToken(new AccessTokenClaims(
+                identity.id().value().toString(),
+                identity.email().value(),
+                identity.status().name()
+        ))).map(issued -> new AuthenticationResponse(
+                issued.accessToken(),
+                issued.tokenType(),
+                issued.expiresIn()
         ));
     }
 

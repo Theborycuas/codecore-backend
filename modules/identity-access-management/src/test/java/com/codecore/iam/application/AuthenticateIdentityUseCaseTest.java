@@ -1,8 +1,11 @@
 package com.codecore.iam.application;
 
 import com.codecore.iam.application.command.AuthenticationCommand;
+import com.codecore.iam.application.dto.AccessTokenClaims;
+import com.codecore.iam.application.dto.IssuedAccessToken;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.application.port.out.TokenProvider;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.model.identity.Credential;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
@@ -45,30 +49,39 @@ class AuthenticateIdentityUseCaseTest {
     @Mock
     private PasswordHasher passwordHasher;
 
+    @Mock
+    private TokenProvider tokenProvider;
+
     private AuthenticateIdentityUseCaseImpl useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new AuthenticateIdentityUseCaseImpl(identityRepository, passwordHasher);
+        useCase = new AuthenticateIdentityUseCaseImpl(identityRepository, passwordHasher, tokenProvider);
     }
 
     @Test
-    void shouldAuthenticateActiveIdentityWithCorrectPassword() {
+    void shouldAuthenticateActiveIdentityAndIssueAccessToken() {
         TenantId tenantId = TenantId.generate();
         Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
         when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
+        when(tokenProvider.generateAccessToken(any(AccessTokenClaims.class)))
+                .thenReturn(new IssuedAccessToken("jwt-token", "Bearer", 900L));
 
         StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, PASSWORD)))
                 .assertNext(result -> {
-                    assertThat(result.identityId()).isEqualTo(identity.id());
-                    assertThat(result.tenantId()).isEqualTo(tenantId);
-                    assertThat(result.email().value()).isEqualTo(EMAIL.toLowerCase());
-                    assertThat(result.status()).isEqualTo(IdentityStatus.ACTIVE);
+                    assertThat(result.accessToken()).isEqualTo("jwt-token");
+                    assertThat(result.tokenType()).isEqualTo("Bearer");
+                    assertThat(result.expiresIn()).isEqualTo(900L);
                 })
                 .verifyComplete();
 
+        ArgumentCaptor<AccessTokenClaims> claimsCaptor = ArgumentCaptor.forClass(AccessTokenClaims.class);
+        verify(tokenProvider).generateAccessToken(claimsCaptor.capture());
+        assertThat(claimsCaptor.getValue().subject()).isEqualTo(identity.id().value().toString());
+        assertThat(claimsCaptor.getValue().email()).isEqualTo(EMAIL.toLowerCase());
+        assertThat(claimsCaptor.getValue().status()).isEqualTo("ACTIVE");
         verify(passwordHasher).matches(PASSWORD, HASH);
     }
 
@@ -83,6 +96,8 @@ class AuthenticateIdentityUseCaseTest {
         StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, "WrongPass1!")))
                 .expectError(InvalidCredentialsException.class)
                 .verify();
+
+        verify(tokenProvider, never()).generateAccessToken(any());
     }
 
     @Test
@@ -96,6 +111,7 @@ class AuthenticateIdentityUseCaseTest {
                 .verify();
 
         verify(passwordHasher, never()).matches(any(), any());
+        verify(tokenProvider, never()).generateAccessToken(any());
     }
 
     @ParameterizedTest
@@ -114,6 +130,7 @@ class AuthenticateIdentityUseCaseTest {
                 .verify();
 
         verify(passwordHasher, never()).matches(any(), any());
+        verify(tokenProvider, never()).generateAccessToken(any());
     }
 
     private static Identity identity(

@@ -6,6 +6,7 @@ import com.codecore.iam.application.port.in.AuthenticateIdentityUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.configuration.IamAuthenticationConfiguration;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
@@ -19,24 +20,42 @@ import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
+import com.codecore.iam.infrastructure.security.JwtTokenProvider;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import reactor.test.StepVerifier;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataR2dbcTest
-@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, BCryptPasswordHasher.class})
+@Import({
+        IamModuleConfiguration.class,
+        IamAuthenticationConfiguration.class,
+        R2dbcIdentityRepository.class,
+        BCryptPasswordHasher.class,
+        JwtTokenProvider.class
+})
+@TestPropertySource(properties = {
+        "security.jwt.secret=codecore-test-jwt-secret-key-minimum-32-characters-long!!",
+        "security.jwt.issuer=codecore-test",
+        "security.jwt.expiration=900s"
+})
 class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
 
     private static final String PASSWORD = "ValidPass1!";
+    private static final String JWT_SECRET = "codecore-test-jwt-secret-key-minimum-32-characters-long!!";
 
     @Autowired
     private AuthenticateIdentityUseCase authenticateIdentityUseCase;
@@ -62,10 +81,19 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
         StepVerifier.create(authenticateIdentityUseCase.execute(
                         new AuthenticationCommand(tenantId, email, PASSWORD)))
                 .assertNext(result -> {
-                    assertThat(result.tenantId()).isEqualTo(tenantId);
-                    assertThat(result.email().value()).isEqualTo(email.toLowerCase());
-                    assertThat(result.status()).isEqualTo(IdentityStatus.ACTIVE);
-                    assertThat(result.identityId()).isNotNull();
+                    assertThat(result.accessToken()).isNotBlank();
+                    assertThat(result.tokenType()).isEqualTo("Bearer");
+                    assertThat(result.expiresIn()).isEqualTo(900L);
+
+                    Claims claims = Jwts.parser()
+                            .verifyWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8)))
+                            .requireIssuer("codecore-test")
+                            .build()
+                            .parseSignedClaims(result.accessToken())
+                            .getPayload();
+                    assertThat(claims.get("email", String.class)).isEqualTo(email.toLowerCase());
+                    assertThat(claims.get("status", String.class)).isEqualTo("ACTIVE");
+                    assertThat(claims.getSubject()).isNotBlank();
                 })
                 .verifyComplete();
     }
