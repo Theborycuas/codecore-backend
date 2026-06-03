@@ -16,6 +16,10 @@ dependencies {
 
     implementation(projects.platform.platformWebflux)
 
+    implementation(projects.platform.platformSecurity)
+
+    implementation(libs.spring.boot.starter.security)
+
     implementation(libs.spring.boot.starter.webflux)
 
     implementation(libs.spring.boot.starter.validation)
@@ -28,6 +32,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     testImplementation(projects.shared.sharedTest)
+    testImplementation(projects.platform.platformSecurity)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     testImplementation(libs.reactor.test)

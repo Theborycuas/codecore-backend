@@ -5,7 +5,10 @@ import com.codecore.iam.application.dto.AuthenticationResponse;
 import com.codecore.iam.application.port.in.AuthenticateIdentityUseCase;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.interfaces.http.dto.LoginRequest;
+import com.codecore.iam.interfaces.http.dto.MeResponse;
+import com.codecore.iam.interfaces.http.security.AuthenticationContext;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -36,5 +39,11 @@ public class AuthenticationController {
                 request.password()
         );
         return authenticateIdentityUseCase.execute(command);
+    }
+
+    @GetMapping("/me")
+    public Mono<MeResponse> me() {
+        return AuthenticationContext.currentPrincipal()
+                .map(MeResponse::from);
     }
 }
