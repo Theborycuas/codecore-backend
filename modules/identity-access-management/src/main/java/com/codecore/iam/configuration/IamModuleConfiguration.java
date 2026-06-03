@@ -1,6 +1,8 @@
 package com.codecore.iam.configuration;
 
+import com.codecore.iam.application.AuthenticateIdentityUseCaseImpl;
 import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
+import com.codecore.iam.application.port.in.AuthenticateIdentityUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
@@ -27,5 +29,13 @@ public class IamModuleConfiguration {
             PasswordHasher passwordHasher
     ) {
         return new RegisterIdentityUseCaseImpl(identityRepository, passwordHasher);
+    }
+
+    @Bean
+    public AuthenticateIdentityUseCase authenticateIdentityUseCase(
+            IdentityRepository identityRepository,
+            PasswordHasher passwordHasher
+    ) {
+        return new AuthenticateIdentityUseCaseImpl(identityRepository, passwordHasher);
     }
 }
