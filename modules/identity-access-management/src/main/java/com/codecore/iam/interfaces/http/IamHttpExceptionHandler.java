@@ -1,7 +1,10 @@
 package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
+import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
+import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
+import com.codecore.iam.domain.valueobject.IdentityStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,5 +25,18 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(InvalidDomainValueException.class)
     public Mono<ResponseEntity<Void>> handleInvalidDomain(InvalidDomainValueException ex) {
         return Mono.just(ResponseEntity.badRequest().build());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public Mono<ResponseEntity<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    @ExceptionHandler(IdentityNotAllowedToAuthenticateException.class)
+    public Mono<ResponseEntity<Void>> handleNotAllowed(IdentityNotAllowedToAuthenticateException ex) {
+        HttpStatus status = ex.status() == IdentityStatus.LOCKED
+                ? HttpStatus.LOCKED
+                : HttpStatus.FORBIDDEN;
+        return Mono.just(ResponseEntity.status(status).build());
     }
 }

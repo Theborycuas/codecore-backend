@@ -60,7 +60,7 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
 
     private Mono<AuthenticationResponse> authenticate(Identity identity, String rawPassword) {
         if (identity.status() != IdentityStatus.ACTIVE) {
-            return Mono.error(new IdentityNotAllowedToAuthenticateException(NOT_ALLOWED_MESSAGE));
+            return Mono.error(new IdentityNotAllowedToAuthenticateException(NOT_ALLOWED_MESSAGE, identity.status()));
         }
 
         Credential credential = identity.credential()

@@ -5,10 +5,10 @@ import com.codecore.iam.application.dto.IssuedAccessToken;
 import com.codecore.iam.application.port.out.TokenProvider;
 import com.codecore.iam.infrastructure.security.config.JwtProperties;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
@@ -27,7 +27,7 @@ public class JwtTokenProvider implements TokenProvider {
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
         this.jwtProperties = Objects.requireNonNull(jwtProperties, "jwtProperties");
-        this.signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        this.signingKey = hmacSha256Key(jwtProperties.getSecret());
     }
 
     @Override
@@ -48,5 +48,10 @@ public class JwtTokenProvider implements TokenProvider {
                 .compact();
 
         return new IssuedAccessToken(accessToken, TOKEN_TYPE, expiresInSeconds);
+    }
+
+    private static SecretKey hmacSha256Key(String secret) {
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 }

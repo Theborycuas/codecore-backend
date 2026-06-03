@@ -22,9 +22,10 @@ dependencies {
 
     implementation(libs.spring.security.crypto)
 
-    implementation(libs.jjwt.api)
-    runtimeOnly(libs.jjwt.impl)
-    runtimeOnly(libs.jjwt.jackson)
+    // JJWT (JJWT 0.12.x — API must be on compile classpath for JwtTokenProvider)
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     testImplementation(projects.shared.sharedTest)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
