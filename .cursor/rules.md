@@ -4,21 +4,43 @@
 
 Nunca asumir que una implementación funciona.
 
-Siempre ejecutar pruebas antes de marcar una tarea como completada.
+Antes de declarar una tarea como completada se debe ejecutar validación real.
 
-Obligatorio ejecutar al menos:
+Durante el desarrollo:
+
+1. Preferir validaciones rápidas:
+   - compileJava
+   - test individual afectado
+   - módulo específico afectado
+
+2. Evitar ejecutar:
+   - ./gradlew build
+   - suites completas
+   después de cada cambio pequeño.
+
+3. Ejecutar obligatoriamente validación completa únicamente al finalizar la tarea.
+
+Validación mínima final:
 
 ```bash
 ./gradlew build
-```
 
-y cuando existan tests relacionados:
+---
+
+## Otra regla que añadiría para CodeCore
+
+Porque veo exactamente el patrón que te está ralentizando.
+
+```markdown
+## Regla 1.1
+
+Durante desarrollo iterativo:
+
+NO ejecutar:
 
 ```bash
-./gradlew test
-```
-
-o el módulo correspondiente.
+./gradlew --stop
+./gradlew --no-daemon
 
 ---
 

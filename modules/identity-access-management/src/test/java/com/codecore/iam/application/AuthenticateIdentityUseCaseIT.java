@@ -105,6 +105,7 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
                             .getPayload();
                     assertThat(claims.get("email", String.class)).isEqualTo(email.toLowerCase());
                     assertThat(claims.get("status", String.class)).isEqualTo("ACTIVE");
+                    assertThat(claims.get("tenantId", String.class)).isEqualTo(tenantId.value().toString());
                     assertThat(claims.getSubject()).isNotBlank();
                 })
                 .verifyComplete();

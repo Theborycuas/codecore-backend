@@ -10,6 +10,8 @@ import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.infrastructure.security.JwtTokenProvider;
 import com.codecore.iam.infrastructure.security.JwtTokenValidator;
 import com.codecore.iam.infrastructure.security.config.JwtProperties;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -134,7 +137,8 @@ class JwtAuthenticationWebFilterTest {
                 new AccessTokenClaims(
                         "44444444-4444-4444-4444-444444444444",
                         "me.filter@codecore.local",
-                        "ACTIVE"
+                        "ACTIVE",
+                        "cccccccc-cccc-cccc-cccc-cccccccccccc"
                 )
         ).accessToken();
 
@@ -160,6 +164,43 @@ class JwtAuthenticationWebFilterTest {
         assertThat(captured.get().orElseThrow().identityId())
                 .isEqualTo(new IdentityId("44444444-4444-4444-4444-444444444444"));
         assertThat(captured.get().orElseThrow().status()).isEqualTo(IdentityStatus.ACTIVE);
+        assertThat(captured.get().orElseThrow().tenantId())
+                .contains(new com.codecore.iam.domain.valueobject.TenantId("cccccccc-cccc-cccc-cccc-cccccccccccc"));
+    }
+
+    @Test
+    void shouldAcceptLegacyTokenWithoutTenantIdClaim() {
+        String legacyToken = Jwts.builder()
+                .issuer("codecore-test")
+                .subject("55555555-5555-5555-5555-555555555555")
+                .claim("email", "legacy.filter@codecore.local")
+                .claim("status", "ACTIVE")
+                .issuedAt(new java.util.Date())
+                .expiration(new java.util.Date(System.currentTimeMillis() + 900_000))
+                .signWith(Keys.hmacShaKeyFor(
+                        "codecore-test-jwt-secret-key-minimum-32-characters-long!!"
+                                .getBytes(StandardCharsets.UTF_8)))
+                .compact();
+
+        MockServerWebExchange exchange = exchange(
+                HttpMethod.GET,
+                "/api/v1/auth/me",
+                "Bearer " + legacyToken
+        );
+
+        AtomicReference<Optional<AuthenticatedPrincipal>> captured = new AtomicReference<>();
+
+        WebFilterChain chain = serverExchange -> Mono.deferContextual(ctx -> {
+            captured.set(AuthenticationContext.get(ctx));
+            return serverExchange.getResponse().setComplete();
+        });
+
+        StepVerifier.create(filter.filter(exchange, chain))
+                .verifyComplete();
+
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(captured.get()).isPresent();
+        assertThat(captured.get().orElseThrow().tenantId()).isEmpty();
     }
 
     private static WebFilterChain passThroughChain() {

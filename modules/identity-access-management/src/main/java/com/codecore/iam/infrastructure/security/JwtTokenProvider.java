@@ -33,6 +33,9 @@ public class JwtTokenProvider implements TokenProvider {
     @Override
     public IssuedAccessToken generateAccessToken(AccessTokenClaims claims) {
         Objects.requireNonNull(claims, "claims");
+        if (claims.tenantId() == null || claims.tenantId().isBlank()) {
+            throw new IllegalArgumentException("tenantId must not be blank");
+        }
         Instant issuedAt = Instant.now();
         Instant expiresAt = issuedAt.plus(jwtProperties.getExpiration());
         long expiresInSeconds = jwtProperties.getExpiration().toSeconds();
@@ -42,6 +45,7 @@ public class JwtTokenProvider implements TokenProvider {
                 .subject(claims.subject())
                 .claim("email", claims.email())
                 .claim("status", claims.status())
+                .claim("tenantId", claims.tenantId())
                 .issuedAt(Date.from(issuedAt))
                 .expiration(Date.from(expiresAt))
                 .signWith(signingKey)

@@ -87,7 +87,8 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
                 .then(Mono.fromCallable(() -> tokenProvider.generateAccessToken(new AccessTokenClaims(
                 identity.id().value().toString(),
                 identity.email().value(),
-                identity.status().name()
+                identity.status().name(),
+                tenantId.value().toString()
                 )))).map(issued -> new AuthenticationResponse(
                 issued.accessToken(),
                 issued.tokenType(),

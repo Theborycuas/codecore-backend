@@ -41,24 +41,46 @@ class JwtTokenValidatorTest {
 
     @Test
     void shouldValidateValidToken() {
+        String tenantId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
         String token = tokenProvider.generateAccessToken(
-                new AccessTokenClaims(SUBJECT, EMAIL, "ACTIVE")).accessToken();
+                new AccessTokenClaims(SUBJECT, EMAIL, "ACTIVE", tenantId)).accessToken();
 
         AuthenticatedPrincipal principal = tokenValidator.validate(token);
 
         assertThat(principal.identityId().value()).hasToString(SUBJECT);
         assertThat(principal.email()).isEqualTo(EMAIL);
         assertThat(principal.status()).isEqualTo(IdentityStatus.ACTIVE);
+        assertThat(principal.tenantId()).contains(new com.codecore.iam.domain.valueobject.TenantId(tenantId));
     }
 
     @Test
     void shouldValidateTokenWithBearerPrefix() {
+        String tenantId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
         String token = tokenProvider.generateAccessToken(
-                new AccessTokenClaims(SUBJECT, EMAIL, "ACTIVE")).accessToken();
+                new AccessTokenClaims(SUBJECT, EMAIL, "ACTIVE", tenantId)).accessToken();
 
         AuthenticatedPrincipal principal = tokenValidator.validate("Bearer " + token);
 
         assertThat(principal.email()).isEqualTo(EMAIL);
+        assertThat(principal.tenantId()).contains(new com.codecore.iam.domain.valueobject.TenantId(tenantId));
+    }
+
+    @Test
+    void shouldValidateLegacyTokenWithoutTenantId() {
+        String token = signedToken(
+                properties(SECRET, ISSUER, Duration.ofSeconds(900)),
+                SUBJECT,
+                EMAIL,
+                "ACTIVE",
+                null,
+                Instant.now(),
+                Instant.now().plusSeconds(900)
+        );
+
+        AuthenticatedPrincipal principal = tokenValidator.validate(token);
+
+        assertThat(principal.email()).isEqualTo(EMAIL);
+        assertThat(principal.tenantId()).isEmpty();
     }
 
     @Test
@@ -68,6 +90,7 @@ class JwtTokenValidatorTest {
                 SUBJECT,
                 EMAIL,
                 "ACTIVE",
+                null,
                 Instant.now().minusSeconds(120),
                 Instant.now().minusSeconds(60)
         );
@@ -83,6 +106,7 @@ class JwtTokenValidatorTest {
                 SUBJECT,
                 EMAIL,
                 "ACTIVE",
+                null,
                 Instant.now(),
                 Instant.now().plusSeconds(900)
         );
@@ -98,6 +122,7 @@ class JwtTokenValidatorTest {
                 SUBJECT,
                 EMAIL,
                 "ACTIVE",
+                null,
                 Instant.now(),
                 Instant.now().plusSeconds(900)
         );
@@ -131,6 +156,7 @@ class JwtTokenValidatorTest {
             String subject,
             String email,
             String status,
+            String tenantId,
             Instant issuedAt,
             Instant expiresAt
     ) {
@@ -138,14 +164,16 @@ class JwtTokenValidatorTest {
                 properties.getSecret().getBytes(StandardCharsets.UTF_8),
                 "HmacSHA256"
         );
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .issuer(properties.getIssuer())
                 .subject(subject)
                 .claim("email", email)
                 .claim("status", status)
                 .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiresAt))
-                .signWith(key)
-                .compact();
+                .expiration(Date.from(expiresAt));
+        if (tenantId != null) {
+            builder.claim("tenantId", tenantId);
+        }
+        return builder.signWith(key).compact();
     }
 }

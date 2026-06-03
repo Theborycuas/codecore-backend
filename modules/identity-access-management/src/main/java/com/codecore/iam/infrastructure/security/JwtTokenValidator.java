@@ -6,6 +6,7 @@ import com.codecore.iam.domain.exception.ExpiredTokenException;
 import com.codecore.iam.domain.exception.InvalidTokenException;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
+import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.security.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,6 +18,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Validates CodeCore HS256 JWTs and maps claims to {@link AuthenticatedPrincipal}.
@@ -72,11 +74,19 @@ public class JwtTokenValidator implements TokenValidator {
             return new AuthenticatedPrincipal(
                     new IdentityId(subject),
                     email,
-                    IdentityStatus.valueOf(statusValue)
+                    IdentityStatus.valueOf(statusValue),
+                    parseTenantId(claims.get("tenantId", String.class))
             );
         } catch (IllegalArgumentException ex) {
             throw new InvalidTokenException(INVALID_TOKEN_MESSAGE);
         }
+    }
+
+    private static Optional<TenantId> parseTenantId(String tenantIdValue) {
+        if (tenantIdValue == null || tenantIdValue.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(new TenantId(tenantIdValue));
     }
 
     private static String normalizeToken(String accessToken) {

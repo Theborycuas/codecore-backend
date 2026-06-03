@@ -34,9 +34,10 @@ class JwtTokenProviderTest {
     void shouldIssueBearerTokenWithRequiredClaims() {
         String subject = "33333333-3333-3333-3333-333333333333";
         String email = "jwt.test@codecore.local";
+        String tenantId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
         IssuedAccessToken issued = provider.generateAccessToken(
-                new AccessTokenClaims(subject, email, "ACTIVE"));
+                new AccessTokenClaims(subject, email, "ACTIVE", tenantId));
 
         assertThat(issued.accessToken()).isNotBlank();
         assertThat(issued.tokenType()).isEqualTo("Bearer");
@@ -52,9 +53,9 @@ class JwtTokenProviderTest {
         assertThat(claims.getSubject()).isEqualTo(subject);
         assertThat(claims.get("email", String.class)).isEqualTo(email);
         assertThat(claims.get("status", String.class)).isEqualTo("ACTIVE");
+        assertThat(claims.get("tenantId", String.class)).isEqualTo(tenantId);
         assertThat(claims.getIssuedAt()).isNotNull();
         assertThat(claims.getExpiration()).isNotNull();
-        assertThat(claims.get("tenantId")).isNull();
         assertThat(claims.get("roles")).isNull();
         assertThat(claims.get("permissions")).isNull();
     }

@@ -97,6 +97,7 @@ class AuthenticateIdentityUseCaseTest {
         assertThat(claimsCaptor.getValue().subject()).isEqualTo(identity.id().value().toString());
         assertThat(claimsCaptor.getValue().email()).isEqualTo(EMAIL.toLowerCase());
         assertThat(claimsCaptor.getValue().status()).isEqualTo("ACTIVE");
+        assertThat(claimsCaptor.getValue().tenantId()).isEqualTo(tenantId.value().toString());
         verify(passwordHasher).matches(PASSWORD, HASH);
     }
 

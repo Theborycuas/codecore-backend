@@ -6,6 +6,7 @@ package com.codecore.iam.application.dto;
 public record AccessTokenClaims(
         String subject,
         String email,
-        String status
+        String status,
+        String tenantId
 ) {
 }

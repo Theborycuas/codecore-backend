@@ -31,16 +31,18 @@ class JwtTokenValidationIT {
         JwtTokenValidator validator = new JwtTokenValidator(properties);
 
         String identityId = UUID.randomUUID().toString();
+        String tenantId = UUID.randomUUID().toString();
         String email = "roundtrip.%s@codecore.local".formatted(identityId);
 
         IssuedAccessToken issued = provider.generateAccessToken(
-                new AccessTokenClaims(identityId, email, "ACTIVE"));
+                new AccessTokenClaims(identityId, email, "ACTIVE", tenantId));
 
         AuthenticatedPrincipal principal = validator.validate(issued.accessToken());
 
         assertThat(principal.identityId().value()).hasToString(identityId);
         assertThat(principal.email()).isEqualTo(email);
         assertThat(principal.status()).isEqualTo(IdentityStatus.ACTIVE);
+        assertThat(principal.tenantId()).contains(new com.codecore.iam.domain.valueobject.TenantId(tenantId));
         assertThat(issued.tokenType()).isEqualTo("Bearer");
         assertThat(issued.expiresIn()).isEqualTo(900L);
     }
