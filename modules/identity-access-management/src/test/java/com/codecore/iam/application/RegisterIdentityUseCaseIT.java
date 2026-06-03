@@ -11,6 +11,7 @@ import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
@@ -27,7 +28,13 @@ import java.sql.ResultSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataR2dbcTest
-@Import({IamModuleConfiguration.class, R2dbcIdentityRepository.class, R2dbcTenantRepository.class, BCryptPasswordHasher.class})
+@Import({
+        IamModuleConfiguration.class,
+        R2dbcIdentityRepository.class,
+        R2dbcMembershipRepository.class,
+        R2dbcTenantRepository.class,
+        BCryptPasswordHasher.class
+})
 class RegisterIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
 
     private static final String PASSWORD = "ValidPass1!";
@@ -70,6 +77,22 @@ class RegisterIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
                     assertThat(rs.getString("status")).isEqualTo("PENDING_VERIFICATION");
                     assertThat(rs.getBoolean("email_verified")).isFalse();
                     assertThat(rs.getObject("tenant_id")).isEqualTo(tenantId.value());
+                }
+            }
+
+            try (PreparedStatement ps = connection.prepareStatement("""
+                    SELECT status FROM iam.identity_tenant_membership
+                    WHERE tenant_id = ? AND identity_id = (
+                        SELECT id FROM iam.iam_user
+                        WHERE tenant_id = ? AND normalized_email = ?
+                    )
+                    """)) {
+                ps.setObject(1, tenantId.value());
+                ps.setObject(2, tenantId.value());
+                ps.setString(3, email.toLowerCase());
+                try (ResultSet rs = ps.executeQuery()) {
+                    assertThat(rs.next()).isTrue();
+                    assertThat(rs.getString("status")).isEqualTo("ACTIVE");
                 }
             }
         }

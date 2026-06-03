@@ -5,7 +5,10 @@ import com.codecore.iam.application.command.RegisterIdentityCommand;
 import com.codecore.iam.application.port.in.AuthenticateIdentityUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.configuration.IamAuthenticationConfiguration;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
@@ -19,7 +22,7 @@ import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
-import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.infrastructure.security.JwtTokenProvider;
@@ -46,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         IamModuleConfiguration.class,
         IamAuthenticationConfiguration.class,
         R2dbcIdentityRepository.class,
+        R2dbcMembershipRepository.class,
         R2dbcTenantRepository.class,
         BCryptPasswordHasher.class,
         JwtTokenProvider.class
@@ -71,6 +75,9 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private PasswordHasher passwordHasher;
+
+    @Autowired
+    private MembershipRepository membershipRepository;
 
     @Test
     void shouldAuthenticateActiveIdentityAgainstPostgreSQL() {
@@ -143,6 +150,59 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
                 .verify();
     }
 
+    @Test
+    void shouldRejectLoginWhenMembershipMissing() {
+        TenantId tenantId = TenantId.generate();
+        String email = "auth.no.membership.%s@codecore.local".formatted(tenantId.value());
+
+        StepVerifier.create(persistIdentityOnly(tenantId, email, IdentityStatus.ACTIVE, PASSWORD))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier.create(authenticateIdentityUseCase.execute(
+                        new AuthenticationCommand(tenantId, email, PASSWORD)))
+                .expectError(IdentityNotMemberOfTenantException.class)
+                .verify();
+    }
+
+    @Test
+    void shouldRejectLoginWhenMembershipInactive() {
+        TenantId tenantId = TenantId.generate();
+        String email = "auth.inactive.membership.%s@codecore.local".formatted(tenantId.value());
+
+        StepVerifier.create(persistIdentityOnly(tenantId, email, IdentityStatus.ACTIVE, PASSWORD)
+                        .flatMap(saved -> {
+                            IdentityTenantMembership membership = IdentityTenantMembership.create(
+                                    saved.id(),
+                                    saved.tenantId(),
+                                    Instant.now()
+                            );
+                            membership.deactivate();
+                            return membershipRepository.save(membership);
+                        }))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier.create(authenticateIdentityUseCase.execute(
+                        new AuthenticationCommand(tenantId, email, PASSWORD)))
+                .expectError(IdentityNotMemberOfTenantException.class)
+                .verify();
+    }
+
+    @Test
+    void shouldCreateActiveMembershipOnRegistration() {
+        TenantId tenantId = TenantId.generate();
+        String email = "register.membership.%s@codecore.local".formatted(tenantId.value());
+
+        StepVerifier.create(registerIdentityUseCase.execute(
+                        new RegisterIdentityCommand(tenantId, email, PASSWORD)))
+                .assertNext(result -> StepVerifier.create(
+                                membershipRepository.exists(result.identityId(), tenantId))
+                        .expectNext(true)
+                        .verifyComplete())
+                .verifyComplete();
+    }
+
     @ParameterizedTest
     @EnumSource(
             value = IdentityStatus.class,
@@ -152,7 +212,7 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
         TenantId tenantId = TenantId.generate();
         String email = "auth.%s.%s@codecore.local".formatted(status.name().toLowerCase(), tenantId.value());
 
-        StepVerifier.create(persistIdentity(tenantId, email, status, PASSWORD))
+        StepVerifier.create(persistIdentityWithMembership(tenantId, email, status, PASSWORD))
                 .expectNextCount(1)
                 .verifyComplete();
 
@@ -167,10 +227,27 @@ class AuthenticateIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
             String email,
             String rawPassword
     ) {
-        return persistIdentity(tenantId, email, IdentityStatus.ACTIVE, rawPassword);
+        return persistIdentityWithMembership(tenantId, email, IdentityStatus.ACTIVE, rawPassword);
     }
 
-    private reactor.core.publisher.Mono<Identity> persistIdentity(
+    private reactor.core.publisher.Mono<Identity> persistIdentityWithMembership(
+            TenantId tenantId,
+            String email,
+            IdentityStatus status,
+            String rawPassword
+    ) {
+        return persistIdentityOnly(tenantId, email, status, rawPassword)
+                .flatMap(saved -> {
+                    IdentityTenantMembership membership = IdentityTenantMembership.create(
+                            saved.id(),
+                            saved.tenantId(),
+                            Instant.now()
+                    );
+                    return membershipRepository.save(membership).thenReturn(saved);
+                });
+    }
+
+    private reactor.core.publisher.Mono<Identity> persistIdentityOnly(
             TenantId tenantId,
             String email,
             IdentityStatus status,

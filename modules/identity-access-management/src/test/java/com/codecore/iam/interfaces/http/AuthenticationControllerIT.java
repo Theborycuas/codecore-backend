@@ -1,7 +1,9 @@
 package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.CredentialId;
@@ -46,6 +48,9 @@ class AuthenticationControllerIT extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private PasswordHasher passwordHasher;
+
+    @Autowired
+    private MembershipRepository membershipRepository;
 
     @Test
     void shouldReturn200WithAccessTokenWhenCredentialsValid() {
@@ -138,6 +143,21 @@ class AuthenticationControllerIT extends AbstractPostgresIntegrationTest {
     }
 
     @Test
+    void shouldReturn403WhenMembershipMissing() {
+        TenantId tenantId = TenantId.generate();
+        String email = "http.no.membership.%s@codecore.local".formatted(tenantId.value());
+        persistIdentityWithoutMembership(tenantId, email, IdentityStatus.ACTIVE, PASSWORD).block();
+
+        webTestClient.post()
+                .uri("/api/v1/auth/login")
+                .header("X-Tenant-Id", tenantId.value().toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new LoginRequest(email, PASSWORD))
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
     void shouldReturn400WhenTenantHeaderMissing() {
         webTestClient.post()
                 .uri("/api/v1/auth/login")
@@ -148,6 +168,45 @@ class AuthenticationControllerIT extends AbstractPostgresIntegrationTest {
     }
 
     private reactor.core.publisher.Mono<Identity> persistIdentity(
+            TenantId tenantId,
+            String email,
+            IdentityStatus status,
+            String rawPassword
+    ) {
+        IdentityId identityId = IdentityId.generate();
+        Instant now = Instant.now();
+        String hashed = passwordHasher.hash(rawPassword);
+        Credential credential = new Credential(
+                new CredentialId(identityId.value()),
+                PasswordHash.ofHashedValue(hashed),
+                now,
+                null,
+                status == IdentityStatus.PASSWORD_RESET_REQUIRED,
+                0L
+        );
+        Identity identity = new Identity(
+                identityId,
+                tenantId,
+                EmailAddress.of(email),
+                status,
+                credential,
+                null,
+                now,
+                now,
+                0L
+        );
+        return identityRepository.save(identity)
+                .flatMap(saved -> {
+                    IdentityTenantMembership membership = IdentityTenantMembership.create(
+                            saved.id(),
+                            saved.tenantId(),
+                            Instant.now()
+                    );
+                    return membershipRepository.save(membership).thenReturn(saved);
+                });
+    }
+
+    private reactor.core.publisher.Mono<Identity> persistIdentityWithoutMembership(
             TenantId tenantId,
             String email,
             IdentityStatus status,

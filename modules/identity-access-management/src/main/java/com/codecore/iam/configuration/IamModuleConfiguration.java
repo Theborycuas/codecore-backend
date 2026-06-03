@@ -5,6 +5,7 @@ import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
 import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TenantRepository;
 import com.codecore.iam.infrastructure.persistence.mapper.IamIdentityTenantMembershipMapper;
@@ -39,9 +40,10 @@ public class IamModuleConfiguration {
     @Bean
     public RegisterIdentityUseCase registerIdentityUseCase(
             IdentityRepository identityRepository,
+            MembershipRepository membershipRepository,
             PasswordHasher passwordHasher
     ) {
-        return new RegisterIdentityUseCaseImpl(identityRepository, passwordHasher);
+        return new RegisterIdentityUseCaseImpl(identityRepository, membershipRepository, passwordHasher);
     }
 
     @Bean

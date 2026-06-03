@@ -4,7 +4,9 @@ import com.codecore.iam.application.command.RegisterIdentityCommand;
 import com.codecore.iam.application.dto.RegisterIdentityResult;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
 import com.codecore.iam.domain.model.identity.Credential;
@@ -26,10 +28,16 @@ import java.util.Objects;
 public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
 
     private final IdentityRepository identityRepository;
+    private final MembershipRepository membershipRepository;
     private final PasswordHasher passwordHasher;
 
-    public RegisterIdentityUseCaseImpl(IdentityRepository identityRepository, PasswordHasher passwordHasher) {
+    public RegisterIdentityUseCaseImpl(
+            IdentityRepository identityRepository,
+            MembershipRepository membershipRepository,
+            PasswordHasher passwordHasher
+    ) {
         this.identityRepository = Objects.requireNonNull(identityRepository, "identityRepository");
+        this.membershipRepository = Objects.requireNonNull(membershipRepository, "membershipRepository");
         this.passwordHasher = Objects.requireNonNull(passwordHasher, "passwordHasher");
     }
 
@@ -88,6 +96,14 @@ public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
         );
 
         return identityRepository.save(identity)
+                .flatMap(saved -> {
+                    IdentityTenantMembership membership = IdentityTenantMembership.create(
+                            saved.id(),
+                            saved.tenantId(),
+                            now
+                    );
+                    return membershipRepository.save(membership).thenReturn(saved);
+                })
                 .map(saved -> new RegisterIdentityResult(
                         saved.id(),
                         saved.tenantId(),

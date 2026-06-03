@@ -3,10 +3,13 @@ package com.codecore.iam.application;
 import com.codecore.iam.application.command.RegisterIdentityCommand;
 import com.codecore.iam.application.dto.RegisterIdentityResult;
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
 import com.codecore.iam.domain.model.identity.Identity;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
+import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
@@ -35,13 +38,15 @@ class RegisterIdentityUseCaseTest {
 
   @Mock private IdentityRepository identityRepository;
 
+  @Mock private MembershipRepository membershipRepository;
+
   @Mock private PasswordHasher passwordHasher;
 
   private RegisterIdentityUseCaseImpl useCase;
 
   @BeforeEach
   void setUp() {
-    useCase = new RegisterIdentityUseCaseImpl(identityRepository, passwordHasher);
+    useCase = new RegisterIdentityUseCaseImpl(identityRepository, membershipRepository, passwordHasher);
   }
 
   @Test
@@ -51,6 +56,8 @@ class RegisterIdentityUseCaseTest {
         .thenReturn(Mono.just(false));
     when(passwordHasher.hash(PASSWORD)).thenReturn("$2a$10$hashed");
     when(identityRepository.save(any(Identity.class)))
+        .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(membershipRepository.save(any(IdentityTenantMembership.class)))
         .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
     RegisterIdentityCommand command =
@@ -71,6 +78,13 @@ class RegisterIdentityUseCaseTest {
     assertThat(saved.getValue().status()).isEqualTo(IdentityStatus.PENDING_VERIFICATION);
     assertThat(saved.getValue().credential()).isPresent();
     verify(passwordHasher).hash(PASSWORD);
+
+    ArgumentCaptor<IdentityTenantMembership> membershipCaptor =
+        ArgumentCaptor.forClass(IdentityTenantMembership.class);
+    verify(membershipRepository).save(membershipCaptor.capture());
+    assertThat(membershipCaptor.getValue().identityId()).isEqualTo(saved.getValue().id());
+    assertThat(membershipCaptor.getValue().tenantId()).isEqualTo(tenantId);
+    assertThat(membershipCaptor.getValue().status()).isEqualTo(MembershipStatus.ACTIVE);
   }
 
   @Test
@@ -87,6 +101,7 @@ class RegisterIdentityUseCaseTest {
         .verify();
 
     verify(identityRepository, never()).save(any());
+    verify(membershipRepository, never()).save(any());
     verify(passwordHasher, never()).hash(any());
   }
 
@@ -99,6 +114,8 @@ class RegisterIdentityUseCaseTest {
     when(passwordHasher.hash(PASSWORD)).thenReturn("$2a$10$hashed");
     when(identityRepository.save(any(Identity.class)))
         .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(membershipRepository.save(any(IdentityTenantMembership.class)))
+        .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
     RegisterIdentityCommand command =
         new RegisterIdentityCommand(tenantB, EMAIL, PASSWORD);
@@ -107,6 +124,7 @@ class RegisterIdentityUseCaseTest {
         .assertNext(result -> assertThat(result.tenantId()).isEqualTo(tenantB))
         .verifyComplete();
 
+    verify(membershipRepository).save(any(IdentityTenantMembership.class));
     verify(identityRepository).existsByTenantAndEmail(eq(tenantB), any(EmailAddress.class));
     verify(identityRepository, never()).existsByTenantAndEmail(eq(tenantA), any(EmailAddress.class));
   }

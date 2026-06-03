@@ -4,12 +4,16 @@ import com.codecore.iam.application.command.AuthenticationCommand;
 import com.codecore.iam.application.dto.AccessTokenClaims;
 import com.codecore.iam.application.dto.IssuedAccessToken;
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TokenProvider;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
+import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
+import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.CredentialId;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
@@ -24,6 +28,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -47,6 +52,9 @@ class AuthenticateIdentityUseCaseTest {
     private IdentityRepository identityRepository;
 
     @Mock
+    private MembershipRepository membershipRepository;
+
+    @Mock
     private PasswordHasher passwordHasher;
 
     @Mock
@@ -56,7 +64,12 @@ class AuthenticateIdentityUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new AuthenticateIdentityUseCaseImpl(identityRepository, passwordHasher, tokenProvider);
+        useCase = new AuthenticateIdentityUseCaseImpl(
+                identityRepository,
+                membershipRepository,
+                passwordHasher,
+                tokenProvider
+        );
     }
 
     @Test
@@ -66,6 +79,8 @@ class AuthenticateIdentityUseCaseTest {
         when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
+        when(membershipRepository.findByIdentityId(identity.id()))
+                .thenReturn(Flux.just(activeMembership(identity)));
         when(tokenProvider.generateAccessToken(any(AccessTokenClaims.class)))
                 .thenReturn(new IssuedAccessToken("jwt-token", "Bearer", 900L));
 
@@ -95,6 +110,40 @@ class AuthenticateIdentityUseCaseTest {
 
         StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, "WrongPass1!")))
                 .expectError(InvalidCredentialsException.class)
+                .verify();
+
+        verify(tokenProvider, never()).generateAccessToken(any());
+    }
+
+    @Test
+    void shouldRejectWhenNoMembershipForTenant() {
+        TenantId tenantId = TenantId.generate();
+        Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
+        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+                .thenReturn(Mono.just(identity));
+        when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
+        when(membershipRepository.findByIdentityId(identity.id())).thenReturn(Flux.empty());
+
+        StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, PASSWORD)))
+                .expectError(IdentityNotMemberOfTenantException.class)
+                .verify();
+
+        verify(tokenProvider, never()).generateAccessToken(any());
+    }
+
+    @Test
+    void shouldRejectWhenMembershipInactive() {
+        TenantId tenantId = TenantId.generate();
+        Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
+        IdentityTenantMembership inactive = activeMembership(identity);
+        inactive.deactivate();
+        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+                .thenReturn(Mono.just(identity));
+        when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
+        when(membershipRepository.findByIdentityId(identity.id())).thenReturn(Flux.just(inactive));
+
+        StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, PASSWORD)))
+                .expectError(IdentityNotMemberOfTenantException.class)
                 .verify();
 
         verify(tokenProvider, never()).generateAccessToken(any());
@@ -159,6 +208,14 @@ class AuthenticateIdentityUseCaseTest {
                 now,
                 now,
                 0L
+        );
+    }
+
+    private static IdentityTenantMembership activeMembership(Identity identity) {
+        return IdentityTenantMembership.create(
+                identity.id(),
+                identity.tenantId(),
+                Instant.now()
         );
     }
 }

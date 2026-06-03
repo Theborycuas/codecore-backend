@@ -1,7 +1,9 @@
 package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.application.port.out.IdentityRepository;
+import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.CredentialId;
@@ -53,6 +55,9 @@ class AuthenticationMeControllerIT extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private PasswordHasher passwordHasher;
+
+    @Autowired
+    private MembershipRepository membershipRepository;
 
     @Test
     void shouldReturn200WithIdentityWhenValidJwt() {
@@ -179,6 +184,14 @@ class AuthenticationMeControllerIT extends AbstractPostgresIntegrationTest {
                 now,
                 0L
         );
-        return identityRepository.save(identity);
+        return identityRepository.save(identity)
+                .flatMap(saved -> {
+                    IdentityTenantMembership membership = IdentityTenantMembership.create(
+                            saved.id(),
+                            saved.tenantId(),
+                            Instant.now()
+                    );
+                    return membershipRepository.save(membership).thenReturn(saved);
+                });
     }
 }

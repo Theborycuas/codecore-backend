@@ -3,6 +3,7 @@ package com.codecore.iam.interfaces.http;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
+import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
@@ -44,5 +45,10 @@ public class IamHttpExceptionHandler {
                 ? HttpStatus.LOCKED
                 : HttpStatus.FORBIDDEN;
         return Mono.just(ResponseEntity.status(status).build());
+    }
+
+    @ExceptionHandler(IdentityNotMemberOfTenantException.class)
+    public Mono<ResponseEntity<Void>> handleNotMember(IdentityNotMemberOfTenantException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 }
