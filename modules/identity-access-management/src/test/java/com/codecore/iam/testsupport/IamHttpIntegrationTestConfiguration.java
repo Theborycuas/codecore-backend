@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 @EnableAutoConfiguration
 @Import({
         IamModuleConfiguration.class,
+        IamR2dbcTestConfiguration.class,
         R2dbcIdentityRepository.class,
         R2dbcMembershipRepository.class,
         R2dbcTenantRepository.class,

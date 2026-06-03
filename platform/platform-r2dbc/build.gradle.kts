@@ -1,5 +1,5 @@
 plugins {
-    id("codecore.java-conventions")
+    id("codecore.spring-boot-library")
 }
 
 dependencies {
@@ -8,8 +8,11 @@ dependencies {
 
     implementation(projects.platform.platformPostgres)
 
-    implementation(libs.r2dbc.postgresql)
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework:spring-r2dbc")
+    implementation("org.springframework:spring-tx")
 
+    implementation(libs.r2dbc.postgresql)
     implementation(libs.reactor.core)
 
     testImplementation(libs.reactor.test)

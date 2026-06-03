@@ -14,6 +14,7 @@ import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import org.springframework.transaction.reactive.TransactionalOperator;
 
 /**
  * IAM module Spring entry point. Registers persistence adapters and registration use case.
@@ -41,9 +42,15 @@ public class IamModuleConfiguration {
     public RegisterIdentityUseCase registerIdentityUseCase(
             IdentityRepository identityRepository,
             MembershipRepository membershipRepository,
-            PasswordHasher passwordHasher
+            PasswordHasher passwordHasher,
+            TransactionalOperator transactionalOperator
     ) {
-        return new RegisterIdentityUseCaseImpl(identityRepository, membershipRepository, passwordHasher);
+        return new RegisterIdentityUseCaseImpl(
+                identityRepository,
+                membershipRepository,
+                passwordHasher,
+                transactionalOperator
+        );
     }
 
     @Bean

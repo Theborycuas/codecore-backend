@@ -20,12 +20,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,11 +44,16 @@ class RegisterIdentityUseCaseTest {
 
   @Mock private PasswordHasher passwordHasher;
 
+  @Mock private TransactionalOperator transactionalOperator;
+
   private RegisterIdentityUseCaseImpl useCase;
 
   @BeforeEach
   void setUp() {
-    useCase = new RegisterIdentityUseCaseImpl(identityRepository, membershipRepository, passwordHasher);
+    lenient().when(transactionalOperator.transactional(any(Mono.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    useCase = new RegisterIdentityUseCaseImpl(
+        identityRepository, membershipRepository, passwordHasher, transactionalOperator);
   }
 
   @Test

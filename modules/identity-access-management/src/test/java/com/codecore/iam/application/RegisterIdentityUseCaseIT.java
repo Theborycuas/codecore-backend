@@ -15,6 +15,7 @@ import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRep
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
+import com.codecore.iam.testsupport.IamR2dbcTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataR2dbcTest
 @Import({
         IamModuleConfiguration.class,
+        IamR2dbcTestConfiguration.class,
         R2dbcIdentityRepository.class,
         R2dbcMembershipRepository.class,
         R2dbcTenantRepository.class,

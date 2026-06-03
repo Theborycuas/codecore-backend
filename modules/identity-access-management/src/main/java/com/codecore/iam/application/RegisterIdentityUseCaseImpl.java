@@ -17,6 +17,7 @@ import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.RawPassword;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -30,15 +31,18 @@ public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
     private final IdentityRepository identityRepository;
     private final MembershipRepository membershipRepository;
     private final PasswordHasher passwordHasher;
+    private final TransactionalOperator transactionalOperator;
 
     public RegisterIdentityUseCaseImpl(
             IdentityRepository identityRepository,
             MembershipRepository membershipRepository,
-            PasswordHasher passwordHasher
+            PasswordHasher passwordHasher,
+            TransactionalOperator transactionalOperator
     ) {
         this.identityRepository = Objects.requireNonNull(identityRepository, "identityRepository");
         this.membershipRepository = Objects.requireNonNull(membershipRepository, "membershipRepository");
         this.passwordHasher = Objects.requireNonNull(passwordHasher, "passwordHasher");
+        this.transactionalOperator = Objects.requireNonNull(transactionalOperator, "transactionalOperator");
     }
 
     @Override
@@ -95,7 +99,7 @@ public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
                 0L
         );
 
-        return identityRepository.save(identity)
+        Mono<RegisterIdentityResult> registration = identityRepository.save(identity)
                 .flatMap(saved -> {
                     IdentityTenantMembership membership = IdentityTenantMembership.create(
                             saved.id(),
@@ -110,6 +114,8 @@ public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
                         saved.email(),
                         saved.status()
                 ));
+
+        return transactionalOperator.transactional(registration);
     }
 
     private static void validateNotBlank(String value, String message) {

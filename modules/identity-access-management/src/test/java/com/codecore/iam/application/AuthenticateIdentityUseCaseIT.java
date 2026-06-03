@@ -27,6 +27,7 @@ import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantReposit
 import com.codecore.iam.infrastructure.security.BCryptPasswordHasher;
 import com.codecore.iam.infrastructure.security.JwtTokenProvider;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
+import com.codecore.iam.testsupport.IamR2dbcTestConfiguration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataR2dbcTest
 @Import({
         IamModuleConfiguration.class,
+        IamR2dbcTestConfiguration.class,
         IamAuthenticationConfiguration.class,
         R2dbcIdentityRepository.class,
         R2dbcMembershipRepository.class,
