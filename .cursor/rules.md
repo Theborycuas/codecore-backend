@@ -1,6 +1,6 @@
 # CodeCore Backend - Cursor Rules
 
-## Regla 1
+v## Regla 1
 
 Nunca asumir que una implementación funciona.
 

@@ -49,6 +49,17 @@ tasks.withType<Test>().configureEach {
     }
 }
 
+if (WindowsDirectoryDeleter.isWindows()) {
+    gradle.taskGraph.beforeTask {
+        val testTask = this
+        if (testTask is Test) {
+            WindowsDirectoryDeleter.deleteRecursively(
+                testTask.project.layout.buildDirectory.dir("test-results/${testTask.name}").get().asFile
+            )
+        }
+    }
+}
+
 jacoco {
     toolVersion = "0.8.13"
 }

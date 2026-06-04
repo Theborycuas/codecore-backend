@@ -122,9 +122,27 @@ Bearer token
 
 ### 5.2 Ejecución
 
+Validación rápida (solo JWT, sin Testcontainers):
+
 ```bash
-./gradlew :modules:identity-access-management:test
+./gradlew :modules:identity-access-management:test --tests "com.codecore.iam.infrastructure.security.JwtToken*" --tests "com.codecore.iam.application.AuthenticateIdentityUseCaseTest" --tests "com.codecore.iam.interfaces.http.security.JwtAuthenticationWebFilterTest"
 ```
+
+Validación final del paso:
+
+```bash
+./gradlew build
+```
+
+### 5.3 Lock `output.bin` en Windows
+
+Si `./gradlew build` falla con `Unable to delete ... output.bin`:
+
+1. `./gradlew --stop` (libera daemon que mantiene el archivo abierto)
+2. Borrar `modules/identity-access-management/build/test-results`
+3. Reintentar `./gradlew build`
+
+**Fix permanente (buildSrc):** el hook `beforeTask` en `codecore.java-conventions` ahora usa `testTask.project` (antes apuntaba al proyecto raíz y no limpiaba el submódulo IAM).
 
 ---
 
@@ -135,7 +153,7 @@ Bearer token
 | JWT emitido contiene `tenantId` | ✅ |
 | Validación preserva `tenantId` en `AuthenticatedPrincipal` | ✅ |
 | Tokens antiguos sin `tenantId` siguen válidos | ✅ |
-| BUILD SUCCESSFUL | Ver sección 5.2 |
+| BUILD SUCCESSFUL | `./gradlew build` tras liberar lock (ver §4) |
 | Sin cambios visibles en login/registro HTTP | ✅ |
 
 ---
