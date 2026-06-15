@@ -9,6 +9,7 @@ import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TenantRepository;
 import com.codecore.iam.infrastructure.persistence.mapper.IamIdentityTenantMembershipMapper;
+import com.codecore.iam.infrastructure.persistence.mapper.IamPermissionMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamRoleMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamTenantMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
@@ -42,6 +43,11 @@ public class IamModuleConfiguration {
     @Bean
     public IamRoleMapper iamRoleMapper() {
         return new IamRoleMapper();
+    }
+
+    @Bean
+    public IamPermissionMapper iamPermissionMapper() {
+        return new IamPermissionMapper();
     }
 
     @Bean

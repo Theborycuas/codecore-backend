@@ -48,3 +48,10 @@ tasks.processTestResources {
         into("db/migration")
     }
 }
+
+tasks.test {
+    // Avoid Windows file locks on reused Gradle binary test-results directories.
+    binaryResultsDirectory.set(
+            layout.buildDirectory.dir("tmp/test-binary-${System.currentTimeMillis()}")
+    )
+}

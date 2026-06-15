@@ -1,6 +1,7 @@
 package com.codecore.iam.domain.model.role;
 
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
+import com.codecore.iam.domain.valueobject.PermissionId;
 import com.codecore.iam.domain.valueobject.RoleCode;
 import com.codecore.iam.domain.valueobject.RoleName;
 import com.codecore.iam.domain.valueobject.RoleStatus;
@@ -68,6 +69,57 @@ class RoleTest {
         assertThatThrownBy(() -> role.rename(RoleName.of("Other")))
                 .isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(role::deactivate)
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldAssignAndRevokePermissionsOnCustomRole() {
+        Role role = Role.create(
+                TenantId.generate(),
+                RoleCode.of("VET"),
+                RoleName.of("Veterinarian"),
+                NOW
+        );
+        PermissionId viewPatient = PermissionId.generate();
+        PermissionId updatePatient = PermissionId.generate();
+
+        role.assignPermission(viewPatient, NOW);
+        role.assignPermission(updatePatient, NOW);
+
+        assertThat(role.hasPermission(viewPatient)).isTrue();
+        assertThat(role.hasPermission(updatePatient)).isTrue();
+        assertThat(role.assignedPermissionIds()).containsExactlyInAnyOrder(viewPatient, updatePatient);
+        assertThat(role.permissionAssignments()).hasSize(2);
+
+        role.revokePermission(viewPatient);
+        assertThat(role.hasPermission(viewPatient)).isFalse();
+        assertThat(role.hasPermission(updatePatient)).isTrue();
+    }
+
+    @Test
+    void shouldRejectDuplicatePermissionAssignment() {
+        Role role = Role.create(
+                TenantId.generate(),
+                RoleCode.of("MANAGER"),
+                RoleName.of("Manager"),
+                NOW
+        );
+        PermissionId permissionId = PermissionId.generate();
+        role.assignPermission(permissionId, NOW);
+
+        assertThatThrownBy(() -> role.assignPermission(permissionId, NOW))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void shouldRejectPermissionAssignmentOnSystemRole() {
+        Role role = Role.createSystemRole(
+                TenantId.generate(),
+                RoleCode.of("ADMIN"),
+                RoleName.of("Admin"),
+                NOW
+        );
+        assertThatThrownBy(() -> role.assignPermission(PermissionId.generate(), NOW))
                 .isInstanceOf(IllegalStateException.class);
     }
 

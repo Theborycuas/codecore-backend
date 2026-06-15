@@ -216,7 +216,7 @@ Dominio de Roles implementado — Flyway V9, R2DBC, tests.
 
 ---
 
-# 14.2 Permissions Domain
+# 14.2 Permissions Domain ✅
 
 ## Objetivo
 
@@ -224,72 +224,50 @@ Crear Aggregate Permission.
 
 ### Entidades
 
-Permission
+Permission ✅
 
 ### Value Objects
 
-PermissionId
-PermissionCode
+PermissionId ✅  
+PermissionCode ✅
 
 ### Reglas
 
-Permission global.
+Permission global. ✅
 
-No depende del tenant.
+No depende del tenant. ✅
 
 ### Ejemplos
 
-user:create
-user:update
-user:delete
-
-patient:create
-patient:update
-patient:view
-
-appointment:create
-appointment:update
+user:create · user:update · user:delete · patient:create · patient:view · appointment:update
 
 ### Resultado
 
-Catálogo de permisos implementado.
+Catálogo de permisos implementado — Flyway V10, R2DBC, tests.
 
 ---
 
-# 14.3 Role Permissions
+# 14.3 Role Permissions ✅
 
 ## Objetivo
 
-Relacionar:
-
-Role
-↔
-Permission
+Relacionar Role ↔ Permission.
 
 ### Tabla
 
-role_permission
+`iam.role_permission` — `role_id`, `permission_id`, `assigned_at`
 
 ### Reglas
 
-N:M
+N:M · `UNIQUE(role_id, permission_id)` · **sin `tenant_id`** (scope vía Role)
 
-### Ejemplo
+### Modelo
 
-ADMIN
-
-* user:create
-* user:update
-* user:delete
-
-VET
-
-* patient:view
-* patient:update
+`RolePermissionAssignment` — entidad interna del aggregate `Role` (no aggregate root)
 
 ### Resultado
 
-Roles con permisos.
+Roles con permisos — Flyway V11, `RolePermissionRepository`, tests.
 
 ---
 
@@ -526,11 +504,9 @@ Tras cerrar una fase, el agente debe:
 
 ### Siguiente acción recomendada
 
-**FASE 14.2 — Permissions Domain**
+**FASE 14.4 — Membership Roles**
 
-- Aggregate `Permission`, VOs (`PermissionId`, `PermissionCode`)
-- Flyway `V10__create_iam_permission_table.sql`
-- Repository R2DBC + tests
+- Tabla `iam.membership_role` (N:M Membership ↔ Role)
 
 ---
 
@@ -538,6 +514,8 @@ Tras cerrar una fase, el agente debe:
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-05-27 | 14.3 | Role Permissions — role_permission + RolePermissionAssignment |
+| 2026-05-27 | 14.2 | Permissions Domain — aggregate Permission + V10 |
 | 2026-05-27 | 14.1 | Roles Domain — aggregate Role + V9 |
 | 2026-05-27 | 14.0 | Authorization Foundation — ADR-007 aprobada |
 | 2026-06-15 | 13 | Cierre formal Identity Global Migration |

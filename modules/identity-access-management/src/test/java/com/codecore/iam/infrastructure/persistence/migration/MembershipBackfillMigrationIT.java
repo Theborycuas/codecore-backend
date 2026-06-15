@@ -157,14 +157,14 @@ class MembershipBackfillMigrationIT {
                 .load()
                 .migrate();
         assertThat(countMembershipsFor(identityId, tenantId)).isEqualTo(1);
-        assertThat(appliedMigrationVersion()).isEqualTo("9");
+        assertThat(appliedMigrationVersion()).isEqualTo("11");
     }
 
     private static void migrateToLatest() {
         flywayBuilder()
                 .load()
                 .migrate();
-        assertThat(appliedMigrationVersion()).isEqualTo("9");
+        assertThat(appliedMigrationVersion()).isEqualTo("11");
     }
 
     private static String appliedMigrationVersion() {

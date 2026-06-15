@@ -8,13 +8,15 @@ import com.codecore.iam.domain.valueobject.RoleStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.entity.IamRoleEntity;
 
+import java.util.Set;
+
 /**
  * Isomorphic mapping between {@link IamRoleEntity} and {@link Role}.
  */
 public final class IamRoleMapper {
 
     public Role toDomain(IamRoleEntity entity) {
-        return new Role(
+        return Role.reconstitute(
                 new RoleId(entity.getRoleId()),
                 new TenantId(entity.getTenantId()),
                 RoleCode.of(entity.getCode()),
@@ -22,7 +24,8 @@ public final class IamRoleMapper {
                 RoleStatus.valueOf(entity.getStatus()),
                 entity.isSystemRole(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                Set.of()
         );
     }
 
