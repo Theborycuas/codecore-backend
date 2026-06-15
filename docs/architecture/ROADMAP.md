@@ -98,7 +98,10 @@
 
 ---
 
-# FASE 14 — Authorization Foundation
+# FASE 14 — Authorization Foundation 🔄
+
+**Estado:** En curso — 14.0 cerrado, 14.1+ pendiente  
+**ADR:** [ADR-007-AUTHORIZATION-MODEL.md](ADR-007-AUTHORIZATION-MODEL.md)
 
 ## Objetivo
 
@@ -154,7 +157,7 @@ Authorization
 
 ---
 
-# 14.0 Authorization Foundation
+# 14.0 Authorization Foundation ✅
 
 ## Objetivo
 
@@ -162,24 +165,25 @@ Definir el modelo de autorización.
 
 ### Entregables
 
-ADR-007-AUTHORIZATION-MODEL.md
+ADR-007-AUTHORIZATION-MODEL.md ✅
 
-PASO-14.0-AUTHORIZATION-FOUNDATION.md
+PASO-14.0-AUTHORIZATION-FOUNDATION.md ✅
 
 ### Decisiones
 
-* Role-based authorization
-* Permission-based authorization
-* Scope por tenant
-* Fuente de verdad
+* Role-based authorization (membership-scoped)
+* Permission-based authorization (global catalog)
+* Roles scope por tenant; permisos globales
+* Fuente de verdad: Membership → Role → Permission
+* Implementación FASE 14 en `identity-access-management` (extracción a `authorization-management` FASE 15+)
 
 ### Resultado
 
-Modelo aprobado.
+Modelo aprobado — RBAC membership-scoped (ADR-007).
 
 ---
 
-# 14.1 Roles Domain
+# 14.1 Roles Domain ✅
 
 ## Objetivo
 
@@ -187,31 +191,28 @@ Crear Aggregate Role.
 
 ### Entidades
 
-Role
+Role ✅
 
 ### Value Objects
 
-RoleId
-RoleCode
-RoleName
+RoleId ✅  
+RoleCode ✅  
+RoleName ✅  
+RoleStatus ✅
 
 ### Reglas
 
-Role pertenece a un Tenant.
+Role pertenece a un Tenant. ✅
 
-RoleCode único por tenant.
+RoleCode único por tenant. ✅ (`uq_role_tenant_code`)
 
 ### Ejemplos
 
-ADMIN
-MANAGER
-VET
-RECEPTIONIST
-READ_ONLY
+ADMIN · MANAGER · VET · RECEPTIONIST · READ_ONLY
 
 ### Resultado
 
-Dominio de Roles implementado.
+Dominio de Roles implementado — Flyway V9, R2DBC, tests.
 
 ---
 
@@ -487,9 +488,11 @@ FASE 18 — Business Modules
 | ADR-004 | Hexagonal architecture | Accepted |
 | ADR-005 | DDD | Accepted |
 | ADR-006 | Identity Global + Membership | Accepted |
+| ADR-007 | Authorization Model (RBAC membership-scoped) | Accepted |
 
 **Ubicación specs:** `codecore-specifications/architecture/adr/`  
-**ADR-006 backend:** `docs/architecture/ADR-006-IDENTITY-STRATEGY.md`
+**ADR-006 backend:** `docs/architecture/ADR-006-IDENTITY-STRATEGY.md`  
+**ADR-007 backend:** `docs/architecture/ADR-007-AUTHORIZATION-MODEL.md`
 
 ---
 
@@ -523,12 +526,11 @@ Tras cerrar una fase, el agente debe:
 
 ### Siguiente acción recomendada
 
-**FASE 14.0 — Authorization Foundation Audit**
+**FASE 14.2 — Permissions Domain**
 
-- Inventariar blueprints `authorization-management` en specifications
-- Definir aggregates Role, Permission, MembershipRole
-- Alinear con ADR-006 (rol scoped a membership)
-- Sin implementación en 14.0 — solo auditoría y plan
+- Aggregate `Permission`, VOs (`PermissionId`, `PermissionCode`)
+- Flyway `V10__create_iam_permission_table.sql`
+- Repository R2DBC + tests
 
 ---
 
@@ -536,6 +538,8 @@ Tras cerrar una fase, el agente debe:
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-05-27 | 14.1 | Roles Domain — aggregate Role + V9 |
+| 2026-05-27 | 14.0 | Authorization Foundation — ADR-007 aprobada |
 | 2026-06-15 | 13 | Cierre formal Identity Global Migration |
 | — | 12 | Tenant & Membership completa |
 | — | 11 | JWT & Security HTTP completa |
