@@ -11,6 +11,10 @@ import java.util.UUID;
  */
 public interface SpringDataIamUserRepository extends ReactiveCrudRepository<IamUserEntity, UUID> {
 
+    Mono<IamUserEntity> findFirstByNormalizedEmailOrderByCreatedAtAsc(String normalizedEmail);
+
+    Mono<Boolean> existsByNormalizedEmail(String normalizedEmail);
+
     Mono<IamUserEntity> findByTenantIdAndNormalizedEmail(UUID tenantId, String normalizedEmail);
 
     Mono<Boolean> existsByTenantIdAndNormalizedEmail(UUID tenantId, String normalizedEmail);

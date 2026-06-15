@@ -32,6 +32,37 @@ class R2dbcIdentityRepositoryIT extends AbstractPostgresIntegrationTest {
     private IdentityRepository identityRepository;
 
     @Test
+    void shouldFindAndExistByEmailGlobally() {
+        TenantId tenantId = TenantId.generate();
+        IdentityId identityId = IdentityId.generate();
+        String email = "global.lookup.%s@codecore.local".formatted(identityId.value());
+        Identity identity = newIdentity(tenantId, email, identityId, IdentityStatus.ACTIVE);
+
+        StepVerifier.create(identityRepository.save(identity))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        StepVerifier.create(identityRepository.existsByEmail(EmailAddress.of(email)))
+                .expectNext(true)
+                .verifyComplete();
+
+        StepVerifier.create(identityRepository.findByEmail(EmailAddress.of(email)))
+                .assertNext(found -> {
+                    assertThat(found.id()).isEqualTo(identity.id());
+                    assertThat(found.email().value()).isEqualTo(email);
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void shouldReturnFalseWhenEmailDoesNotExistGlobally() {
+        StepVerifier.create(identityRepository.existsByEmail(
+                        EmailAddress.of("missing.%s@codecore.local".formatted(IdentityId.generate().value()))))
+                .expectNext(false)
+                .verifyComplete();
+    }
+
+    @Test
     void shouldPersistFindAndDeleteIdentityByTenantAndEmail() {
         TenantId tenantId = TenantId.generate();
         IdentityId identityId = IdentityId.generate();

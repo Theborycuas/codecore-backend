@@ -57,11 +57,11 @@ public class RegisterIdentityUseCaseImpl implements RegisterIdentityUseCase {
             EmailAddress email = EmailAddress.of(command.email());
             RawPassword rawPassword = RawPassword.of(command.rawPassword());
 
-            return identityRepository.existsByTenantAndEmail(command.tenantId(), email)
+            return identityRepository.existsByEmail(email)
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new IdentityAlreadyExistsException(
-                                "Identity already exists for this tenant and email"));
+                                "Identity already exists for this email"));
                     }
                     return register(command.tenantId(), email, rawPassword);
                 });

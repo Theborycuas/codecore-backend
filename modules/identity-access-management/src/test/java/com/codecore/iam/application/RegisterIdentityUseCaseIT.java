@@ -116,7 +116,7 @@ class RegisterIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
     }
 
     @Test
-    void shouldAllowSameEmailInDifferentTenants() {
+    void shouldRejectDuplicateEmailInDifferentTenant() {
         String email = "shared.%s@codecore.local".formatted(TenantId.generate().value());
         TenantId tenantA = TenantId.generate();
         TenantId tenantB = TenantId.generate();
@@ -128,8 +128,8 @@ class RegisterIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
 
         StepVerifier.create(registerIdentityUseCase.execute(
                         new RegisterIdentityCommand(tenantB, email, PASSWORD)))
-                .expectNextCount(1)
-                .verifyComplete();
+                .expectError(IdentityAlreadyExistsException.class)
+                .verify();
     }
 
     @Test
@@ -141,7 +141,7 @@ class RegisterIdentityUseCaseIT extends AbstractPostgresIntegrationTest {
         StepVerifier.create(
                         registerIdentityUseCase.execute(command)
                                 .flatMap(registered -> identityRepository
-                                        .findByTenantAndEmail(tenantId, registered.email())
+                                        .findByEmail(registered.email())
                                         .map(loaded -> new RegisteredAndLoaded(registered, loaded))))
                 .assertNext(pair -> {
                     assertThat(pair.registered().identityId()).isEqualTo(pair.loaded().id());

@@ -43,6 +43,17 @@ public class R2dbcIdentityRepository implements IdentityRepository {
     }
 
     @Override
+    public Mono<Identity> findByEmail(EmailAddress email) {
+        return springDataIamUserRepository.findFirstByNormalizedEmailOrderByCreatedAtAsc(email.value())
+                .map(iamUserMapper::toDomain);
+    }
+
+    @Override
+    public Mono<Boolean> existsByEmail(EmailAddress email) {
+        return springDataIamUserRepository.existsByNormalizedEmail(email.value());
+    }
+
+    @Override
     public Mono<Identity> findByTenantAndEmail(TenantId tenantId, EmailAddress email) {
         return springDataIamUserRepository.findByTenantIdAndNormalizedEmail(tenantId.value(), email.value())
                 .map(iamUserMapper::toDomain);

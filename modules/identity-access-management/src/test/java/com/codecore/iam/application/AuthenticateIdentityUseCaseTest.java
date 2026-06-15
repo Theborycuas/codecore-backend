@@ -36,7 +36,6 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +75,7 @@ class AuthenticateIdentityUseCaseTest {
     void shouldAuthenticateActiveIdentityAndIssueAccessToken() {
         TenantId tenantId = TenantId.generate();
         Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
         when(membershipRepository.findByIdentityId(identity.id()))
@@ -105,7 +104,7 @@ class AuthenticateIdentityUseCaseTest {
     void shouldRejectActiveIdentityWithIncorrectPassword() {
         TenantId tenantId = TenantId.generate();
         Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches("WrongPass1!", HASH)).thenReturn(false);
 
@@ -120,7 +119,7 @@ class AuthenticateIdentityUseCaseTest {
     void shouldRejectWhenNoMembershipForTenant() {
         TenantId tenantId = TenantId.generate();
         Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
         when(membershipRepository.findByIdentityId(identity.id())).thenReturn(Flux.empty());
@@ -138,7 +137,7 @@ class AuthenticateIdentityUseCaseTest {
         Identity identity = identity(tenantId, EMAIL, IdentityStatus.ACTIVE, HASH);
         IdentityTenantMembership inactive = activeMembership(identity);
         inactive.deactivate();
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
         when(passwordHasher.matches(PASSWORD, HASH)).thenReturn(true);
         when(membershipRepository.findByIdentityId(identity.id())).thenReturn(Flux.just(inactive));
@@ -153,7 +152,7 @@ class AuthenticateIdentityUseCaseTest {
     @Test
     void shouldRejectWhenIdentityDoesNotExist() {
         TenantId tenantId = TenantId.generate();
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, PASSWORD)))
@@ -172,7 +171,7 @@ class AuthenticateIdentityUseCaseTest {
     void shouldRejectNonActiveStatuses(IdentityStatus status) {
         TenantId tenantId = TenantId.generate();
         Identity identity = identity(tenantId, EMAIL, status, HASH);
-        when(identityRepository.findByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+        when(identityRepository.findByEmail(any(EmailAddress.class)))
                 .thenReturn(Mono.just(identity));
 
         StepVerifier.create(useCase.execute(new AuthenticationCommand(tenantId, EMAIL, PASSWORD)))

@@ -26,7 +26,6 @@ import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -59,7 +58,7 @@ class RegisterIdentityUseCaseTest {
   @Test
   void shouldRegisterIdentitySuccessfully() {
     TenantId tenantId = TenantId.generate();
-    when(identityRepository.existsByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+    when(identityRepository.existsByEmail(any(EmailAddress.class)))
         .thenReturn(Mono.just(false));
     when(passwordHasher.hash(PASSWORD)).thenReturn("$2a$10$hashed");
     when(identityRepository.save(any(Identity.class)))
@@ -97,7 +96,7 @@ class RegisterIdentityUseCaseTest {
   @Test
   void shouldRejectDuplicateEmailInSameTenant() {
     TenantId tenantId = TenantId.generate();
-    when(identityRepository.existsByTenantAndEmail(eq(tenantId), any(EmailAddress.class)))
+    when(identityRepository.existsByEmail(any(EmailAddress.class)))
         .thenReturn(Mono.just(true));
 
     RegisterIdentityCommand command =
@@ -113,27 +112,22 @@ class RegisterIdentityUseCaseTest {
   }
 
   @Test
-  void shouldAllowSameEmailInDifferentTenant() {
-    TenantId tenantA = TenantId.generate();
+  void shouldRejectDuplicateEmailInDifferentTenant() {
     TenantId tenantB = TenantId.generate();
-    when(identityRepository.existsByTenantAndEmail(eq(tenantB), any(EmailAddress.class)))
-        .thenReturn(Mono.just(false));
-    when(passwordHasher.hash(PASSWORD)).thenReturn("$2a$10$hashed");
-    when(identityRepository.save(any(Identity.class)))
-        .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
-    when(membershipRepository.save(any(IdentityTenantMembership.class)))
-        .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+    when(identityRepository.existsByEmail(any(EmailAddress.class)))
+        .thenReturn(Mono.just(true));
 
     RegisterIdentityCommand command =
         new RegisterIdentityCommand(tenantB, EMAIL, PASSWORD);
 
     StepVerifier.create(useCase.execute(command))
-        .assertNext(result -> assertThat(result.tenantId()).isEqualTo(tenantB))
-        .verifyComplete();
+        .expectError(IdentityAlreadyExistsException.class)
+        .verify();
 
-    verify(membershipRepository).save(any(IdentityTenantMembership.class));
-    verify(identityRepository).existsByTenantAndEmail(eq(tenantB), any(EmailAddress.class));
-    verify(identityRepository, never()).existsByTenantAndEmail(eq(tenantA), any(EmailAddress.class));
+    verify(identityRepository).existsByEmail(any(EmailAddress.class));
+    verify(identityRepository, never()).save(any());
+    verify(membershipRepository, never()).save(any());
+    verify(passwordHasher, never()).hash(any());
   }
 
   @Test
@@ -145,7 +139,7 @@ class RegisterIdentityUseCaseTest {
         .expectError(InvalidDomainValueException.class)
         .verify();
 
-    verify(identityRepository, never()).existsByTenantAndEmail(any(), any());
+    verify(identityRepository, never()).existsByEmail(any());
   }
 
   @Test
@@ -157,6 +151,6 @@ class RegisterIdentityUseCaseTest {
         .expectError(InvalidDomainValueException.class)
         .verify();
 
-    verify(identityRepository, never()).existsByTenantAndEmail(any(), any());
+    verify(identityRepository, never()).existsByEmail(any());
   }
 }

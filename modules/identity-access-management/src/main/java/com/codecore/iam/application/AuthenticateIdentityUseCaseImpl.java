@@ -61,7 +61,7 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
             EmailAddress email = EmailAddress.of(command.email());
             String rawPassword = command.rawPassword();
 
-            return identityRepository.findByTenantAndEmail(command.tenantId(), email)
+            return identityRepository.findByEmail(email)
                     .switchIfEmpty(Mono.error(new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE)))
                     .flatMap(identity -> authenticate(identity, command.tenantId(), rawPassword));
         });
