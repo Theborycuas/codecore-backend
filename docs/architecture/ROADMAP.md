@@ -271,48 +271,33 @@ Roles con permisos — Flyway V11, `RolePermissionRepository`, tests.
 
 ---
 
-# 14.4 Membership Roles
+# 14.4 Membership Roles ✅
 
 ## Objetivo
 
-Relacionar:
-
-Membership
-↔
-Role
+Relacionar Membership ↔ Role.
 
 ### Tabla
 
-membership_role
+`iam.membership_role` — `membership_id`, `role_id`, `assigned_at`
 
 ### Reglas
 
-Un membership puede tener múltiples roles.
+N:M · múltiples roles por membership · `UNIQUE(membership_id, role_id)` · **sin `tenant_id`**
 
-### Ejemplo
+Validación dominio: `role.tenantId` debe coincidir con `membership.tenantId`.
 
-Juan
+### Modelo
 
-Tenant A
-
-Roles:
-
-* ADMIN
-* BILLING
-
-Tenant B
-
-Roles:
-
-* VET
+`MembershipRoleAssignment` — entidad interna del aggregate `IdentityTenantMembership`
 
 ### Resultado
 
-Roles asignados por tenant.
+Roles asignados por membership — Flyway V12, `MembershipRoleRepository`, tests.
 
 ---
 
-# 14.5 Authorization Service
+# 14.5 Authorization Service ✅
 
 ## Objetivo
 
@@ -320,45 +305,33 @@ Crear servicio de autorización.
 
 ### API
 
-hasPermission()
-
-hasAnyPermission()
-
-hasRole()
+`hasPermission()` · `hasAnyPermission()` · `hasRole()`
 
 ### Fuente
 
-Membership
-↓
-Role
-↓
-Permission
+Membership → Role → Permission (SQL EXISTS joins)
 
 ### Resultado
 
-Motor de autorización funcional.
+`AuthorizationService` + `R2dbcAuthorizationQueryRepository` — tests 14.5 ✅
 
 ---
 
-# 14.6 Authorization Context
+# 14.6 Authorization Context ✅
 
 ## Objetivo
 
 Integrar:
 
-JWT
-↓
-TenantContext
-↓
-AuthorizationContext
+JWT → TenantContext → AuthorizationContext
 
 ### Resultado
 
-Autorización disponible en Use Cases.
+`AuthorizationContextWebFilter`, `AuthorizationReactorContext`, `ReactorAuthorizationContextAccessor` — tests 14.6 ✅
 
 ---
 
-# 14.7 HTTP Authorization
+# 14.7 HTTP Authorization ✅
 
 ## Objetivo
 
@@ -366,13 +339,11 @@ Proteger endpoints.
 
 ### Ejemplo
 
-@RequiresPermission("patient:create")
-
-o equivalente WebFlux.
+`@RequiresPermission("patient:create")` vía `RequiresPermissionAspect` (WebFlux + AOP)
 
 ### Resultado
 
-Autorización HTTP.
+Autorización HTTP — `AuthorizationHttpIT` ✅
 
 ---
 
@@ -504,9 +475,10 @@ Tras cerrar una fase, el agente debe:
 
 ### Siguiente acción recomendada
 
-**FASE 14.4 — Membership Roles**
+**FASE 14.8 — Seeds**
 
-- Tabla `iam.membership_role` (N:M Membership ↔ Role)
+- Roles iniciales (ADMIN, OWNER, …) y permisos base
+- Flyway seed migration o bootstrap service
 
 ---
 
@@ -514,6 +486,10 @@ Tras cerrar una fase, el agente debe:
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-05-27 | 14.7 | HTTP Authorization — `@RequiresPermission` + Aspect + 403 |
+| 2026-05-27 | 14.6 | Authorization Context — JWT → membership ACTIVE → Reactor Context |
+| 2026-05-27 | 14.5 | Authorization Service — hasPermission / hasRole runtime |
+| 2026-05-27 | 14.4 | Membership Roles — membership_role + MembershipRoleAssignment |
 | 2026-05-27 | 14.3 | Role Permissions — role_permission + RolePermissionAssignment |
 | 2026-05-27 | 14.2 | Permissions Domain — aggregate Permission + V10 |
 | 2026-05-27 | 14.1 | Roles Domain — aggregate Role + V9 |

@@ -24,6 +24,8 @@ dependencies {
 
     implementation(libs.spring.boot.starter.validation)
 
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
     implementation(libs.spring.security.crypto)
 
     // JJWT (JJWT 0.12.x — API must be on compile classpath for JwtTokenProvider)

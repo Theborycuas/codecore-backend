@@ -7,19 +7,22 @@ import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.entity.IamIdentityTenantMembershipEntity;
 
+import java.util.Set;
+
 /**
  * Isomorphic mapping between {@link IamIdentityTenantMembershipEntity} and {@link IdentityTenantMembership}.
  */
 public final class IamIdentityTenantMembershipMapper {
 
     public IdentityTenantMembership toDomain(IamIdentityTenantMembershipEntity entity) {
-        return new IdentityTenantMembership(
+        return IdentityTenantMembership.reconstitute(
                 new MembershipId(entity.getMembershipId()),
                 new IdentityId(entity.getIdentityId()),
                 new TenantId(entity.getTenantId()),
                 MembershipStatus.valueOf(entity.getStatus()),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                Set.of()
         );
     }
 

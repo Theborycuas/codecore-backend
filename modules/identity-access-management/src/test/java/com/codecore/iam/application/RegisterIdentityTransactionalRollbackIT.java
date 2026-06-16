@@ -124,6 +124,14 @@ class RegisterIdentityTransactionalRollbackIT extends AbstractPostgresIntegratio
                 public Flux<IdentityTenantMembership> findByTenantId(TenantId tenantId) {
                     return r2dbcMembershipRepository.findByTenantId(tenantId);
                 }
+
+                @Override
+                public Mono<IdentityTenantMembership> findActiveByIdentityIdAndTenantId(
+                        IdentityId identityId,
+                        TenantId tenantId
+                ) {
+                    return r2dbcMembershipRepository.findActiveByIdentityIdAndTenantId(identityId, tenantId);
+                }
             };
         }
     }

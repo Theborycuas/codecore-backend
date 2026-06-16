@@ -15,4 +15,10 @@ public interface SpringDataIamIdentityTenantMembershipRepository
     Flux<IamIdentityTenantMembershipEntity> findByIdentityId(UUID identityId);
 
     Flux<IamIdentityTenantMembershipEntity> findByTenantId(UUID tenantId);
+
+    Mono<IamIdentityTenantMembershipEntity> findByIdentityIdAndTenantIdAndStatus(
+            UUID identityId,
+            UUID tenantId,
+            String status
+    );
 }

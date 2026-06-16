@@ -1,5 +1,6 @@
 package com.codecore.iam.interfaces.http;
 
+import com.codecore.iam.domain.exception.AuthorizationDeniedException;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
@@ -49,6 +50,11 @@ public class IamHttpExceptionHandler {
 
     @ExceptionHandler(IdentityNotMemberOfTenantException.class)
     public Mono<ResponseEntity<Void>> handleNotMember(IdentityNotMemberOfTenantException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public Mono<ResponseEntity<Void>> handleAuthorizationDenied(AuthorizationDeniedException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 }

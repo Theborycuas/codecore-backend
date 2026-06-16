@@ -3,6 +3,7 @@ package com.codecore.iam.infrastructure.persistence.repository;
 import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.valueobject.IdentityId;
+import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.mapper.IamIdentityTenantMembershipMapper;
 import org.springframework.stereotype.Repository;
@@ -52,6 +53,19 @@ public class R2dbcMembershipRepository implements MembershipRepository {
     @Override
     public Flux<IdentityTenantMembership> findByTenantId(TenantId tenantId) {
         return springDataRepository.findByTenantId(tenantId.value())
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Mono<IdentityTenantMembership> findActiveByIdentityIdAndTenantId(
+            IdentityId identityId,
+            TenantId tenantId
+    ) {
+        return springDataRepository.findByIdentityIdAndTenantIdAndStatus(
+                        identityId.value(),
+                        tenantId.value(),
+                        MembershipStatus.ACTIVE.name()
+                )
                 .map(mapper::toDomain);
     }
 }
