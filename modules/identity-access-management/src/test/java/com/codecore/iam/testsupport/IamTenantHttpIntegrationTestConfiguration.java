@@ -3,6 +3,7 @@ package com.codecore.iam.testsupport;
 import com.codecore.iam.application.CreateTenantUseCaseImpl;
 import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.application.port.out.TenantSystemRolesProvisioner;
 import com.codecore.iam.infrastructure.persistence.mapper.IamTenantMapper;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
 import com.codecore.iam.interfaces.http.CreateTenantController;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableAutoConfiguration
@@ -29,7 +31,15 @@ public class IamTenantHttpIntegrationTestConfiguration {
     }
 
     @Bean
-    CreateTenantUseCase createTenantUseCase(TenantRepository tenantRepository) {
-        return new CreateTenantUseCaseImpl(tenantRepository);
+    CreateTenantUseCase createTenantUseCase(
+            TenantRepository tenantRepository,
+            TenantSystemRolesProvisioner tenantSystemRolesProvisioner
+    ) {
+        return new CreateTenantUseCaseImpl(tenantRepository, tenantSystemRolesProvisioner);
+    }
+
+    @Bean
+    TenantSystemRolesProvisioner noopTenantSystemRolesProvisioner() {
+        return tenantId -> Mono.empty();
     }
 }

@@ -22,4 +22,10 @@ public class AuthorizationProbeController {
     public Mono<Map<String, String>> authorizationProbe() {
         return Mono.just(Map.of("authorized", "true"));
     }
+
+    @GetMapping("/user-create-probe")
+    @RequiresPermission("user:create")
+    public Mono<Map<String, String>> userCreateProbe() {
+        return Mono.just(Map.of("authorized", "true"));
+    }
 }

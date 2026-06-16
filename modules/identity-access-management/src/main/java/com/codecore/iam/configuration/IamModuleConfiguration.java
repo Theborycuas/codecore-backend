@@ -8,6 +8,7 @@ import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.application.port.out.TenantSystemRolesProvisioner;
 import com.codecore.iam.infrastructure.persistence.mapper.IamIdentityTenantMembershipMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamPermissionMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamRoleMapper;
@@ -66,7 +67,10 @@ public class IamModuleConfiguration {
     }
 
     @Bean
-    public CreateTenantUseCase createTenantUseCase(TenantRepository tenantRepository) {
-        return new CreateTenantUseCaseImpl(tenantRepository);
+    public CreateTenantUseCase createTenantUseCase(
+            TenantRepository tenantRepository,
+            TenantSystemRolesProvisioner tenantSystemRolesProvisioner
+    ) {
+        return new CreateTenantUseCaseImpl(tenantRepository, tenantSystemRolesProvisioner);
     }
 }

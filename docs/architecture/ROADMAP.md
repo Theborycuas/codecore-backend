@@ -347,44 +347,35 @@ Autorización HTTP — `AuthorizationHttpIT` ✅
 
 ---
 
-# 14.8 Seeds
+# 14.8 Seeds ✅
 
 ## Objetivo
 
-Crear roles iniciales.
+Contrato de autorización IAM base (no permisos de negocio).
 
-### Roles
+### Permisos IAM (V13)
 
-ADMIN
+16 grants globales `system_permission = true` — tenant, membership, role, permission, user.
 
-OWNER
+### Roles system (por tenant)
 
-READ_ONLY
-
-### Permisos
-
-Catálogo mínimo inicial.
+OWNER · ADMIN · MANAGER · USER · READ_ONLY — provisionados en `CreateTenantUseCase`.
 
 ### Resultado
 
-Instalación lista para usar.
+`V13__seed_authorization_foundation.sql` + `TenantSystemRolesProvisioner` — tests 14.8 ✅
 
 ---
 
-# 14.9 Authorization Verification
+# 14.9 Authorization Verification ✅
 
 ## Objetivo
 
-Validar:
-
-* roles
-* permisos
-* memberships
-* tenant isolation
+Validar cadena completa: roles, permisos, memberships, tenant isolation, deny-by-default, HTTP.
 
 ### Resultado
 
-FASE 14 cerrada.
+`AuthorizationFoundationVerificationIT` (9 verificaciones) — **FASE 14 cerrada** ✅
 
 ---
 
@@ -475,10 +466,7 @@ Tras cerrar una fase, el agente debe:
 
 ### Siguiente acción recomendada
 
-**FASE 14.8 — Seeds**
-
-- Roles iniciales (ADMIN, OWNER, …) y permisos base
-- Flyway seed migration o bootstrap service
+**FASE 15 — Organizations** (primer paso pendiente post-FASE 14).
 
 ---
 
@@ -486,7 +474,9 @@ Tras cerrar una fase, el agente debe:
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
-| 2026-05-27 | 14.7 | HTTP Authorization — `@RequiresPermission` + Aspect + 403 |
+| 2026-05-27 | **14** | **Cierre FASE 14 — RBAC multi-tenant operativo** |
+| 2026-05-27 | 14.9 | Authorization Verification — 9 verificaciones E2E |
+| 2026-05-27 | 14.8 | IAM Seeds — V13 + system roles provisioner |
 | 2026-05-27 | 14.6 | Authorization Context — JWT → membership ACTIVE → Reactor Context |
 | 2026-05-27 | 14.5 | Authorization Service — hasPermission / hasRole runtime |
 | 2026-05-27 | 14.4 | Membership Roles — membership_role + MembershipRoleAssignment |

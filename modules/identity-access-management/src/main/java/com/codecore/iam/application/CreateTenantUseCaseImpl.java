@@ -4,6 +4,7 @@ import com.codecore.iam.application.command.CreateTenantCommand;
 import com.codecore.iam.application.dto.CreateTenantResponse;
 import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.application.port.out.TenantSystemRolesProvisioner;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.model.tenant.Tenant;
@@ -20,9 +21,17 @@ import java.util.Objects;
 public class CreateTenantUseCaseImpl implements CreateTenantUseCase {
 
     private final TenantRepository tenantRepository;
+    private final TenantSystemRolesProvisioner tenantSystemRolesProvisioner;
 
-    public CreateTenantUseCaseImpl(TenantRepository tenantRepository) {
+    public CreateTenantUseCaseImpl(
+            TenantRepository tenantRepository,
+            TenantSystemRolesProvisioner tenantSystemRolesProvisioner
+    ) {
         this.tenantRepository = Objects.requireNonNull(tenantRepository, "tenantRepository");
+        this.tenantSystemRolesProvisioner = Objects.requireNonNull(
+                tenantSystemRolesProvisioner,
+                "tenantSystemRolesProvisioner"
+        );
     }
 
     @Override
@@ -50,6 +59,7 @@ public class CreateTenantUseCaseImpl implements CreateTenantUseCase {
         Tenant tenant = Tenant.create(tenantId, name, now);
 
         return tenantRepository.save(tenant)
+                .flatMap(saved -> tenantSystemRolesProvisioner.provisionForTenant(saved.id()).thenReturn(saved))
                 .map(saved -> new CreateTenantResponse(
                         saved.id(),
                         saved.name(),

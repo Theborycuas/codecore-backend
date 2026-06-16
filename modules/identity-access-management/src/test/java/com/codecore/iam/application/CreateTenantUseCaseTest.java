@@ -2,6 +2,7 @@ package com.codecore.iam.application;
 
 import com.codecore.iam.application.command.CreateTenantCommand;
 import com.codecore.iam.application.port.out.TenantRepository;
+import com.codecore.iam.application.port.out.TenantSystemRolesProvisioner;
 import com.codecore.iam.domain.exception.InvalidDomainValueException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.model.tenant.Tenant;
@@ -31,11 +32,14 @@ class CreateTenantUseCaseTest {
     @Mock
     private TenantRepository tenantRepository;
 
+    @Mock
+    private TenantSystemRolesProvisioner tenantSystemRolesProvisioner;
+
     private CreateTenantUseCaseImpl useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new CreateTenantUseCaseImpl(tenantRepository);
+        useCase = new CreateTenantUseCaseImpl(tenantRepository, tenantSystemRolesProvisioner);
     }
 
     @Test
@@ -43,6 +47,7 @@ class CreateTenantUseCaseTest {
         when(tenantRepository.existsByName(any(TenantName.class))).thenReturn(Mono.just(false));
         when(tenantRepository.save(any(Tenant.class)))
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+        when(tenantSystemRolesProvisioner.provisionForTenant(any())).thenReturn(Mono.empty());
 
         StepVerifier.create(useCase.execute(new CreateTenantCommand(TENANT_NAME)))
                 .assertNext(result -> {
