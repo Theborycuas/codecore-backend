@@ -5,6 +5,7 @@ import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.TenantId;
+import com.codecore.iam.infrastructure.persistence.entity.IamUserEntity;
 import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -28,17 +29,26 @@ public class R2dbcIdentityRepository implements IdentityRepository {
 
     @Override
     public Mono<Identity> save(Identity identity) {
-        return springDataIamUserRepository
-                .findByTenantIdAndId(identity.tenantId().value(), identity.id().value())
-                .hasElement()
-                .flatMap(exists -> springDataIamUserRepository.save(
-                        iamUserMapper.toEntity(identity, !exists)))
+        return springDataIamUserRepository.findById(identity.id().value())
+                .flatMap(existing -> {
+                    IamUserEntity entity = iamUserMapper.toEntity(identity, false);
+                    entity.setVersion(existing.getVersion());
+                    return springDataIamUserRepository.save(entity);
+                })
+                .switchIfEmpty(Mono.defer(() -> springDataIamUserRepository.save(
+                        iamUserMapper.toEntity(identity, true))))
                 .map(iamUserMapper::toDomain);
     }
 
     @Override
     public Mono<Identity> findById(TenantId tenantId, IdentityId identityId) {
         return springDataIamUserRepository.findByTenantIdAndId(tenantId.value(), identityId.value())
+                .map(iamUserMapper::toDomain);
+    }
+
+    @Override
+    public Mono<Identity> findById(IdentityId identityId) {
+        return springDataIamUserRepository.findById(identityId.value())
                 .map(iamUserMapper::toDomain);
     }
 

@@ -6,6 +6,7 @@ import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.valueobject.IdentityId;
+import com.codecore.iam.domain.valueobject.MembershipId;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRepository;
@@ -131,6 +132,22 @@ class RegisterIdentityTransactionalRollbackIT extends AbstractPostgresIntegratio
                         TenantId tenantId
                 ) {
                     return r2dbcMembershipRepository.findActiveByIdentityIdAndTenantId(identityId, tenantId);
+                }
+
+                @Override
+                public Mono<IdentityTenantMembership> findByIdentityIdAndTenantId(
+                        IdentityId identityId,
+                        TenantId tenantId
+                ) {
+                    return r2dbcMembershipRepository.findByIdentityIdAndTenantId(identityId, tenantId);
+                }
+
+                @Override
+                public Mono<IdentityTenantMembership> findByIdAndTenantId(
+                        MembershipId membershipId,
+                        TenantId tenantId
+                ) {
+                    return r2dbcMembershipRepository.findByIdAndTenantId(membershipId, tenantId);
                 }
             };
         }

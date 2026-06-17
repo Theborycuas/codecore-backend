@@ -21,4 +21,8 @@ public interface SpringDataIamIdentityTenantMembershipRepository
             UUID tenantId,
             String status
     );
+
+    Mono<IamIdentityTenantMembershipEntity> findByIdentityIdAndTenantId(UUID identityId, UUID tenantId);
+
+    Mono<IamIdentityTenantMembershipEntity> findByMembershipIdAndTenantId(UUID membershipId, UUID tenantId);
 }

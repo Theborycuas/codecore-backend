@@ -19,7 +19,7 @@ import java.util.Optional;
 public final class Identity extends AggregateRoot {
 
     private final IdentityId id;
-    private final EmailAddress email;
+    private EmailAddress email;
     private IdentityStatus status;
     private Credential credential;
     private Instant lastLoginAt;
@@ -165,6 +165,22 @@ public final class Identity extends AggregateRoot {
 
     public void attachCredential(Credential newCredential) {
         this.credential = Objects.requireNonNull(newCredential, "newCredential");
+        touch();
+        bumpVersion();
+    }
+
+    /**
+     * Changes the globally unique email. Caller must enforce uniqueness before invoking.
+     */
+    public void changeEmail(EmailAddress newEmail) {
+        Objects.requireNonNull(newEmail, "newEmail");
+        if (status == IdentityStatus.LOCKED) {
+            throw new IllegalStateException("Cannot change email while identity is locked");
+        }
+        if (status == IdentityStatus.DISABLED) {
+            throw new IllegalStateException("Cannot change email while identity is disabled");
+        }
+        this.email = newEmail;
         touch();
         bumpVersion();
     }

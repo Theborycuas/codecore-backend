@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.0 |
+| **15** | IAM Administration | 🔵 **En curso** | 15.1 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -96,7 +96,8 @@ Flujo **vía HTTP real** (no solo tests internos):
 | Paso | Nombre | Estado | Entregable principal |
 |------|--------|--------|----------------------|
 | **15.0** | IAM Administration Foundation | ✅ | ADR-008, convenciones API, primer endpoint protegido productivo |
-| **15.1** | User Administration | ⏳ | CRUD/list `user:*` → `/api/v1/iam/users` |
+| **15.0.1** | Ownership Rules Audit | ✅ | Matriz jerárquica OWNER→READ_ONLY |
+| **15.1** | User Administration | ✅ | CRUD/list `user:*` → `/api/v1/iam/users` |
 | **15.2** | Membership Administration | ⏳ | `membership:*` |
 | **15.3** | Role Administration | ⏳ | `role:*` |
 | **15.4** | Permission Administration | ⏳ | `permission:read` (catálogo) |
@@ -115,7 +116,14 @@ Flujo **vía HTTP real** (no solo tests internos):
 - `GET /api/v1/iam/administration/status` con `@RequiresPermission("role:read")`  
 - Documentación: `PASO-15.0-IAM-ADMINISTRATION-FOUNDATION.md`
 
-### 15.1 – 15.9 (pendiente)
+### 15.1 User Administration ✅
+
+- `GET/POST/PUT/DELETE /api/v1/iam/users` con `@RequiresPermission`
+- Membership-first listado; `Identity.disable()` para delete
+- `OwnershipPolicy` (15.0.1); `IdentityRegistrationOrchestrator`
+- Documentación: `PASO-15.1-USER-ADMINISTRATION.md`
+
+### 15.2 – 15.9 (pendiente)
 
 Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
 
@@ -178,7 +186,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.1 — User Administration** (tras cerrar 15.0)
+**FASE 15.2 — Membership Administration** (tras cerrar 15.1)
 
 ---
 
@@ -186,6 +194,8 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15.1 | User Administration — `/api/v1/iam/users` + ownership |
+| 2026-06-17 | 15.0.1 | Ownership Rules Audit |
 | 2026-06-15 | 15.0 | IAM Administration Foundation — ADR-008 + admin API base |
 | 2026-05-27 | 14 | Cierre FASE 14 — RBAC + seeds + verificación |
 | 2026-05-27 | 14.9.1 | RBAC Operability Audit |

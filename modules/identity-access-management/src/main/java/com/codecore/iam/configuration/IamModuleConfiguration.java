@@ -2,7 +2,7 @@ package com.codecore.iam.configuration;
 
 import com.codecore.iam.application.CreateTenantUseCaseImpl;
 import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
-import com.codecore.iam.application.port.in.CreateTenantUseCase;
+import com.codecore.iam.application.admin.IdentityRegistrationOrchestrator;import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;
@@ -52,17 +52,28 @@ public class IamModuleConfiguration {
     }
 
     @Bean
-    public RegisterIdentityUseCase registerIdentityUseCase(
+    public IdentityRegistrationOrchestrator identityRegistrationOrchestrator(
             IdentityRepository identityRepository,
             MembershipRepository membershipRepository,
             PasswordHasher passwordHasher,
             TransactionalOperator transactionalOperator
     ) {
-        return new RegisterIdentityUseCaseImpl(
+        return new IdentityRegistrationOrchestrator(
                 identityRepository,
                 membershipRepository,
                 passwordHasher,
                 transactionalOperator
+        );
+    }
+
+    @Bean
+    public RegisterIdentityUseCase registerIdentityUseCase(
+            IdentityRepository identityRepository,
+            IdentityRegistrationOrchestrator identityRegistrationOrchestrator
+    ) {
+        return new RegisterIdentityUseCaseImpl(
+                identityRepository,
+                identityRegistrationOrchestrator
         );
     }
 

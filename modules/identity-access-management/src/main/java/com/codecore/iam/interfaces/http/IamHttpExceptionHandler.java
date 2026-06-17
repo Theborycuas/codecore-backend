@@ -2,6 +2,10 @@ package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.domain.exception.AuthorizationDeniedException;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
+import com.codecore.iam.domain.exception.IdentityNotFoundException;
+import com.codecore.iam.domain.exception.MembershipAlreadyExistsException;
+import com.codecore.iam.domain.exception.MembershipNotFoundException;
+import com.codecore.iam.domain.exception.OwnershipDeniedException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
@@ -56,5 +60,35 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     public Mono<ResponseEntity<Void>> handleAuthorizationDenied(AuthorizationDeniedException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @ExceptionHandler(OwnershipDeniedException.class)
+    public Mono<ResponseEntity<Void>> handleOwnershipDenied(OwnershipDeniedException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @ExceptionHandler(IdentityNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handleIdentityNotFound(IdentityNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @ExceptionHandler(MembershipNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handleMembershipNotFound(MembershipNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @ExceptionHandler(MembershipAlreadyExistsException.class)
+    public Mono<ResponseEntity<Void>> handleMembershipAlreadyExists(MembershipAlreadyExistsException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public Mono<ResponseEntity<Void>> handleIllegalState(IllegalStateException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Mono<ResponseEntity<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        return Mono.just(ResponseEntity.badRequest().build());
     }
 }

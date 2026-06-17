@@ -9,6 +9,10 @@ public final class IamAdminApiPaths {
 
     public static final String ADMINISTRATION = BASE + "/administration";
 
+    public static final String USERS = BASE + "/users";
+
+    public static final String MEMBERSHIPS = BASE + "/memberships";
+
     private IamAdminApiPaths() {
     }
 }
