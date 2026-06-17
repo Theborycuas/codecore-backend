@@ -21,6 +21,8 @@ Quinta capa administrativa IAM: sincronización de permisos sobre roles custom d
 | Tests 15.5 | ✅ 11 tests |
 | Suite IAM completa | No ejecutada (por diseño) |
 
+
+
 ---
 
 ## 2. Decisiones tomadas

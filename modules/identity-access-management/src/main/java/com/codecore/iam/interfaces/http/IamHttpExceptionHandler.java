@@ -12,6 +12,7 @@ import com.codecore.iam.domain.exception.RoleInUseException;
 import com.codecore.iam.domain.exception.RoleNotFoundException;
 import com.codecore.iam.domain.exception.SystemRoleImmutableException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
+import com.codecore.iam.domain.exception.TenantNotFoundException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
@@ -37,6 +38,11 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(TenantAlreadyExistsException.class)
     public Mono<ResponseEntity<Void>> handleTenantDuplicate(TenantAlreadyExistsException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(TenantNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handleTenantNotFound(TenantNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @ExceptionHandler(InvalidDomainValueException.class)

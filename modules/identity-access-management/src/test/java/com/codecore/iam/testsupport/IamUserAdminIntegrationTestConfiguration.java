@@ -23,11 +23,16 @@ import com.codecore.iam.infrastructure.security.JwtTokenProvider;
 import com.codecore.iam.infrastructure.security.JwtTokenValidator;
 import com.codecore.iam.interfaces.http.AuthenticationController;
 import com.codecore.iam.interfaces.http.IamHttpExceptionHandler;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRoleAdminQueryRepository;
 import com.codecore.iam.interfaces.http.admin.IamMembershipAdminController;
+import com.codecore.iam.interfaces.http.admin.IamMembershipRoleAdminController;
 import com.codecore.iam.interfaces.http.admin.IamPermissionAdminController;
 import com.codecore.iam.interfaces.http.admin.IamRoleAdminController;
 import com.codecore.iam.interfaces.http.admin.IamRolePermissionAdminController;
+import com.codecore.iam.interfaces.http.admin.IamTenantAdminController;
 import com.codecore.iam.interfaces.http.admin.IamUserAdminController;
+import com.codecore.iam.interfaces.http.CreateTenantController;
+import com.codecore.iam.interfaces.http.RegisterIdentityController;
 import com.codecore.iam.interfaces.http.security.AuthenticatedPrincipalAuthorizationManager;
 import com.codecore.iam.interfaces.http.security.JwtAuthenticationWebFilter;
 import com.codecore.iam.interfaces.http.security.RequiresPermissionAspect;
@@ -55,6 +60,7 @@ import org.springframework.context.annotation.Import;
         R2dbcRolePermissionRepository.class,
         R2dbcRolePermissionAdminQueryRepository.class,
         R2dbcMembershipRoleRepository.class,
+        R2dbcMembershipRoleAdminQueryRepository.class,
         R2dbcAuthorizationQueryRepository.class,
         BCryptPasswordHasher.class,
         JwtTokenProvider.class,
@@ -66,9 +72,13 @@ import org.springframework.context.annotation.Import;
         AuthenticationController.class,
         IamUserAdminController.class,
         IamMembershipAdminController.class,
+        IamMembershipRoleAdminController.class,
         IamRoleAdminController.class,
         IamPermissionAdminController.class,
         IamRolePermissionAdminController.class,
+        IamTenantAdminController.class,
+        CreateTenantController.class,
+        RegisterIdentityController.class,
         IamHttpExceptionHandler.class
 })
 public class IamUserAdminIntegrationTestConfiguration {

@@ -13,7 +13,7 @@ import java.util.Objects;
 public final class Tenant {
 
     private final TenantId id;
-    private final TenantName name;
+    private TenantName name;
     private TenantStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
@@ -69,6 +69,11 @@ public final class Tenant {
 
     public void activate() {
         this.status = TenantStatus.ACTIVE;
+        touch();
+    }
+
+    public void rename(TenantName newName) {
+        this.name = Objects.requireNonNull(newName, "newName");
         touch();
     }
 

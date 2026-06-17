@@ -1,6 +1,6 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-06-15  
+**Última actualización:** 2026-06-17  
 **Módulo principal:** `identity-access-management`  
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith
 
@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.5 |
+| **15** | IAM Administration | 🔵 **En curso** | 15.7 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -102,8 +102,8 @@ Flujo **vía HTTP real** (no solo tests internos):
 | **15.3** | Role Administration | ✅ | CRUD/list `role:*` → `/api/v1/iam/roles` |
 | **15.4** | Permission Administration | ✅ | Catálogo `permission:read` → `/api/v1/iam/permissions` |
 | **15.5** | Role Permission Administration | ✅ | `permission:assign` → `/roles/{id}/permissions` |
-| **15.6** | Membership Role Administration | ⏳ | asignación membership ↔ role |
-| **15.7** | Tenant Administration | ⏳ | `tenant:*`, endurecer bootstrap |
+| **15.6** | Membership Role Administration | ✅ | `membership:update` → `/memberships/{id}/roles` |
+| **15.7** | Tenant Administration | ✅ | `tenant:*` → `/tenants/current` + bootstrap endurecido |
 | **15.8** | OpenAPI | ⏳ | Contrato HTTP IAM |
 | **15.9** | IAM Administration Verification | ⏳ | E2E HTTP completo, cierre fase |
 
@@ -150,7 +150,21 @@ Flujo **vía HTTP real** (no solo tests internos):
 - System roles: GET ok, PUT → 403
 - Documentación: `PASO-15.5-ROLE-PERMISSION-ADMINISTRATION.md`
 
-### 15.6 – 15.9 (pendiente)
+### 15.6 Membership Role Administration ✅
+
+- `GET/PUT /api/v1/iam/memberships/{membershipId}/roles` con `membership:update`
+- PUT replace: diff dominio + `MembershipRoleRepository.replaceAll`
+- `OwnershipPolicy` en PUT; membership ACTIVE requerida
+- Documentación: `PASO-15.6-MEMBERSHIP-ROLE-ADMINISTRATION.md`
+
+### 15.7 Tenant Administration ✅
+
+- `GET/PUT /api/v1/iam/tenants/current` con `tenant:read` / `tenant:update`
+- `Tenant.rename()`; estados ACTIVE / SUSPENDED / DISABLED
+- Bootstrap: `POST /tenants` y `POST /identities` requieren JWT (ADR-008 15.7)
+- Documentación: `PASO-15.7-TENANT-ADMINISTRATION.md`
+
+### 15.8 – 15.9 (pendiente)
 
 Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
 
@@ -213,7 +227,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.6 — Membership Role Administration** (tras cerrar 15.5)
+**FASE 15.8 — OpenAPI** (tras cerrar 15.7)
 
 ---
 
@@ -221,6 +235,8 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15.7 | Tenant Administration — `/tenants/current` + bootstrap endurecido |
+| 2026-06-17 | 15.6 | Membership Role Administration — `/memberships/{id}/roles` |
 | 2026-06-17 | 15.5 | Role Permission Administration — `/roles/{id}/permissions` |
 | 2026-06-17 | 15.4 | Permission Administration — catálogo `/api/v1/iam/permissions` |
 | 2026-06-17 | 15.3 | Role Administration — `/api/v1/iam/roles` |

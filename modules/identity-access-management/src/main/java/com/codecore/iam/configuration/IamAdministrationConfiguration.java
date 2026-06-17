@@ -3,9 +3,11 @@ package com.codecore.iam.configuration;
 import com.codecore.iam.application.admin.IdentityRegistrationOrchestrator;
 import com.codecore.iam.application.admin.OwnershipPolicy;
 import com.codecore.iam.application.admin.MembershipAdministrationUseCaseImpl;
+import com.codecore.iam.application.admin.MembershipRoleAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.PermissionAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.RolePermissionAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.RoleAdministrationUseCaseImpl;
+import com.codecore.iam.application.admin.TenantAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.UserAdministrationUseCaseImpl;
 import com.codecore.iam.application.port.in.CreateAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.CreateAdminRoleUseCase;
@@ -13,24 +15,29 @@ import com.codecore.iam.application.port.in.CreateAdminUserUseCase;
 import com.codecore.iam.application.port.in.DeactivateAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.DeactivateAdminUserUseCase;
 import com.codecore.iam.application.port.in.DeleteAdminRoleUseCase;
+import com.codecore.iam.application.port.in.GetAdminMembershipRolesUseCase;
 import com.codecore.iam.application.port.in.GetAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.GetAdminPermissionUseCase;
 import com.codecore.iam.application.port.in.GetAdminRolePermissionsUseCase;
 import com.codecore.iam.application.port.in.GetAdminRoleUseCase;
 import com.codecore.iam.application.port.in.GetAdminUserUseCase;
+import com.codecore.iam.application.port.in.GetAdminTenantUseCase;
 import com.codecore.iam.application.port.in.ListAdminMembershipsUseCase;
 import com.codecore.iam.application.port.in.ListAdminPermissionsUseCase;
 import com.codecore.iam.application.port.in.ListAdminRolesUseCase;
 import com.codecore.iam.application.port.in.ListAdminUsersUseCase;
+import com.codecore.iam.application.port.in.ReplaceAdminMembershipRolesUseCase;
 import com.codecore.iam.application.port.in.ReplaceAdminRolePermissionsUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminRoleUseCase;
+import com.codecore.iam.application.port.in.UpdateAdminTenantUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminUserUseCase;
 import com.codecore.iam.application.port.out.AuthorizationContextAccessor;
 import com.codecore.iam.application.port.out.IdentityAdminQueryRepository;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipAdminQueryRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;
+import com.codecore.iam.application.port.out.MembershipRoleAdminQueryRepository;
 import com.codecore.iam.application.port.out.MembershipRoleRepository;
 import com.codecore.iam.application.port.out.PermissionAdminQueryRepository;
 import com.codecore.iam.application.port.out.PermissionRepository;
@@ -38,6 +45,7 @@ import com.codecore.iam.application.port.out.RoleAdminQueryRepository;
 import com.codecore.iam.application.port.out.RolePermissionAdminQueryRepository;
 import com.codecore.iam.application.port.out.RolePermissionRepository;
 import com.codecore.iam.application.port.out.RoleRepository;
+import com.codecore.iam.application.port.out.TenantRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -243,6 +251,64 @@ public class IamAdministrationConfiguration {
     public ReplaceAdminRolePermissionsUseCase replaceAdminRolePermissionsUseCase(
             RolePermissionAdministrationUseCaseImpl delegate
     ) {
+        return delegate;
+    }
+
+    @Bean
+    public MembershipRoleAdministrationUseCaseImpl membershipRoleAdministrationUseCase(
+            AuthorizationContextAccessor authorizationContextAccessor,
+            MembershipRepository membershipRepository,
+            RoleRepository roleRepository,
+            MembershipRoleRepository membershipRoleRepository,
+            MembershipRoleAdminQueryRepository membershipRoleAdminQueryRepository,
+            OwnershipPolicy ownershipPolicy,
+            TransactionalOperator transactionalOperator
+    ) {
+        return new MembershipRoleAdministrationUseCaseImpl(
+                authorizationContextAccessor,
+                membershipRepository,
+                roleRepository,
+                membershipRoleRepository,
+                membershipRoleAdminQueryRepository,
+                ownershipPolicy,
+                transactionalOperator
+        );
+    }
+
+    @Bean
+    public GetAdminMembershipRolesUseCase getAdminMembershipRolesUseCase(
+            MembershipRoleAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public ReplaceAdminMembershipRolesUseCase replaceAdminMembershipRolesUseCase(
+            MembershipRoleAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public TenantAdministrationUseCaseImpl tenantAdministrationUseCase(
+            AuthorizationContextAccessor authorizationContextAccessor,
+            TenantRepository tenantRepository,
+            TransactionalOperator transactionalOperator
+    ) {
+        return new TenantAdministrationUseCaseImpl(
+                authorizationContextAccessor,
+                tenantRepository,
+                transactionalOperator
+        );
+    }
+
+    @Bean
+    public GetAdminTenantUseCase getAdminTenantUseCase(TenantAdministrationUseCaseImpl delegate) {
+        return delegate;
+    }
+
+    @Bean
+    public UpdateAdminTenantUseCase updateAdminTenantUseCase(TenantAdministrationUseCaseImpl delegate) {
         return delegate;
     }
 }

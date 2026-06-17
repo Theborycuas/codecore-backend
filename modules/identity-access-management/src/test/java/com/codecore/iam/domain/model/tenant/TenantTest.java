@@ -53,4 +53,18 @@ class TenantTest {
         assertThat(tenant.status()).isEqualTo(TenantStatus.ACTIVE);
         assertThat(tenant.updatedAt()).isAfter(NOW);
     }
+
+    @Test
+    void shouldRenameTenant() {
+        Tenant tenant = Tenant.create(
+                TenantId.generate(),
+                TenantName.of("Original Name"),
+                NOW
+        );
+
+        tenant.rename(TenantName.of("Renamed Tenant"));
+
+        assertThat(tenant.name().value()).isEqualTo("Renamed Tenant");
+        assertThat(tenant.updatedAt()).isAfter(NOW);
+    }
 }

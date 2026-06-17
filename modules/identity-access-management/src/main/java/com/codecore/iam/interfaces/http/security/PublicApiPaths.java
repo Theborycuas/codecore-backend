@@ -5,6 +5,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Public routes that skip JWT validation (must stay aligned with {@code PlatformSecurityAutoConfiguration}).
+ * Bootstrap {@code POST /tenants} and {@code POST /identities} require authentication since FASE 15.7.
  */
 public final class PublicApiPaths {
 
@@ -19,12 +20,6 @@ public final class PublicApiPaths {
             return true;
         }
         if (method == HttpMethod.POST && "/api/v1/auth/login".equals(path)) {
-            return true;
-        }
-        if (method == HttpMethod.POST && "/api/v1/identities".equals(path)) {
-            return true;
-        }
-        if (method == HttpMethod.POST && "/api/v1/tenants".equals(path)) {
             return true;
         }
         return false;
