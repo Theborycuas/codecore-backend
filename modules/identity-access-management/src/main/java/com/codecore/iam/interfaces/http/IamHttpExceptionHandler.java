@@ -6,6 +6,7 @@ import com.codecore.iam.domain.exception.IdentityNotFoundException;
 import com.codecore.iam.domain.exception.MembershipAlreadyExistsException;
 import com.codecore.iam.domain.exception.MembershipNotFoundException;
 import com.codecore.iam.domain.exception.OwnershipDeniedException;
+import com.codecore.iam.domain.exception.PermissionNotFoundException;
 import com.codecore.iam.domain.exception.RoleAlreadyExistsException;
 import com.codecore.iam.domain.exception.RoleInUseException;
 import com.codecore.iam.domain.exception.RoleNotFoundException;
@@ -104,6 +105,11 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(SystemRoleImmutableException.class)
     public Mono<ResponseEntity<Void>> handleSystemRoleImmutable(SystemRoleImmutableException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @ExceptionHandler(PermissionNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handlePermissionNotFound(PermissionNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @ExceptionHandler(IllegalStateException.class)

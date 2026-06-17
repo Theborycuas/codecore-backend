@@ -98,4 +98,33 @@ public final class PageQueryParser {
     public static String roleSqlOrderColumn(String sortField) {
         return ROLE_SORT_COLUMNS.getOrDefault(sortField, ROLE_SORT_COLUMNS.get("createdAt"));
     }
+
+    private static final Map<String, String> PERMISSION_SORT_COLUMNS = Map.of(
+            "code", "code",
+            "createdAt", "created_at"
+    );
+
+    private static final Set<String> PERMISSION_ALLOWED_SORT = PERMISSION_SORT_COLUMNS.keySet();
+
+    public static PageQuery parsePermissionPageQuery(int page, int size, String sort) {
+        String sortField = "code";
+        PageQuery.SortDirection direction = PageQuery.SortDirection.ASC;
+        if (sort != null && !sort.isBlank()) {
+            String[] parts = sort.split(",", 2);
+            String candidate = parts[0].trim();
+            if (PERMISSION_ALLOWED_SORT.contains(candidate)) {
+                sortField = candidate;
+            }
+            if (parts.length > 1 && "desc".equalsIgnoreCase(parts[1].trim())) {
+                direction = PageQuery.SortDirection.DESC;
+            }
+        }
+        int safeSize = Math.min(Math.max(size, 1), PageQuery.MAX_SIZE);
+        int safePage = Math.max(page, 0);
+        return new PageQuery(safePage, safeSize, sortField, direction);
+    }
+
+    public static String permissionSqlOrderColumn(String sortField) {
+        return PERMISSION_SORT_COLUMNS.getOrDefault(sortField, PERMISSION_SORT_COLUMNS.get("code"));
+    }
 }

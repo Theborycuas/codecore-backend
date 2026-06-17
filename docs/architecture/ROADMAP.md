@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.3 |
+| **15** | IAM Administration | 🔵 **En curso** | 15.4 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -100,7 +100,7 @@ Flujo **vía HTTP real** (no solo tests internos):
 | **15.1** | User Administration | ✅ | CRUD/list `user:*` → `/api/v1/iam/users` |
 | **15.2** | Membership Administration | ✅ | CRUD/list `membership:*` → `/api/v1/iam/memberships` |
 | **15.3** | Role Administration | ✅ | CRUD/list `role:*` → `/api/v1/iam/roles` |
-| **15.4** | Permission Administration | ⏳ | `permission:read` (catálogo) |
+| **15.4** | Permission Administration | ✅ | Catálogo `permission:read` → `/api/v1/iam/permissions` |
 | **15.5** | Role Permission Administration | ⏳ | `permission:assign` |
 | **15.6** | Membership Role Administration | ⏳ | asignación membership ↔ role |
 | **15.7** | Tenant Administration | ⏳ | `tenant:*`, endurecer bootstrap |
@@ -137,7 +137,13 @@ Flujo **vía HTTP real** (no solo tests internos):
 - DELETE físico si no hay `membership_role`; CASCADE en `role_permission`
 - Documentación: `PASO-15.3-ROLE-ADMINISTRATION.md`
 
-### 15.4 – 15.9 (pendiente)
+### 15.4 Permission Administration ✅
+
+- `GET /api/v1/iam/permissions` y `GET /{id}` con `permission:read`
+- Catálogo global read-only (semillas V13); sin mutaciones
+- Documentación: `PASO-15.4-PERMISSION-ADMINISTRATION.md`
+
+### 15.5 – 15.9 (pendiente)
 
 Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
 
@@ -200,7 +206,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.4 — Permission Administration** (tras cerrar 15.3)
+**FASE 15.5 — Role Permission Administration** (tras cerrar 15.4)
 
 ---
 
@@ -208,6 +214,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15.4 | Permission Administration — catálogo `/api/v1/iam/permissions` |
 | 2026-06-17 | 15.3 | Role Administration — `/api/v1/iam/roles` |
 | 2026-06-17 | 15.2 | Membership Administration — `/api/v1/iam/memberships` |
 | 2026-06-17 | 15.1 | User Administration — `/api/v1/iam/users` + ownership |

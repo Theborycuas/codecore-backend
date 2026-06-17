@@ -15,6 +15,8 @@ public final class IamAdminApiPaths {
 
     public static final String ROLES = BASE + "/roles";
 
+    public static final String PERMISSIONS = BASE + "/permissions";
+
     private IamAdminApiPaths() {
     }
 }

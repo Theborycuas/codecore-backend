@@ -8,6 +8,7 @@ import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcAuthorizationQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityAdminQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipAdminQueryRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcPermissionAdminQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcRoleAdminQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRepository;
@@ -22,6 +23,7 @@ import com.codecore.iam.infrastructure.security.JwtTokenValidator;
 import com.codecore.iam.interfaces.http.AuthenticationController;
 import com.codecore.iam.interfaces.http.IamHttpExceptionHandler;
 import com.codecore.iam.interfaces.http.admin.IamMembershipAdminController;
+import com.codecore.iam.interfaces.http.admin.IamPermissionAdminController;
 import com.codecore.iam.interfaces.http.admin.IamRoleAdminController;
 import com.codecore.iam.interfaces.http.admin.IamUserAdminController;
 import com.codecore.iam.interfaces.http.security.AuthenticatedPrincipalAuthorizationManager;
@@ -43,6 +45,7 @@ import org.springframework.context.annotation.Import;
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,
         R2dbcRoleAdminQueryRepository.class,
+        R2dbcPermissionAdminQueryRepository.class,
         R2dbcTenantRepository.class,
         R2dbcMembershipRepository.class,
         R2dbcRoleRepository.class,
@@ -61,6 +64,7 @@ import org.springframework.context.annotation.Import;
         IamUserAdminController.class,
         IamMembershipAdminController.class,
         IamRoleAdminController.class,
+        IamPermissionAdminController.class,
         IamHttpExceptionHandler.class
 })
 public class IamUserAdminIntegrationTestConfiguration {
