@@ -51,4 +51,9 @@ public class R2dbcRoleRepository implements RoleRepository {
     public Mono<Boolean> existsByTenantIdAndCode(TenantId tenantId, RoleCode code) {
         return springDataIamRoleRepository.existsByTenantIdAndCode(tenantId.value(), code.value());
     }
+
+    @Override
+    public Mono<Void> delete(RoleId roleId) {
+        return springDataIamRoleRepository.deleteById(roleId.value()).then();
+    }
 }

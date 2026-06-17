@@ -83,6 +83,20 @@ public class R2dbcMembershipRoleRepository implements MembershipRoleRepository {
     }
 
     @Override
+    public Mono<Boolean> existsByRoleId(RoleId roleId) {
+        return databaseClient.sql("""
+                        SELECT EXISTS (
+                            SELECT 1 FROM iam.membership_role
+                            WHERE role_id = :roleId
+                        )
+                        """)
+                .bind("roleId", roleId.value())
+                .map((row, metadata) -> row.get(0, Boolean.class))
+                .one()
+                .defaultIfEmpty(false);
+    }
+
+    @Override
     public Mono<Void> replaceAll(MembershipId membershipId, Iterable<MembershipRoleAssignment> assignments) {
         return databaseClient.sql("DELETE FROM iam.membership_role WHERE membership_id = :membershipId")
                 .bind("membershipId", membershipId.value())

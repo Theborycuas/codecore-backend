@@ -67,4 +67,35 @@ public final class PageQueryParser {
     public static String membershipSqlOrderColumn(String sortField) {
         return MEMBERSHIP_SORT_COLUMNS.getOrDefault(sortField, MEMBERSHIP_SORT_COLUMNS.get("createdAt"));
     }
+
+    private static final Map<String, String> ROLE_SORT_COLUMNS = Map.of(
+            "code", "code",
+            "name", "name",
+            "status", "status",
+            "createdAt", "created_at"
+    );
+
+    private static final Set<String> ROLE_ALLOWED_SORT = ROLE_SORT_COLUMNS.keySet();
+
+    public static PageQuery parseRolePageQuery(int page, int size, String sort) {
+        String sortField = "createdAt";
+        PageQuery.SortDirection direction = PageQuery.SortDirection.DESC;
+        if (sort != null && !sort.isBlank()) {
+            String[] parts = sort.split(",", 2);
+            String candidate = parts[0].trim();
+            if (ROLE_ALLOWED_SORT.contains(candidate)) {
+                sortField = candidate;
+            }
+            if (parts.length > 1 && "asc".equalsIgnoreCase(parts[1].trim())) {
+                direction = PageQuery.SortDirection.ASC;
+            }
+        }
+        int safeSize = Math.min(Math.max(size, 1), PageQuery.MAX_SIZE);
+        int safePage = Math.max(page, 0);
+        return new PageQuery(safePage, safeSize, sortField, direction);
+    }
+
+    public static String roleSqlOrderColumn(String sortField) {
+        return ROLE_SORT_COLUMNS.getOrDefault(sortField, ROLE_SORT_COLUMNS.get("createdAt"));
+    }
 }

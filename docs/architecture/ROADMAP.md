@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.1 |
+| **15** | IAM Administration | 🔵 **En curso** | 15.3 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -98,8 +98,8 @@ Flujo **vía HTTP real** (no solo tests internos):
 | **15.0** | IAM Administration Foundation | ✅ | ADR-008, convenciones API, primer endpoint protegido productivo |
 | **15.0.1** | Ownership Rules Audit | ✅ | Matriz jerárquica OWNER→READ_ONLY |
 | **15.1** | User Administration | ✅ | CRUD/list `user:*` → `/api/v1/iam/users` |
-| **15.2** | Membership Administration | ⏳ | `membership:*` |
-| **15.3** | Role Administration | ⏳ | `role:*` |
+| **15.2** | Membership Administration | ✅ | CRUD/list `membership:*` → `/api/v1/iam/memberships` |
+| **15.3** | Role Administration | ✅ | CRUD/list `role:*` → `/api/v1/iam/roles` |
 | **15.4** | Permission Administration | ⏳ | `permission:read` (catálogo) |
 | **15.5** | Role Permission Administration | ⏳ | `permission:assign` |
 | **15.6** | Membership Role Administration | ⏳ | asignación membership ↔ role |
@@ -123,7 +123,21 @@ Flujo **vía HTTP real** (no solo tests internos):
 - `OwnershipPolicy` (15.0.1); `IdentityRegistrationOrchestrator`
 - Documentación: `PASO-15.1-USER-ADMINISTRATION.md`
 
-### 15.2 – 15.9 (pendiente)
+### 15.2 Membership Administration ✅
+
+- `GET/POST/PUT/DELETE /api/v1/iam/memberships` con `@RequiresPermission`
+- Alta: vincular identity existente o crear con `IdentityRegistrationOrchestrator`
+- `membership.deactivate()` para delete; ownership en DELETE (15.0.1)
+- Documentación: `PASO-15.2-MEMBERSHIP-ADMINISTRATION.md`
+
+### 15.3 Role Administration ✅
+
+- `GET/POST/PUT/DELETE /api/v1/iam/roles` con `@RequiresPermission`
+- Roles custom mutables; system roles solo lectura (403)
+- DELETE físico si no hay `membership_role`; CASCADE en `role_permission`
+- Documentación: `PASO-15.3-ROLE-ADMINISTRATION.md`
+
+### 15.4 – 15.9 (pendiente)
 
 Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
 
@@ -186,7 +200,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.2 — Membership Administration** (tras cerrar 15.1)
+**FASE 15.4 — Permission Administration** (tras cerrar 15.3)
 
 ---
 
@@ -194,6 +208,8 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15.3 | Role Administration — `/api/v1/iam/roles` |
+| 2026-06-17 | 15.2 | Membership Administration — `/api/v1/iam/memberships` |
 | 2026-06-17 | 15.1 | User Administration — `/api/v1/iam/users` + ownership |
 | 2026-06-17 | 15.0.1 | Ownership Rules Audit |
 | 2026-06-15 | 15.0 | IAM Administration Foundation — ADR-008 + admin API base |

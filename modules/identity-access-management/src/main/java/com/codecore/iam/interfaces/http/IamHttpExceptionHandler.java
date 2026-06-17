@@ -6,6 +6,10 @@ import com.codecore.iam.domain.exception.IdentityNotFoundException;
 import com.codecore.iam.domain.exception.MembershipAlreadyExistsException;
 import com.codecore.iam.domain.exception.MembershipNotFoundException;
 import com.codecore.iam.domain.exception.OwnershipDeniedException;
+import com.codecore.iam.domain.exception.RoleAlreadyExistsException;
+import com.codecore.iam.domain.exception.RoleInUseException;
+import com.codecore.iam.domain.exception.RoleNotFoundException;
+import com.codecore.iam.domain.exception.SystemRoleImmutableException;
 import com.codecore.iam.domain.exception.TenantAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
@@ -80,6 +84,26 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(MembershipAlreadyExistsException.class)
     public Mono<ResponseEntity<Void>> handleMembershipAlreadyExists(MembershipAlreadyExistsException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handleRoleNotFound(RoleNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @ExceptionHandler(RoleAlreadyExistsException.class)
+    public Mono<ResponseEntity<Void>> handleRoleAlreadyExists(RoleAlreadyExistsException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(RoleInUseException.class)
+    public Mono<ResponseEntity<Void>> handleRoleInUse(RoleInUseException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(SystemRoleImmutableException.class)
+    public Mono<ResponseEntity<Void>> handleSystemRoleImmutable(SystemRoleImmutableException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
     @ExceptionHandler(IllegalStateException.class)

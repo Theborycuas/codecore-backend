@@ -13,6 +13,8 @@ public final class IamAdminApiPaths {
 
     public static final String MEMBERSHIPS = BASE + "/memberships";
 
+    public static final String ROLES = BASE + "/roles";
+
     private IamAdminApiPaths() {
     }
 }
