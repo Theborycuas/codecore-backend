@@ -7,6 +7,7 @@ import com.codecore.iam.domain.valueobject.PermissionId;
 import com.codecore.iam.interfaces.http.admin.dto.PagedPermissionResponse;
 import com.codecore.iam.interfaces.http.admin.dto.PermissionResponse;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.PERMISSIONS)
+@Tag(name = "Permissions", description = "Global permission catalog (`permission:read`)")
 public class IamPermissionAdminController {
 
     private final ListAdminPermissionsUseCase listAdminPermissionsUseCase;

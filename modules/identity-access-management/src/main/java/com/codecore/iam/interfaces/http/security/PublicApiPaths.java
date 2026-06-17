@@ -19,6 +19,9 @@ public final class PublicApiPaths {
         if (method == HttpMethod.GET && "/actuator/health".equals(path)) {
             return true;
         }
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui")) {
+            return true;
+        }
         if (method == HttpMethod.POST && "/api/v1/auth/login".equals(path)) {
             return true;
         }

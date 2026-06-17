@@ -15,6 +15,7 @@ import com.codecore.iam.interfaces.http.admin.dto.PagedUserResponse;
 import com.codecore.iam.interfaces.http.admin.dto.UpdateUserRequest;
 import com.codecore.iam.interfaces.http.admin.dto.UserResponse;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +34,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.USERS)
+@Tag(name = "Users", description = "Identity administration (`user:*` permissions)")
 public class IamUserAdminController {
 
     private final ListAdminUsersUseCase listAdminUsersUseCase;

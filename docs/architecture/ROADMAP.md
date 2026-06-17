@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.7 |
+| **15** | IAM Administration | 🔵 **En curso** | 15.8 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -104,7 +104,7 @@ Flujo **vía HTTP real** (no solo tests internos):
 | **15.5** | Role Permission Administration | ✅ | `permission:assign` → `/roles/{id}/permissions` |
 | **15.6** | Membership Role Administration | ✅ | `membership:update` → `/memberships/{id}/roles` |
 | **15.7** | Tenant Administration | ✅ | `tenant:*` → `/tenants/current` + bootstrap endurecido |
-| **15.8** | OpenAPI | ⏳ | Contrato HTTP IAM |
+| **15.8** | OpenAPI | ✅ | Contrato `/v3/api-docs/iam-administration` + Swagger UI |
 | **15.9** | IAM Administration Verification | ⏳ | E2E HTTP completo, cierre fase |
 
 ---
@@ -164,7 +164,14 @@ Flujo **vía HTTP real** (no solo tests internos):
 - Bootstrap: `POST /tenants` y `POST /identities` requieren JWT (ADR-008 15.7)
 - Documentación: `PASO-15.7-TENANT-ADMINISTRATION.md`
 
-### 15.8 – 15.9 (pendiente)
+### 15.8 OpenAPI ✅
+
+- springdoc-openapi WebFlux; grupo `iam-administration` para `/api/v1/iam/**`
+- JWT Bearer + extensión `x-permission` desde `@RequiresPermission`
+- Swagger UI en dev; deshabilitado en prod
+- Documentación: `PASO-15.8-OPENAPI-IAM-ADMINISTRATION.md`
+
+### 15.9 (pendiente)
 
 Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
 
@@ -227,7 +234,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.8 — OpenAPI** (tras cerrar 15.7)
+**FASE 15.9 — IAM Administration Verification** (tras cerrar 15.8)
 
 ---
 
@@ -235,6 +242,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15.8 | OpenAPI IAM — springdoc grupo `iam-administration` |
 | 2026-06-17 | 15.7 | Tenant Administration — `/tenants/current` + bootstrap endurecido |
 | 2026-06-17 | 15.6 | Membership Role Administration — `/memberships/{id}/roles` |
 | 2026-06-17 | 15.5 | Role Permission Administration — `/roles/{id}/permissions` |

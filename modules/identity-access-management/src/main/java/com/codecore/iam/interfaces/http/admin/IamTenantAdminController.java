@@ -6,6 +6,7 @@ import com.codecore.iam.application.port.in.UpdateAdminTenantUseCase;
 import com.codecore.iam.interfaces.http.admin.dto.TenantResponse;
 import com.codecore.iam.interfaces.http.admin.dto.UpdateTenantRequest;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.TENANTS)
+@Tag(name = "Tenants", description = "Current tenant metadata (`tenant:read`, `tenant:update`)")
 public class IamTenantAdminController {
 
     private final GetAdminTenantUseCase getAdminTenantUseCase;

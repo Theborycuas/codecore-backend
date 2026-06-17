@@ -7,6 +7,7 @@ import com.codecore.iam.domain.valueobject.MembershipId;
 import com.codecore.iam.interfaces.http.admin.dto.MembershipRoleResponse;
 import com.codecore.iam.interfaces.http.admin.dto.ReplaceMembershipRolesRequest;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.MEMBERSHIPS + "/{membershipId}/roles")
+@Tag(name = "Membership Roles", description = "Membership ↔ role assignments (`membership:update`)")
 public class IamMembershipRoleAdminController {
 
     private final GetAdminMembershipRolesUseCase getAdminMembershipRolesUseCase;

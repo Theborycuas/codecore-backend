@@ -14,6 +14,7 @@ import com.codecore.iam.interfaces.http.admin.dto.MembershipResponse;
 import com.codecore.iam.interfaces.http.admin.dto.PagedMembershipResponse;
 import com.codecore.iam.interfaces.http.admin.dto.UpdateMembershipRequest;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.MEMBERSHIPS)
+@Tag(name = "Memberships", description = "Tenant membership administration (`membership:*` permissions)")
 public class IamMembershipAdminController {
 
     private final ListAdminMembershipsUseCase listAdminMembershipsUseCase;

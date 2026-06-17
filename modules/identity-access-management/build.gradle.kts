@@ -24,6 +24,8 @@ dependencies {
 
     implementation(libs.spring.boot.starter.validation)
 
+    implementation(libs.springdoc.openapi.starter.webflux.api)
+
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
     implementation(libs.spring.security.crypto)

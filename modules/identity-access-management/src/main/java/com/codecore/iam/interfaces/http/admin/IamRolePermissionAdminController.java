@@ -7,6 +7,7 @@ import com.codecore.iam.domain.valueobject.RoleId;
 import com.codecore.iam.interfaces.http.admin.dto.ReplaceRolePermissionsRequest;
 import com.codecore.iam.interfaces.http.admin.dto.RolePermissionResponse;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.ROLES + "/{roleId}/permissions")
+@Tag(name = "Role Permissions", description = "Role ↔ permission assignments (`permission:assign`)")
 public class IamRolePermissionAdminController {
 
     private final GetAdminRolePermissionsUseCase getAdminRolePermissionsUseCase;

@@ -2,6 +2,7 @@ package com.codecore.iam.interfaces.http.admin;
 
 import com.codecore.iam.application.authorization.IamPermissionCatalog;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(IamAdminApiPaths.ADMINISTRATION)
+@Tag(name = "Administration", description = "IAM administration foundation and health probes")
 public class IamAdministrationController {
 
     @GetMapping("/status")

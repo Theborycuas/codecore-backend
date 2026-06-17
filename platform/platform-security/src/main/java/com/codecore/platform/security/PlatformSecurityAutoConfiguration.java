@@ -36,6 +36,7 @@ public class PlatformSecurityAutoConfiguration {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .authorizeExchange(exchanges -> {
                     exchanges
+                            .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                             .pathMatchers(HttpMethod.GET, "/actuator/health").permitAll();
                     if (jwtAuthenticationWebFilter != null) {

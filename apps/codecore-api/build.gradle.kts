@@ -27,6 +27,8 @@ dependencies {
     // =========================
     implementation(projects.modules.identityAccessManagement)
 
+    implementation(libs.springdoc.openapi.starter.webflux.ui)
+
     // =========================
     // Testing
     // =========================

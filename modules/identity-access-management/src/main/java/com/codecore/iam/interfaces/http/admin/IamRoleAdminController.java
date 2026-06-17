@@ -14,6 +14,7 @@ import com.codecore.iam.interfaces.http.admin.dto.PagedRoleResponse;
 import com.codecore.iam.interfaces.http.admin.dto.RoleResponse;
 import com.codecore.iam.interfaces.http.admin.dto.UpdateRoleRequest;
 import com.codecore.iam.interfaces.http.security.RequiresPermission;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(IamAdminApiPaths.ROLES)
+@Tag(name = "Roles", description = "Tenant role administration (`role:*` permissions)")
 public class IamRoleAdminController {
 
     private final ListAdminRolesUseCase listAdminRolesUseCase;
