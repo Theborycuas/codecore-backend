@@ -4,6 +4,7 @@ import com.codecore.iam.application.admin.IdentityRegistrationOrchestrator;
 import com.codecore.iam.application.admin.OwnershipPolicy;
 import com.codecore.iam.application.admin.MembershipAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.PermissionAdministrationUseCaseImpl;
+import com.codecore.iam.application.admin.RolePermissionAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.RoleAdministrationUseCaseImpl;
 import com.codecore.iam.application.admin.UserAdministrationUseCaseImpl;
 import com.codecore.iam.application.port.in.CreateAdminMembershipUseCase;
@@ -14,12 +15,14 @@ import com.codecore.iam.application.port.in.DeactivateAdminUserUseCase;
 import com.codecore.iam.application.port.in.DeleteAdminRoleUseCase;
 import com.codecore.iam.application.port.in.GetAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.GetAdminPermissionUseCase;
+import com.codecore.iam.application.port.in.GetAdminRolePermissionsUseCase;
 import com.codecore.iam.application.port.in.GetAdminRoleUseCase;
 import com.codecore.iam.application.port.in.GetAdminUserUseCase;
 import com.codecore.iam.application.port.in.ListAdminMembershipsUseCase;
 import com.codecore.iam.application.port.in.ListAdminPermissionsUseCase;
 import com.codecore.iam.application.port.in.ListAdminRolesUseCase;
 import com.codecore.iam.application.port.in.ListAdminUsersUseCase;
+import com.codecore.iam.application.port.in.ReplaceAdminRolePermissionsUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminMembershipUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminRoleUseCase;
 import com.codecore.iam.application.port.in.UpdateAdminUserUseCase;
@@ -32,6 +35,8 @@ import com.codecore.iam.application.port.out.MembershipRoleRepository;
 import com.codecore.iam.application.port.out.PermissionAdminQueryRepository;
 import com.codecore.iam.application.port.out.PermissionRepository;
 import com.codecore.iam.application.port.out.RoleAdminQueryRepository;
+import com.codecore.iam.application.port.out.RolePermissionAdminQueryRepository;
+import com.codecore.iam.application.port.out.RolePermissionRepository;
 import com.codecore.iam.application.port.out.RoleRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -205,6 +210,39 @@ public class IamAdministrationConfiguration {
 
     @Bean
     public GetAdminPermissionUseCase getAdminPermissionUseCase(PermissionAdministrationUseCaseImpl delegate) {
+        return delegate;
+    }
+
+    @Bean
+    public RolePermissionAdministrationUseCaseImpl rolePermissionAdministrationUseCase(
+            AuthorizationContextAccessor authorizationContextAccessor,
+            RoleRepository roleRepository,
+            PermissionRepository permissionRepository,
+            RolePermissionRepository rolePermissionRepository,
+            RolePermissionAdminQueryRepository rolePermissionAdminQueryRepository,
+            TransactionalOperator transactionalOperator
+    ) {
+        return new RolePermissionAdministrationUseCaseImpl(
+                authorizationContextAccessor,
+                roleRepository,
+                permissionRepository,
+                rolePermissionRepository,
+                rolePermissionAdminQueryRepository,
+                transactionalOperator
+        );
+    }
+
+    @Bean
+    public GetAdminRolePermissionsUseCase getAdminRolePermissionsUseCase(
+            RolePermissionAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public ReplaceAdminRolePermissionsUseCase replaceAdminRolePermissionsUseCase(
+            RolePermissionAdministrationUseCaseImpl delegate
+    ) {
         return delegate;
     }
 }

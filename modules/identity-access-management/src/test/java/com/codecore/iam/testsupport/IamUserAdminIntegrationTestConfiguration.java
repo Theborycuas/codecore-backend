@@ -14,6 +14,7 @@ import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepos
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRoleRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcPermissionRepository;
+import com.codecore.iam.infrastructure.persistence.repository.R2dbcRolePermissionAdminQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcRolePermissionRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcRoleRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcTenantRepository;
@@ -25,6 +26,7 @@ import com.codecore.iam.interfaces.http.IamHttpExceptionHandler;
 import com.codecore.iam.interfaces.http.admin.IamMembershipAdminController;
 import com.codecore.iam.interfaces.http.admin.IamPermissionAdminController;
 import com.codecore.iam.interfaces.http.admin.IamRoleAdminController;
+import com.codecore.iam.interfaces.http.admin.IamRolePermissionAdminController;
 import com.codecore.iam.interfaces.http.admin.IamUserAdminController;
 import com.codecore.iam.interfaces.http.security.AuthenticatedPrincipalAuthorizationManager;
 import com.codecore.iam.interfaces.http.security.JwtAuthenticationWebFilter;
@@ -51,6 +53,7 @@ import org.springframework.context.annotation.Import;
         R2dbcRoleRepository.class,
         R2dbcPermissionRepository.class,
         R2dbcRolePermissionRepository.class,
+        R2dbcRolePermissionAdminQueryRepository.class,
         R2dbcMembershipRoleRepository.class,
         R2dbcAuthorizationQueryRepository.class,
         BCryptPasswordHasher.class,
@@ -65,6 +68,7 @@ import org.springframework.context.annotation.Import;
         IamMembershipAdminController.class,
         IamRoleAdminController.class,
         IamPermissionAdminController.class,
+        IamRolePermissionAdminController.class,
         IamHttpExceptionHandler.class
 })
 public class IamUserAdminIntegrationTestConfiguration {
