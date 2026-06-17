@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Import;
         AuthenticatedPrincipalAuthorizationManager.class,
         AuthenticationController.class,
         AuthorizationProbeController.class,
+        com.codecore.iam.interfaces.http.admin.IamAdministrationController.class,
         IamHttpExceptionHandler.class
 })
 public class IamAuthorizationVerificationTestConfiguration {

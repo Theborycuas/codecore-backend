@@ -51,9 +51,4 @@ tasks.processTestResources {
     }
 }
 
-tasks.test {
-    // Avoid Windows file locks on reused Gradle binary test-results directories.
-    binaryResultsDirectory.set(
-            layout.buildDirectory.dir("tmp/test-binary-${System.currentTimeMillis()}")
-    )
-}
+// Windows cleanup: codecore.java-conventions. Do not set binaryResultsDirectory to a timestamped path (breaks JUnit XML on Windows).
