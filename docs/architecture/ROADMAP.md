@@ -193,3 +193,26 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 | — | 12 | Tenant & Membership |
 | — | 11 | JWT & Security HTTP |
 | — | 10 | IAM Foundation |
+
+
+
+FASE 16
+ORGANIZATIONS
+
+FASE 17
+INVITATIONS
+
+FASE 18
+BUSINESS MODULE FRAMEWORK
+
+FASE 19
+DENTAL / PETNOVA
+
+FASE 20
+BILLING & SUBSCRIPTIONS
+
+FASE 21
+AUDIT & OBSERVABILITY
+
+FASE 22
+PRODUCTION HARDENING
