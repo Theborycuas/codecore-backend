@@ -24,6 +24,7 @@ import com.codecore.iam.infrastructure.security.JwtTokenValidator;
 import com.codecore.iam.interfaces.http.AuthenticationController;
 import com.codecore.iam.interfaces.http.IamHttpExceptionHandler;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcMembershipRoleAdminQueryRepository;
+import com.codecore.iam.interfaces.http.admin.IamAdministrationController;
 import com.codecore.iam.interfaces.http.admin.IamMembershipAdminController;
 import com.codecore.iam.interfaces.http.admin.IamMembershipRoleAdminController;
 import com.codecore.iam.interfaces.http.admin.IamPermissionAdminController;
@@ -70,6 +71,7 @@ import org.springframework.context.annotation.Import;
         ReactorAuthorizationContextAccessor.class,
         AuthenticatedPrincipalAuthorizationManager.class,
         AuthenticationController.class,
+        IamAdministrationController.class,
         IamUserAdminController.class,
         IamMembershipAdminController.class,
         IamMembershipRoleAdminController.class,

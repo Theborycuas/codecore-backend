@@ -15,7 +15,7 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | 🔵 **En curso** | 15.8 |
+| **15** | IAM Administration | ✅ Cerrada | 15.9 |
 | **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -29,6 +29,7 @@
 | **12** | Tenant, membership N:M, TenantContext | `docs/audits/PASO-12.*` |
 | **13** | Identity Global + Membership (ADR-006) | `docs/audits/PASO-13.*` |
 | **14** | RBAC membership-scoped, AuthorizationService, seeds V13 (ADR-007) | `docs/audits/PASO-14.*` · [ADR-007](ADR-007-AUTHORIZATION-MODEL.md) |
+| **15** | IAM Administration HTTP completa (ADR-008), OpenAPI, verificación E2E | `docs/audits/PASO-15.*` · [ADR-008](ADR-008-IAM-ADMINISTRATION-API.md) |
 
 ### FASE 14 — entregables clave
 
@@ -38,7 +39,7 @@ Identity → Membership → Role → Permission → `AuthorizationService` → `
 
 ---
 
-# FASE 15 — IAM Administration 🔵
+# FASE 15 — IAM Administration ✅ (cerrada)
 
 ## Contexto
 
@@ -105,7 +106,7 @@ Flujo **vía HTTP real** (no solo tests internos):
 | **15.6** | Membership Role Administration | ✅ | `membership:update` → `/memberships/{id}/roles` |
 | **15.7** | Tenant Administration | ✅ | `tenant:*` → `/tenants/current` + bootstrap endurecido |
 | **15.8** | OpenAPI | ✅ | Contrato `/v3/api-docs/iam-administration` + Swagger UI |
-| **15.9** | IAM Administration Verification | ⏳ | E2E HTTP completo, cierre fase |
+| **15.9** | IAM Administration Verification | ✅ | E2E `IamAdministrationVerificationIT` — cierre fase |
 
 ---
 
@@ -171,9 +172,11 @@ Flujo **vía HTTP real** (no solo tests internos):
 - Swagger UI en dev; deshabilitado en prod
 - Documentación: `PASO-15.8-OPENAPI-IAM-ADMINISTRATION.md`
 
-### 15.9 (pendiente)
+### 15.9 IAM Administration Verification ✅
 
-Ver tabla anterior. Cada paso consume permisos ya sembrados en V13 / `IamPermissionCatalog`.
+- `IamAdministrationVerificationIT` — 8 verificaciones E2E (journey, RBAC, tenant, ownership, bootstrap, OpenAPI)
+- Cierre FASE 15
+- Documentación: `PASO-15.9-IAM-ADMINISTRATION-VERIFICATION.md`
 
 ---
 
@@ -234,7 +237,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 15.9 — IAM Administration Verification** (tras cerrar 15.8)
+**FASE 16 — Organizations** (primera fase post-IAM Administration).
 
 ---
 
@@ -242,6 +245,8 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-17 | 15 | **Cierre FASE 15** — IAM Administration E2E verificado |
+| 2026-06-17 | 15.9 | IAM Administration Verification — `IamAdministrationVerificationIT` |
 | 2026-06-17 | 15.8 | OpenAPI IAM — springdoc grupo `iam-administration` |
 | 2026-06-17 | 15.7 | Tenant Administration — `/tenants/current` + bootstrap endurecido |
 | 2026-06-17 | 15.6 | Membership Role Administration — `/memberships/{id}/roles` |
