@@ -36,6 +36,7 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,15 +60,20 @@ class AuthenticateIdentityUseCaseTest {
     @Mock
     private TokenProvider tokenProvider;
 
+    @Mock
+    private TenantOperationalGuard tenantOperationalGuard;
+
     private AuthenticateIdentityUseCaseImpl useCase;
 
     @BeforeEach
     void setUp() {
+        lenient().when(tenantOperationalGuard.assertOperational(any(TenantId.class))).thenReturn(Mono.empty());
         useCase = new AuthenticateIdentityUseCaseImpl(
                 identityRepository,
                 membershipRepository,
                 passwordHasher,
-                tokenProvider
+                tokenProvider,
+                tenantOperationalGuard
         );
     }
 

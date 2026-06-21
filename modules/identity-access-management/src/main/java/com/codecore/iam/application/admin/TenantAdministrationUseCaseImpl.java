@@ -92,6 +92,10 @@ public final class TenantAdministrationUseCaseImpl
 
     private Mono<Tenant> applyStatus(Tenant tenant, TenantStatus status) {
         if (status == TenantStatus.ACTIVE) {
+            if (tenant.status() == TenantStatus.DISABLED) {
+                return Mono.error(new InvalidDomainValueException(
+                        "Disabled tenants cannot be reactivated via API"));
+            }
             tenant.activate();
         } else if (status == TenantStatus.SUSPENDED) {
             tenant.suspend();

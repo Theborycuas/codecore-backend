@@ -2,7 +2,8 @@ package com.codecore.iam.configuration;
 
 import com.codecore.iam.application.CreateTenantUseCaseImpl;
 import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
-import com.codecore.iam.application.admin.IdentityRegistrationOrchestrator;import com.codecore.iam.application.port.in.CreateTenantUseCase;
+import com.codecore.iam.application.admin.IdentityRegistrationOrchestrator;
+import com.codecore.iam.application.port.in.CreateTenantUseCase;
 import com.codecore.iam.application.port.in.RegisterIdentityUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;

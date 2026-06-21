@@ -6,6 +6,7 @@ import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.TokenProvider;
+import com.codecore.iam.application.TenantOperationalGuard;
 import com.codecore.iam.infrastructure.security.config.JwtProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +24,15 @@ public class IamAuthenticationConfiguration {
             IdentityRepository identityRepository,
             MembershipRepository membershipRepository,
             PasswordHasher passwordHasher,
-            TokenProvider tokenProvider
+            TokenProvider tokenProvider,
+            TenantOperationalGuard tenantOperationalGuard
     ) {
         return new AuthenticateIdentityUseCaseImpl(
                 identityRepository,
                 membershipRepository,
                 passwordHasher,
-                tokenProvider
+                tokenProvider,
+                tenantOperationalGuard
         );
     }
 }

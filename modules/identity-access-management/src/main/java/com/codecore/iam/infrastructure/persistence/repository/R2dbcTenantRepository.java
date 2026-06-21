@@ -49,4 +49,9 @@ public class R2dbcTenantRepository implements TenantRepository {
     public Mono<Boolean> existsByName(TenantName name) {
         return springDataIamTenantRepository.existsByName(name.value());
     }
+
+    @Override
+    public Mono<Long> count() {
+        return springDataIamTenantRepository.count();
+    }
 }

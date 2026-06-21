@@ -36,17 +36,23 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
     private final MembershipRepository membershipRepository;
     private final PasswordHasher passwordHasher;
     private final TokenProvider tokenProvider;
+    private final TenantOperationalGuard tenantOperationalGuard;
 
     public AuthenticateIdentityUseCaseImpl(
             IdentityRepository identityRepository,
             MembershipRepository membershipRepository,
             PasswordHasher passwordHasher,
-            TokenProvider tokenProvider
+            TokenProvider tokenProvider,
+            TenantOperationalGuard tenantOperationalGuard
     ) {
         this.identityRepository = Objects.requireNonNull(identityRepository, "identityRepository");
         this.membershipRepository = Objects.requireNonNull(membershipRepository, "membershipRepository");
         this.passwordHasher = Objects.requireNonNull(passwordHasher, "passwordHasher");
         this.tokenProvider = Objects.requireNonNull(tokenProvider, "tokenProvider");
+        this.tenantOperationalGuard = Objects.requireNonNull(
+                tenantOperationalGuard,
+                "tenantOperationalGuard"
+        );
     }
 
     @Override
@@ -84,6 +90,7 @@ public class AuthenticateIdentityUseCaseImpl implements AuthenticateIdentityUseC
         }
 
         return requireActiveMembership(identity, tenantId)
+                .then(tenantOperationalGuard.assertOperational(tenantId))
                 .then(Mono.fromCallable(() -> tokenProvider.generateAccessToken(new AccessTokenClaims(
                 identity.id().value().toString(),
                 identity.email().value(),

@@ -139,12 +139,15 @@ public final class UserAdministrationUseCaseImpl
         return authorizationContextAccessor.current()
                 .flatMap(ctx -> loadIdentityInTenant(ctx, identityId)
                         .flatMap(identity -> ownershipPolicy.assertCanModifyUser(ctx, identityId)
-                                .then(Mono.defer(() -> {
-                                    identity.disable();
-                                    return identityRepository.save(identity);
-                                })))
-                        .then()
-                        .as(transactionalOperator::transactional));
+                                .then(membershipRepository.findByIdentityIdAndTenantId(identity.id(), ctx.tenantId()))
+                                .switchIfEmpty(Mono.error(new IdentityNotFoundException(
+                                        "User not found in tenant context")))
+                                .flatMap(membership -> {
+                                    membership.deactivate();
+                                    return membershipRepository.save(membership);
+                                }))
+                        .then())
+                .as(transactionalOperator::transactional);
     }
 
     private Mono<Identity> loadIdentityInTenant(AuthorizationContext ctx, IdentityId identityId) {

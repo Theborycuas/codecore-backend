@@ -10,7 +10,9 @@ import com.codecore.iam.domain.exception.IdentityNotFoundException;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
+import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
+import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.TenantId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,18 +84,27 @@ class UserAdministrationUseCaseTest {
     }
 
     @Test
-    void shouldDeactivateUserViaDisable() {
+    void shouldDeactivateMembershipForUserInTenant() {
         Identity identity = activeIdentity();
+        IdentityTenantMembership membership = IdentityTenantMembership.create(
+                identityId,
+                tenantId,
+                Instant.now()
+        );
         when(membershipRepository.exists(identityId, tenantId)).thenReturn(Mono.just(true));
         when(identityRepository.findById(identityId)).thenReturn(Mono.just(identity));
-        when(identityRepository.save(any(Identity.class)))
+        when(membershipRepository.findByIdentityIdAndTenantId(identityId, tenantId))
+                .thenReturn(Mono.just(membership));
+        when(membershipRepository.save(any(IdentityTenantMembership.class)))
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
 
         StepVerifier.create(useCase.deactivate(identityId))
                 .verifyComplete();
 
         verify(ownershipPolicy).assertCanModifyUser(context, identityId);
-        assertThat(identity.status()).isEqualTo(IdentityStatus.DISABLED);
+        assertThat(identity.status()).isEqualTo(IdentityStatus.ACTIVE);
+        assertThat(membership.status()).isEqualTo(MembershipStatus.INACTIVE);
+        verify(identityRepository, never()).save(any());
     }
 
     @Test

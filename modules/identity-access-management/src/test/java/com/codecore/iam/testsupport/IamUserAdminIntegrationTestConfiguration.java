@@ -4,6 +4,7 @@ import com.codecore.iam.application.ReactorAuthorizationContextAccessor;
 import com.codecore.iam.configuration.IamAdministrationConfiguration;
 import com.codecore.iam.configuration.IamAuthenticationConfiguration;
 import com.codecore.iam.configuration.IamAuthorizationConfiguration;
+import com.codecore.iam.configuration.IamBootstrapConfiguration;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcAuthorizationQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityAdminQueryRepository;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Import;
 @EnableAutoConfiguration
 @Import({
         IamModuleConfiguration.class,
+        IamBootstrapConfiguration.class,
         IamAdministrationConfiguration.class,
         IamAuthenticationConfiguration.class,
         IamAuthorizationConfiguration.class,
@@ -67,6 +69,7 @@ import org.springframework.context.annotation.Import;
         JwtTokenProvider.class,
         JwtTokenValidator.class,
         JwtAuthenticationWebFilter.class,
+        com.codecore.iam.interfaces.http.security.AuthorizationContextWebFilter.class,
         RequiresPermissionAspect.class,
         ReactorAuthorizationContextAccessor.class,
         AuthenticatedPrincipalAuthorizationManager.class,

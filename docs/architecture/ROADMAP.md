@@ -2,7 +2,8 @@
 
 **Última actualización:** 2026-06-17  
 **Módulo principal:** `identity-access-management`  
-**Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith
+**Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
+**IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)
 
 ---
 
@@ -15,8 +16,9 @@
 | **12** | Tenant & Membership | ✅ Cerrada | 12.9 |
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
-| **15** | IAM Administration | ✅ Cerrada | 15.9 |
-| **16+** | Organizations · Invitations · Billing · Business | ⏳ Pendiente | — |
+| **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
+| **16** | Organizations | 🟡 En preparación | 16.0 audit |
+| **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
 
@@ -178,13 +180,45 @@ Flujo **vía HTTP real** (no solo tests internos):
 - Cierre FASE 15
 - Documentación: `PASO-15.9-IAM-ADMINISTRATION-VERIFICATION.md`
 
+### 15.9.1 IAM Production Readiness Audit ✅
+
+- Auditoría profunda pre-producción
+- Veredicto: READY WITH MAJOR DEBT; FASE 16 no bloqueada
+- Documentación: `PASO-15.9.1-IAM-PRODUCTION-READINESS-AUDIT.md`
+
+### 15.9.2 Bootstrap Strategy ✅
+
+- `ApplicationRunner` + `BootstrapPlatformUseCase` — tenant + OWNER en BD vacía
+- Config `codecore.platform.bootstrap.*` (env-gated, disabled por defecto)
+- Documentación: `PASO-15.9.2-BOOTSTRAP-STRATEGY.md` · ADR-009 P0
+
+### 15.9.3 Tenant Status Enforcement ✅
+
+- `TenantOperationalGuard` — ACTIVE required en login + API
+- Reactivación SUSPENDED vía `PUT /tenants/current`; DISABLED no reactivable
+- Documentación: `PASO-15.9.3-TENANT-STATUS-ENFORCEMENT.md` · ADR-009 P1
+
+### 15.9.4 Identity Disable Semantics ✅
+
+- `DELETE /users` → `membership.deactivate()` (offboarding tenant)
+- `PUT /users` status DISABLED → offboarding global identity
+- Documentación: `PASO-15.9.4-IDENTITY-DISABLE-SEMANTICS.md` · ADR-009 P1
+
+---
+
+## IAM Foundation Complete
+
+FASE 15 + pasos 15.9.2–15.9.4 cierran la **base IAM** para módulos de negocio.
+
+Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINESS-BACKLOG.md) (Password Recovery, Audit, JWT stale, OpenAPI, Observability).
+
 ---
 
 ## Roadmap futuro (post-FASE 15)
 
 | Fase | Nombre | Dependencia |
 |------|--------|-------------|
-| **16** | Organizations | FASE 15 |
+| **16** | Organizations | IAM Foundation Complete |
 | **17** | Invitations | ADR-006 + membership |
 | **18** | Business Module Framework | FASE 15+ |
 | **19** | Dental / PetNova | Módulos negocio |
@@ -196,6 +230,10 @@ Flujo **vía HTTP real** (no solo tests internos):
 
 | Ítem | Origen | Cuándo |
 |------|--------|--------|
+| Password recovery | ADR-009 P1 | Pre-piloto / FASE 21+ |
+| Audit trail | ADR-009 P2 | FASE 21 |
+| JWT stale mitigation | ADR-009 P2 | FASE 22 |
+| OpenAPI auth group | ADR-009 P2 | FASE 22 |
 | Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM |
 | Consolidación datos 13.3 | Solo si prod duplicados | FUTURE-PROD |
 | JWT `tenantId` desde membership | Mejora opcional | FASE 16+ |
@@ -214,6 +252,7 @@ Flujo **vía HTTP real** (no solo tests internos):
 | ADR-006 | Identity Global + Membership | Accepted |
 | ADR-007 | Authorization Model | Accepted |
 | ADR-008 | IAM Administration API | Accepted (15.0) |
+| ADR-009 | Production Readiness Backlog | Accepted (15.9.2) |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -237,7 +276,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 16 — Organizations** (primera fase post-IAM Administration).
+**FASE 16 — Organizations** — ver [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md).
 
 ---
 
@@ -245,7 +284,11 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
-| 2026-06-17 | 15 | **Cierre FASE 15** — IAM Administration E2E verificado |
+| 2026-06-17 | 15.9.4 | Identity disable semantics — tenant offboarding |
+| 2026-06-17 | 15.9.3 | Tenant status enforcement |
+| 2026-06-17 | 15.9.2 | Platform bootstrap strategy |
+| 2026-06-17 | 15.9.1 | IAM production readiness audit |
+| 2026-06-17 | 15 | **IAM FOUNDATION COMPLETE** |
 | 2026-06-17 | 15.9 | IAM Administration Verification — `IamAdministrationVerificationIT` |
 | 2026-06-17 | 15.8 | OpenAPI IAM — springdoc grupo `iam-administration` |
 | 2026-06-17 | 15.7 | Tenant Administration — `/tenants/current` + bootstrap endurecido |

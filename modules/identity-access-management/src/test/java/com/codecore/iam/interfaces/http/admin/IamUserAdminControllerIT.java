@@ -18,6 +18,7 @@ import com.codecore.iam.domain.valueobject.CredentialId;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
+import com.codecore.iam.domain.valueobject.MembershipStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.interfaces.http.admin.dto.CreateUserRequest;
@@ -179,7 +180,13 @@ class IamUserAdminControllerIT extends AbstractPostgresIntegrationTest {
 
         Identity disabled = identityRepository.findById(targetId).block();
         assertThat(disabled).isNotNull();
-        assertThat(disabled.status()).isEqualTo(IdentityStatus.DISABLED);
+        assertThat(disabled.status()).isEqualTo(IdentityStatus.ACTIVE);
+
+        IdentityTenantMembership membership = membershipRepository
+                .findByIdentityIdAndTenantId(targetId, tenantId)
+                .block();
+        assertThat(membership).isNotNull();
+        assertThat(membership.status()).isEqualTo(MembershipStatus.INACTIVE);
     }
 
     @Test

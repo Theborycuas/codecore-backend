@@ -124,4 +124,31 @@ class TenantAdministrationUseCaseTest {
 
         verify(tenantRepository, never()).save(any());
     }
+
+    @Test
+    void shouldRejectReactivationWhenTenantDisabled() {
+        Instant now = Instant.parse("2026-06-01T12:00:00Z");
+        Tenant tenant = Tenant.create(tenantId, TenantName.of("Acme"), now);
+        tenant.disable();
+        when(tenantRepository.findById(tenantId)).thenReturn(Mono.just(tenant));
+
+        StepVerifier.create(useCase.execute(new UpdateAdminTenantCommand(null, TenantStatus.ACTIVE)))
+                .expectError(InvalidDomainValueException.class)
+                .verify();
+
+        verify(tenantRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldAllowReactivationWhenTenantSuspended() {
+        Instant now = Instant.parse("2026-06-01T12:00:00Z");
+        Tenant tenant = Tenant.create(tenantId, TenantName.of("Acme"), now);
+        tenant.suspend();
+        when(tenantRepository.findById(tenantId)).thenReturn(Mono.just(tenant));
+        when(tenantRepository.save(any(Tenant.class))).thenAnswer(invocation -> Mono.just(invocation.getArgument(0)));
+
+        StepVerifier.create(useCase.execute(new UpdateAdminTenantCommand(null, TenantStatus.ACTIVE)))
+                .assertNext(view -> assertThat(view.status()).isEqualTo(TenantStatus.ACTIVE))
+                .verifyComplete();
+    }
 }
