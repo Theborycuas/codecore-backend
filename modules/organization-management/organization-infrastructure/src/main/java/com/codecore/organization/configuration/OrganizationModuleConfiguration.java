@@ -1,0 +1,19 @@
+package com.codecore.organization.configuration;
+
+import com.codecore.organization.infrastructure.persistence.mapper.OrganizationMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+
+/**
+ * Organization Management module Spring entry point — persistence adapters (FASE 16.2).
+ */
+@Configuration
+@EnableR2dbcRepositories(basePackages = "com.codecore.organization.infrastructure.persistence.repository")
+public class OrganizationModuleConfiguration {
+
+    @Bean
+    public OrganizationMapper organizationMapper() {
+        return new OrganizationMapper();
+    }
+}

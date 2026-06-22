@@ -17,7 +17,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 En implementación | 16.1 domain foundation |
+| **16** | Organizations | 🟡 En implementación | 16.2 persistence |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -295,8 +295,8 @@ Flujo **vía HTTP real**:
 | **16.0** | Organizations Audit | ✅ | Auditoría IAM + hipótesis inicial |
 | **16.0.1** | Organizations Roadmap & Decisions | ✅ | Decisiones obligatorias + modelo objetivo |
 | **16.1** | Organizations Domain Foundation | ✅ | ADR-010, aggregate `Organization`, ports, 16 tests |
-| **16.2** | Organization Persistence | ⏳ **Siguiente** | Schema `org`, Flyway V14+, R2DBC |
-| **16.3** | Organization Permission Seeds | ⏳ | `organization:*` en catálogo + system roles |
+| **16.2** | Organization Persistence | ✅ | Schema `org`, Flyway V14, R2DBC, ITs |
+| **16.3** | Organization Permission Seeds | ⏳ **Siguiente** | `organization:*` en catálogo + system roles |
 | **16.4** | Organization Administration API | ⏳ | CRUD `/api/v1/org/organizations` |
 | **16.5** | Office Domain & Persistence | ⏳ | Aggregate `Office`, tablas, repos |
 | **16.6** | Office Administration API | ⏳ | CRUD `/api/v1/org/offices` + `office:*` |
@@ -327,13 +327,15 @@ Flujo **vía HTTP real**:
 - Sin HTTP, sin Flyway
 - Documentación: [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](../audits/PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md)
 
-### 16.2 Organization Persistence ⏳ **Siguiente**
+### 16.2 Organization Persistence ✅
 
-- Tabla `org.organization` con `tenant_id` NOT NULL
-- Repositorios R2DBC, índices `(tenant_id, code)` UNIQUE
-- Tests de integración persistencia
+- Schema `org`, tabla `org.organization`, Flyway V14
+- `OrganizationEntity`, `OrganizationMapper`, `R2dbcOrganizationRepository`
+- `OrganizationModuleConfiguration` — sin tocar IAM
+- `R2dbcOrganizationRepositoryIT` — 6 escenarios Testcontainers
+- Documentación: [PASO-16.2-ORGANIZATION-PERSISTENCE.md](../audits/PASO-16.2-ORGANIZATION-PERSISTENCE.md)
 
-### 16.3 Organization Permission Seeds ⏳
+### 16.3 Organization Permission Seeds ⏳ **Siguiente**
 
 - Permisos globales `organization:*` en `iam.permission` (Flyway)
 - Grants en `SystemRoleTemplate` OWNER/ADMIN
@@ -445,9 +447,9 @@ FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/0
 
 ### Siguiente acción
 
-**PASO 16.2 — Organization Persistence** — schema `org`, Flyway V14+, implementación R2DBC de `OrganizationRepository` y `OrganizationQueryPort`.
+**PASO 16.3 — Organization Permission Seeds** — permisos `organization:*` en catálogo IAM + grants OWNER/ADMIN.
 
-Referencias: [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](../audits/PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md).
+Referencias: [PASO-16.2-ORGANIZATION-PERSISTENCE.md](../audits/PASO-16.2-ORGANIZATION-PERSISTENCE.md).
 
 ---
 
@@ -455,6 +457,7 @@ Referencias: [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](../audits/PASO-16.1-
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-22 | 16.2 | Organization persistence — schema org, V14, R2DBC |
 | 2026-06-22 | 16.1 | Organizations domain foundation — ADR-010, aggregate, ports, tests |
 | 2026-06-22 | 16.0.1 | Organizations roadmap — decisiones arquitectónicas cerradas |
 | 2026-06-17 | 16.0 | Organizations audit — inicio FASE 16 |
