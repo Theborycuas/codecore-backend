@@ -1,6 +1,6 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-06-17  
+**Última actualización:** 2026-06-22  
 **Módulo principal:** `identity-access-management`  
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
 **IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)
@@ -17,7 +17,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 En preparación | 16.0 audit |
+| **16** | Organizations | 🟡 Diseño completo | 16.0.1 roadmap |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -214,7 +214,171 @@ Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINE
 
 ---
 
-## Roadmap futuro (post-FASE 15)
+# FASE 16 — Organizations 🟡 (diseño completo, sin implementación)
+
+## Contexto
+
+IAM cerrado (FASE 15). Comienza el **dominio de negocio**. Organizations modela la estructura interna del cliente SaaS (clínicas, departamentos, sucursales) **sin** alterar ADR-006 ni ADR-007.
+
+**Regla:** No modificar IAM salvo bugs o seeds acotados de permisos `organization:*` / `office:*` (paso 16.3).
+
+## Fuente de verdad
+
+- Este `ROADMAP.md`
+- [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md)
+- [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md) — decisiones y definición de Organization
+- ADR-010 (pendiente 16.1) — Organizations Model
+- [CONTEXT-MAP.md](../../codecore-specifications/architecture/core/CONTEXT-MAP.md) §26 — `tenant != organization`
+
+## Definición: ¿Qué es Organization?
+
+Unidad estructural de **negocio acotada por tenant** — subdivisión operativa del cliente (clínica, departamento, sucursal). **No** es Tenant (aislamiento SaaS), Identity (auth), ni Membership (acceso IAM).
+
+```text
+Tenant (IAM)
+ └── Organization (1..N)     ← FASE 16
+      └── Office (0..N)
+           └── StaffAssignment (membershipId + scope)
+           └── Patient scope   ← FASE 19
+```
+
+## Decisiones arquitectónicas (cerradas en 16.0.1)
+
+| # | Pregunta | Decisión |
+|---|----------|----------|
+| 1 | Organization pertenece a | **Tenant** (A) |
+| 2 | Múltiples orgs por tenant | **Sí** |
+| 3 | Org sin tenant | **No** |
+| 4 | Office depende de | **Organization** (+ `tenant_id` denormalizado) |
+| 5 | Staff | **Membership** (IAM) + **StaffAssignment** (org/office) |
+| 6 | Patient | **Tenant** + opcional org/office (datos en FASE 19) |
+| 7 | Organization aggregate root | **Sí**; Office = aggregate root separado |
+| 8 | Permisos propios | **Sí** — `organization:*`, `office:*`, `staff-assignment:*` |
+| 9 | Ubicación | **Nuevo módulo** `organization-management` + schema `org` |
+
+## Objetivo
+
+Entregar jerarquía operativa tenant → organization → office, API administrativa `/api/v1/org/**`, asignación de staff por scope, y verificación E2E — sobre IAM Foundation Complete.
+
+## Modo de trabajo (cada paso)
+
+1. Auditoría mínima  
+2. Diseño (`PASO-16.x-*.md`)  
+3. Implementación acotada  
+4. Tests del paso  
+5. Actualizar este ROADMAP  
+
+## Restricciones
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003 tenant isolation.
+
+No introducir: CQRS · Event Sourcing · Microservicios · organization-scoped RBAC (FASE 16).
+
+## Resultado esperado al cerrar FASE 16
+
+Flujo **vía HTTP real**:
+
+1. Tenant OWNER autenticado  
+2. Crear Organizations (ej. Dental Norte, Centro, Sur)  
+3. Crear Offices bajo cada Organization  
+4. Asignar staff (`membershipId`) a org/office  
+5. Staff con permisos consume endpoints org scoped al tenant  
+6. Cross-tenant org access → 403/404  
+7. Verificación E2E `OrganizationVerificationIT`  
+
+---
+
+## Pasos FASE 16
+
+| Paso | Nombre | Estado | Entregable principal |
+|------|--------|--------|----------------------|
+| **16.0** | Organizations Audit | ✅ | Auditoría IAM + hipótesis inicial |
+| **16.0.1** | Organizations Roadmap & Decisions | ✅ | Decisiones obligatorias + modelo objetivo |
+| **16.1** | Organizations Domain Foundation | ⏳ | ADR-010, aggregate `Organization`, ports |
+| **16.2** | Organization Persistence | ⏳ | Schema `org`, Flyway V14+, R2DBC |
+| **16.3** | Organization Permission Seeds | ⏳ | `organization:*` en catálogo + system roles |
+| **16.4** | Organization Administration API | ⏳ | CRUD `/api/v1/org/organizations` |
+| **16.5** | Office Domain & Persistence | ⏳ | Aggregate `Office`, tablas, repos |
+| **16.6** | Office Administration API | ⏳ | CRUD `/api/v1/org/offices` + `office:*` |
+| **16.7** | Staff Organizational Assignment | ⏳ | `StaffAssignment`, `staff-assignment:*` |
+| **16.8** | Organization Authorization Patterns | ⏳ | Scoping tenant/org en use cases; doc Patient |
+| **16.9** | Organization Verification | ⏳ | E2E journey completo |
+| **16.10** | Organizations Closeout | ⏳ | Cierre fase + OpenAPI grupo `org-administration` |
+
+### 16.0 Organizations Audit ✅
+
+- IAM Foundation Complete verificado; sin bloqueantes
+- Hipótesis `Tenant → Organization → Office`
+- Documentación: [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md)
+
+### 16.0.1 Organizations Roadmap & Decisions ✅
+
+- Definición formal de Organization con evidencia del código IAM
+- Respuesta a 9 decisiones obligatorias
+- Veredicto escenarios: **SÍ**
+- Documentación: [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md)
+
+### 16.1 Organizations Domain Foundation ⏳
+
+- ADR-010 Organizations Model
+- Módulo Gradle `organization-management` (estructura hexagonal)
+- Aggregate `Organization`, value objects, domain ports
+- Sin HTTP, sin migraciones
+
+### 16.2 Organization Persistence ⏳
+
+- Tabla `org.organization` con `tenant_id` NOT NULL
+- Repositorios R2DBC, índices `(tenant_id, code)` UNIQUE
+- Tests de integración persistencia
+
+### 16.3 Organization Permission Seeds ⏳
+
+- Permisos globales `organization:*` en `iam.permission` (Flyway)
+- Grants en `SystemRoleTemplate` OWNER/ADMIN
+- `OrganizationPermissionCatalog` en módulo org
+- **Único** touch IAM permitido en FASE 16
+
+### 16.4 Organization Administration API ⏳
+
+- `GET/POST/PUT/DELETE /api/v1/org/organizations`
+- `@RequiresPermission("organization:*")` · tenant desde JWT
+- Patrón ADR-008 (simétrico a IAM admin)
+
+### 16.5 Office Domain & Persistence ⏳
+
+- Aggregate `Office` con `organizationId` + `tenantId`
+- Tabla `org.office`, repositorios, invariantes org→office
+
+### 16.6 Office Administration API ⏳
+
+- CRUD `/api/v1/org/offices` · permisos `office:*`
+
+### 16.7 Staff Organizational Assignment ⏳
+
+- Entidad/asociación `StaffAssignment(membershipId, organizationId?, officeId?)`
+- API administrativa; validación membership.tenantId == org.tenantId
+- Sin duplicar Identity/Membership
+
+### 16.8 Organization Authorization Patterns ⏳
+
+- Filtros de aplicación por tenant/org/office en queries
+- Documentar patrón Patient visibility (implementación FASE 19)
+- Sin organization-scoped roles
+
+### 16.9 Organization Verification ⏳
+
+- `OrganizationVerificationIT` — journey E2E multi-org, staff, isolation
+- Cierre técnico pre-closeout
+
+### 16.10 Organizations Closeout ⏳
+
+- OpenAPI grupo `org-administration`
+- Actualización ROADMAP · historial de cierres
+- FASE 16 → ✅ Cerrada
+
+---
+
+## Roadmap futuro (post-FASE 16)
 
 | Fase | Nombre | Dependencia |
 |------|--------|-------------|
@@ -253,6 +417,7 @@ Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINE
 | ADR-007 | Authorization Model | Accepted |
 | ADR-008 | IAM Administration API | Accepted (15.0) |
 | ADR-009 | Production Readiness Backlog | Accepted (15.9.2) |
+| ADR-010 | Organizations Model | Planned (16.1) |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -263,6 +428,8 @@ Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINE
 Nueva ADR o paso estilo 13.x solo si el cambio altera tenancy, Identity/Membership de forma estructural, RBAC base, seguridad transversal o arquitectura SaaS.
 
 Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requieren escalamiento si respetan ADR-003, ADR-006 y ADR-007.
+
+FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/007. Seeds de permisos en IAM son cambio acotado, no reescritura de RBAC.
 
 ---
 
@@ -276,7 +443,9 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 ### Siguiente acción
 
-**FASE 16 — Organizations** — ver [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md).
+**PASO 16.1 — Organizations Domain Foundation** — ADR-010 + módulo `organization-management` + aggregate `Organization` (sin HTTP ni Flyway hasta 16.2+).
+
+Referencias: [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md).
 
 ---
 
@@ -284,6 +453,8 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-22 | 16.0.1 | Organizations roadmap — decisiones arquitectónicas cerradas |
+| 2026-06-17 | 16.0 | Organizations audit — inicio FASE 16 |
 | 2026-06-17 | 15.9.4 | Identity disable semantics — tenant offboarding |
 | 2026-06-17 | 15.9.3 | Tenant status enforcement |
 | 2026-06-17 | 15.9.2 | Platform bootstrap strategy |
@@ -306,26 +477,3 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 | — | 12 | Tenant & Membership |
 | — | 11 | JWT & Security HTTP |
 | — | 10 | IAM Foundation |
-
-
-
-FASE 16
-ORGANIZATIONS
-
-FASE 17
-INVITATIONS
-
-FASE 18
-BUSINESS MODULE FRAMEWORK
-
-FASE 19
-DENTAL / PETNOVA
-
-FASE 20
-BILLING & SUBSCRIPTIONS
-
-FASE 21
-AUDIT & OBSERVABILITY
-
-FASE 22
-PRODUCTION HARDENING
