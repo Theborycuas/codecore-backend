@@ -44,6 +44,12 @@ include(
 
 include(":modules:identity-access-management")
 
+include(
+    ":modules:organization-management:organization-domain",
+    ":modules:organization-management:organization-application",
+    ":modules:organization-management:organization-infrastructure",
+    ":modules:organization-management:organization-contract"
+)
 
 include(
     ":modules:tenant-management:tenant-domain",

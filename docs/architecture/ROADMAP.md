@@ -17,7 +17,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 Diseño completo | 16.0.1 roadmap |
+| **16** | Organizations | 🟡 En implementación | 16.1 domain foundation |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -214,7 +214,7 @@ Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINE
 
 ---
 
-# FASE 16 — Organizations 🟡 (diseño completo, sin implementación)
+# FASE 16 — Organizations 🟡 (16.1 completado)
 
 ## Contexto
 
@@ -227,7 +227,7 @@ IAM cerrado (FASE 15). Comienza el **dominio de negocio**. Organizations modela 
 - Este `ROADMAP.md`
 - [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md)
 - [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md) — decisiones y definición de Organization
-- ADR-010 (pendiente 16.1) — Organizations Model
+- [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md) — Organizations Model ✅
 - [CONTEXT-MAP.md](../../codecore-specifications/architecture/core/CONTEXT-MAP.md) §26 — `tenant != organization`
 
 ## Definición: ¿Qué es Organization?
@@ -294,8 +294,8 @@ Flujo **vía HTTP real**:
 |------|--------|--------|----------------------|
 | **16.0** | Organizations Audit | ✅ | Auditoría IAM + hipótesis inicial |
 | **16.0.1** | Organizations Roadmap & Decisions | ✅ | Decisiones obligatorias + modelo objetivo |
-| **16.1** | Organizations Domain Foundation | ⏳ | ADR-010, aggregate `Organization`, ports |
-| **16.2** | Organization Persistence | ⏳ | Schema `org`, Flyway V14+, R2DBC |
+| **16.1** | Organizations Domain Foundation | ✅ | ADR-010, aggregate `Organization`, ports, 16 tests |
+| **16.2** | Organization Persistence | ⏳ **Siguiente** | Schema `org`, Flyway V14+, R2DBC |
 | **16.3** | Organization Permission Seeds | ⏳ | `organization:*` en catálogo + system roles |
 | **16.4** | Organization Administration API | ⏳ | CRUD `/api/v1/org/organizations` |
 | **16.5** | Office Domain & Persistence | ⏳ | Aggregate `Office`, tablas, repos |
@@ -318,14 +318,16 @@ Flujo **vía HTTP real**:
 - Veredicto escenarios: **SÍ**
 - Documentación: [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md)
 
-### 16.1 Organizations Domain Foundation ⏳
+### 16.1 Organizations Domain Foundation ✅
 
-- ADR-010 Organizations Model
-- Módulo Gradle `organization-management` (estructura hexagonal)
-- Aggregate `Organization`, value objects, domain ports
-- Sin HTTP, sin migraciones
+- ADR-010 accepted
+- Módulo `organization-management` (domain, application, infrastructure, contract)
+- Aggregate `Organization` + value objects + outbound ports
+- 16 domain tests green
+- Sin HTTP, sin Flyway
+- Documentación: [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](../audits/PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md)
 
-### 16.2 Organization Persistence ⏳
+### 16.2 Organization Persistence ⏳ **Siguiente**
 
 - Tabla `org.organization` con `tenant_id` NOT NULL
 - Repositorios R2DBC, índices `(tenant_id, code)` UNIQUE
@@ -417,7 +419,7 @@ Flujo **vía HTTP real**:
 | ADR-007 | Authorization Model | Accepted |
 | ADR-008 | IAM Administration API | Accepted (15.0) |
 | ADR-009 | Production Readiness Backlog | Accepted (15.9.2) |
-| ADR-010 | Organizations Model | Planned (16.1) |
+| ADR-010 | Organizations Model | Accepted (16.1) |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -443,9 +445,9 @@ FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/0
 
 ### Siguiente acción
 
-**PASO 16.1 — Organizations Domain Foundation** — ADR-010 + módulo `organization-management` + aggregate `Organization` (sin HTTP ni Flyway hasta 16.2+).
+**PASO 16.2 — Organization Persistence** — schema `org`, Flyway V14+, implementación R2DBC de `OrganizationRepository` y `OrganizationQueryPort`.
 
-Referencias: [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md).
+Referencias: [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](../audits/PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md).
 
 ---
 
@@ -453,6 +455,7 @@ Referencias: [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANI
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-22 | 16.1 | Organizations domain foundation — ADR-010, aggregate, ports, tests |
 | 2026-06-22 | 16.0.1 | Organizations roadmap — decisiones arquitectónicas cerradas |
 | 2026-06-17 | 16.0 | Organizations audit — inicio FASE 16 |
 | 2026-06-17 | 15.9.4 | Identity disable semantics — tenant offboarding |

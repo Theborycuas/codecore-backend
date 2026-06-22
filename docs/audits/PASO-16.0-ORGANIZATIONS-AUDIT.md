@@ -94,13 +94,14 @@ Organizations **no** debe alterar ADR-006 ni ADR-007 sin nueva ADR.
 
 ## Próximo paso recomendado
 
-**PASO 16.1 — Organizations Domain Foundation**
+**PASO 16.2 — Organization Persistence**
 
-1. Auditoría de modelo (este documento + código actual)
-2. Diseño aggregate Organization
-3. Migración Flyway V14+
-4. Ports + use cases mínimos
-5. Sin HTTP hasta 16.2+
+1. Schema `org.organization` (Flyway V14+)
+2. Implementación R2DBC de `OrganizationRepository` y `OrganizationQueryPort`
+3. Tests de integración persistencia
+4. Sin HTTP hasta 16.4
+
+Ver [PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md](PASO-16.1-ORGANIZATIONS-DOMAIN-FOUNDATION.md).
 
 ---
 
