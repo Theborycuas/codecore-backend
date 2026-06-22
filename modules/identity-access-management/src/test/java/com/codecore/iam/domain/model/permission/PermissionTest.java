@@ -53,6 +53,12 @@ class PermissionTest {
     }
 
     @Test
+    void shouldAcceptHyphenatedResourceCodes() {
+        assertThat(PermissionCode.of("staff-assignment:read").value())
+                .isEqualTo("staff-assignment:read");
+    }
+
+    @Test
     void shouldRejectInvalidPermissionCode() {
         assertThatThrownBy(() -> PermissionCode.of("USER_CREATE"))
                 .isInstanceOf(InvalidDomainValueException.class);

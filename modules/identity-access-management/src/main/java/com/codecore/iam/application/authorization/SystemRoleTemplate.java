@@ -6,8 +6,15 @@ import com.codecore.iam.domain.valueobject.RoleName;
 
 import java.util.Set;
 
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ADMIN_IAM;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_IAM;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ORGANIZATION;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.STRUCTURE_READ;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.union;
+
 /**
- * Tenant-scoped system role templates provisioned on tenant creation (FASE 14.8).
+ * Tenant-scoped system role templates provisioned on tenant creation (FASE 14.8 + 16.3 org contract).
  */
 public enum SystemRoleTemplate {
 
@@ -19,43 +26,28 @@ public enum SystemRoleTemplate {
     ADMIN(
             RoleCode.of("ADMIN"),
             RoleName.of("Administrator"),
-            Set.of(
-                    IamPermissionCatalog.MEMBERSHIP_READ,
-                    IamPermissionCatalog.MEMBERSHIP_CREATE,
-                    IamPermissionCatalog.MEMBERSHIP_UPDATE,
-                    IamPermissionCatalog.MEMBERSHIP_DELETE,
-                    IamPermissionCatalog.ROLE_READ,
-                    IamPermissionCatalog.ROLE_CREATE,
-                    IamPermissionCatalog.ROLE_UPDATE,
-                    IamPermissionCatalog.ROLE_DELETE,
-                    IamPermissionCatalog.PERMISSION_ASSIGN,
-                    IamPermissionCatalog.USER_READ,
-                    IamPermissionCatalog.USER_CREATE,
-                    IamPermissionCatalog.USER_UPDATE,
-                    IamPermissionCatalog.USER_DELETE
-            )
+            union(ADMIN_IAM, ORGANIZATION_PLATFORM_ALL)
     ),
     MANAGER(
             RoleCode.of("MANAGER"),
             RoleName.of("Manager"),
-            Set.of(
-                    IamPermissionCatalog.MEMBERSHIP_READ,
-                    IamPermissionCatalog.USER_READ,
-                    IamPermissionCatalog.USER_UPDATE
-            )
+            union(MANAGER_IAM, MANAGER_ORGANIZATION)
     ),
     USER(
             RoleCode.of("USER"),
             RoleName.of("User"),
-            Set.of(IamPermissionCatalog.USER_READ)
+            union(Set.of(IamPermissionCatalog.USER_READ), STRUCTURE_READ)
     ),
     READ_ONLY(
             RoleCode.of("READ_ONLY"),
             RoleName.of("Read only"),
-            Set.of(
-                    IamPermissionCatalog.TENANT_READ,
-                    IamPermissionCatalog.MEMBERSHIP_READ,
-                    IamPermissionCatalog.ROLE_READ
+            union(
+                    Set.of(
+                            IamPermissionCatalog.TENANT_READ,
+                            IamPermissionCatalog.MEMBERSHIP_READ,
+                            IamPermissionCatalog.ROLE_READ
+                    ),
+                    STRUCTURE_READ
             )
     );
 

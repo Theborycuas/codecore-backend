@@ -17,7 +17,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 En implementación | 16.2 persistence |
+| **16** | Organizations | 🟡 En implementación | 16.3 authorization contract |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -296,8 +296,8 @@ Flujo **vía HTTP real**:
 | **16.0.1** | Organizations Roadmap & Decisions | ✅ | Decisiones obligatorias + modelo objetivo |
 | **16.1** | Organizations Domain Foundation | ✅ | ADR-010, aggregate `Organization`, ports, 16 tests |
 | **16.2** | Organization Persistence | ✅ | Schema `org`, Flyway V14, R2DBC, ITs |
-| **16.3** | Organization Permission Seeds | ⏳ **Siguiente** | `organization:*` en catálogo + system roles |
-| **16.4** | Organization Administration API | ⏳ | CRUD `/api/v1/org/organizations` |
+| **16.3** | Organization Authorization Contract | ✅ | Catálogo 12 permisos, matriz RBAC, Flyway V15 |
+| **16.4** | Organization Administration API | ⏳ **Siguiente** | CRUD `/api/v1/org/organizations` |
 | **16.5** | Office Domain & Persistence | ⏳ | Aggregate `Office`, tablas, repos |
 | **16.6** | Office Administration API | ⏳ | CRUD `/api/v1/org/offices` + `office:*` |
 | **16.7** | Staff Organizational Assignment | ⏳ | `StaffAssignment`, `staff-assignment:*` |
@@ -335,14 +335,16 @@ Flujo **vía HTTP real**:
 - `R2dbcOrganizationRepositoryIT` — 6 escenarios Testcontainers
 - Documentación: [PASO-16.2-ORGANIZATION-PERSISTENCE.md](../audits/PASO-16.2-ORGANIZATION-PERSISTENCE.md)
 
-### 16.3 Organization Permission Seeds ⏳ **Siguiente**
+### 16.3 Organization Authorization Contract ✅
 
-- Permisos globales `organization:*` en `iam.permission` (Flyway)
-- Grants en `SystemRoleTemplate` OWNER/ADMIN
-- `OrganizationPermissionCatalog` en módulo org
-- **Único** touch IAM permitido en FASE 16
+- Auditoría 10 preguntas + matriz RBAC formal
+- `OrganizationPermissionCatalog` (12 permisos) + `IamPermissionCatalog` extendido (28 total)
+- `SystemRoleTemplate` actualizado — OWNER/ADMIN/MANAGER/USER/READ_ONLY
+- Flyway V15 idempotente + backfill role_permission
+- Tests: `SystemRoleTemplateTest`, `OrganizationPermissionCatalogTest`, migration ITs
+- Documentación: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT-AUDIT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT-AUDIT.md) · [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md)
 
-### 16.4 Organization Administration API ⏳
+### 16.4 Organization Administration API ⏳ **Siguiente**
 
 - `GET/POST/PUT/DELETE /api/v1/org/organizations`
 - `@RequiresPermission("organization:*")` · tenant desde JWT
@@ -447,9 +449,9 @@ FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/0
 
 ### Siguiente acción
 
-**PASO 16.3 — Organization Permission Seeds** — permisos `organization:*` en catálogo IAM + grants OWNER/ADMIN.
+**PASO 16.4 — Organization Administration API** — CRUD HTTP `/api/v1/org/organizations` con `@RequiresPermission`.
 
-Referencias: [PASO-16.2-ORGANIZATION-PERSISTENCE.md](../audits/PASO-16.2-ORGANIZATION-PERSISTENCE.md).
+Referencias: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md).
 
 ---
 
@@ -457,6 +459,7 @@ Referencias: [PASO-16.2-ORGANIZATION-PERSISTENCE.md](../audits/PASO-16.2-ORGANIZ
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-06-22 | 16.3 | Organization authorization contract — V15, 12 permisos, matriz RBAC |
 | 2026-06-22 | 16.2 | Organization persistence — schema org, V14, R2DBC |
 | 2026-06-22 | 16.1 | Organizations domain foundation — ADR-010, aggregate, ports, tests |
 | 2026-06-22 | 16.0.1 | Organizations roadmap — decisiones arquitectónicas cerradas |

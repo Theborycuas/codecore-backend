@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public final class PermissionCode {
 
     private static final int MAX_LENGTH = 150;
-    private static final Pattern FORMAT = Pattern.compile("^[a-z][a-z0-9_]*:[a-z][a-z0-9_]*$");
+    private static final Pattern FORMAT = Pattern.compile("^[a-z][a-z0-9_-]*:[a-z][a-z0-9_-]*$");
 
     private final String value;
 

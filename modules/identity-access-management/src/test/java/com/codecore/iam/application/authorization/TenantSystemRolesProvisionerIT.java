@@ -47,8 +47,12 @@ class TenantSystemRolesProvisionerIT extends AbstractPostgresIntegrationTest {
                 .assertNext(count -> assertThat(count).isEqualTo(IamPermissionCatalog.ALL.size()))
                 .verifyComplete();
 
-        StepVerifier.create(countRolePermissionsForTenantRole(tenantId, SystemRoleTemplate.ADMIN.code()))
-                .assertNext(count -> assertThat(count).isEqualTo(SystemRoleTemplate.ADMIN.permissions().size()))
+        StepVerifier.create(countRolePermissionsForTenantRole(tenantId, SystemRoleTemplate.READ_ONLY.code()))
+                .assertNext(count -> assertThat(count).isEqualTo(SystemRoleTemplate.READ_ONLY.permissions().size()))
+                .verifyComplete();
+
+        StepVerifier.create(countRolePermissionsForTenantRole(tenantId, SystemRoleTemplate.MANAGER.code()))
+                .assertNext(count -> assertThat(count).isEqualTo(SystemRoleTemplate.MANAGER.permissions().size()))
                 .verifyComplete();
     }
 
