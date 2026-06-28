@@ -26,6 +26,7 @@ dependencies {
     // Modules
     // =========================
     implementation(projects.modules.identityAccessManagement)
+    implementation(projects.modules.organizationManagement.organizationInfrastructure)
 
     implementation(libs.springdoc.openapi.starter.webflux.ui)
 

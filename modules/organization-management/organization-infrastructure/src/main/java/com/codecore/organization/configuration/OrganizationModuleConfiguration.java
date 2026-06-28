@@ -1,8 +1,10 @@
 package com.codecore.organization.configuration;
 
+import com.codecore.organization.infrastructure.persistence.mapper.OfficeMapper;
 import com.codecore.organization.infrastructure.persistence.mapper.OrganizationMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 /**
@@ -10,10 +12,16 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
  */
 @Configuration
 @EnableR2dbcRepositories(basePackages = "com.codecore.organization.infrastructure.persistence.repository")
+@Import(OrganizationAdministrationConfiguration.class)
 public class OrganizationModuleConfiguration {
 
     @Bean
     public OrganizationMapper organizationMapper() {
         return new OrganizationMapper();
+    }
+
+    @Bean
+    public OfficeMapper officeMapper() {
+        return new OfficeMapper();
     }
 }

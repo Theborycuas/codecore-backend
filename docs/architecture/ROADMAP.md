@@ -260,13 +260,27 @@ Tenant (IAM)
 
 Entregar jerarquía operativa tenant → organization → office, API administrativa `/api/v1/org/**`, asignación de staff por scope, y verificación E2E — sobre IAM Foundation Complete.
 
-## Modo de trabajo (cada paso)
+## Modo de trabajo (FASE 16 — post 16.3.1)
 
-1. Auditoría mínima  
-2. Diseño (`PASO-16.x-*.md`)  
-3. Implementación acotada  
-4. Tests del paso  
-5. Actualizar este ROADMAP  
+Patrón estabilizado. **No** auditoría previa obligatoria en cada paso rutinario.
+
+| Fase del paso | Acción |
+|---------------|--------|
+| Implementación | Código + tests del paso |
+| Cierre | `PASO-16.x-*.md` + actualizar ROADMAP |
+
+**Auditoría previa obligatoria solo** ante cambio de paradigma arquitectónico:
+
+| Trigger | Motivo |
+|---------|--------|
+| **StaffAssignment** (16.7) | Alcance organizacional sobre Membership |
+| **Patient** (FASE 19) | Primer aggregate clínico |
+| **Appointment** (FASE 19+) | Conecta múltiples bounded contexts |
+| **Billing** (FASE 20) | Finanzas e invariantes propias |
+
+Pasos **16.4 → 16.6** (Organization/Office HTTP) siguen ADR-008, ADR-010 y [PASO-16.3.1](../audits/PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md) — implementación directa.
+
+Pasos iniciales 16.0–16.3.1 conservaron auditorías de fundación (cerradas).
 
 ## Restricciones
 
@@ -297,10 +311,11 @@ Flujo **vía HTTP real**:
 | **16.1** | Organizations Domain Foundation | ✅ | ADR-010, aggregate `Organization`, ports, 16 tests |
 | **16.2** | Organization Persistence | ✅ | Schema `org`, Flyway V14, R2DBC, ITs |
 | **16.3** | Organization Authorization Contract | ✅ | Catálogo 12 permisos, matriz RBAC, Flyway V15 |
-| **16.4** | Organization Administration API | ⏳ **Siguiente** | CRUD `/api/v1/org/organizations` |
-| **16.5** | Office Domain & Persistence | ⏳ | Aggregate `Office`, tablas, repos |
-| **16.6** | Office Administration API | ⏳ | CRUD `/api/v1/org/offices` + `office:*` |
-| **16.7** | Staff Organizational Assignment | ⏳ | `StaffAssignment`, `staff-assignment:*` |
+| **16.3.1** | Organization Admin API Audit | ✅ | Decisiones HTTP/archive/pagination (cierre fundación) |
+| **16.4** | Organization Administration API | ✅ | CRUD `/api/v1/org/organizations` |
+| **16.5** | Office Domain & Persistence | ✅ | Aggregate `Office`, Flyway V16, R2DBC |
+| **16.6** | Office Administration API | ✅ | CRUD `/api/v1/org/offices` + guard archive org |
+| **16.7** | Staff Organizational Assignment | ⏳ **Siguiente** | `StaffAssignment`, `staff-assignment:*` |
 | **16.8** | Organization Authorization Patterns | ⏳ | Scoping tenant/org en use cases; doc Patient |
 | **16.9** | Organization Verification | ⏳ | E2E journey completo |
 | **16.10** | Organizations Closeout | ⏳ | Cierre fase + OpenAPI grupo `org-administration` |
@@ -349,22 +364,27 @@ Flujo **vía HTTP real**:
 - Decisiones HTTP/DTO/queries/paginación/archive antes de 16.4
 - Documentación: [PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md](../audits/PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md)
 
-### 16.4 Organization Administration API ⏳ **Siguiente**
+### 16.4 Organization Administration API ✅
 
-- `GET/POST/PUT/DELETE /api/v1/org/organizations`
-- `@RequiresPermission("organization:*")` · tenant desde JWT
-- Patrón ADR-008 (simétrico a IAM admin)
+- `OrganizationAdminController` + use cases + admin query repository
+- Paginación, filtro `status=ACTIVE|ARCHIVED|ALL`, archive/activate
+- `codecore-api` wired · 2 unit tests + 6 ITs (Docker)
+- Documentación: [PASO-16.4-ORGANIZATION-ADMINISTRATION-API.md](../audits/PASO-16.4-ORGANIZATION-ADMINISTRATION-API.md)
 
-### 16.5 Office Domain & Persistence ⏳
+### 16.5 Office Domain & Persistence ✅
 
-- Aggregate `Office` con `organizationId` + `tenantId`
-- Tabla `org.office`, repositorios, invariantes org→office
+- Aggregate `Office` + VOs + 3 domain tests
+- Flyway V16 `org.office` · R2DBC repositories
+- Documentación: [PASO-16.5-OFFICE-DOMAIN-PERSISTENCE.md](../audits/PASO-16.5-OFFICE-DOMAIN-PERSISTENCE.md)
 
-### 16.6 Office Administration API ⏳
+### 16.6 Office Administration API ✅
 
-- CRUD `/api/v1/org/offices` · permisos `office:*`
+- `OfficeAdminController` + `OfficeAdministrationUseCaseImpl`
+- Guard: archivar org bloqueado si offices ACTIVE (409)
+- 3 ITs WebFlux (Docker)
+- Documentación: [PASO-16.6-OFFICE-ADMINISTRATION-API.md](../audits/PASO-16.6-OFFICE-ADMINISTRATION-API.md)
 
-### 16.7 Staff Organizational Assignment ⏳
+### 16.7 Staff Organizational Assignment ⏳ **Siguiente**
 
 - Entidad/asociación `StaffAssignment(membershipId, organizationId?, officeId?)`
 - API administrativa; validación membership.tenantId == org.tenantId
