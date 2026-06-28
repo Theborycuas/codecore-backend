@@ -344,6 +344,11 @@ Flujo **vía HTTP real**:
 - Tests: `SystemRoleTemplateTest`, `OrganizationPermissionCatalogTest`, migration ITs
 - Documentación: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT-AUDIT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT-AUDIT.md) · [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md)
 
+### 16.3.1 Organization Administration API Audit ✅
+
+- Decisiones HTTP/DTO/queries/paginación/archive antes de 16.4
+- Documentación: [PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md](../audits/PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md)
+
 ### 16.4 Organization Administration API ⏳ **Siguiente**
 
 - `GET/POST/PUT/DELETE /api/v1/org/organizations`
