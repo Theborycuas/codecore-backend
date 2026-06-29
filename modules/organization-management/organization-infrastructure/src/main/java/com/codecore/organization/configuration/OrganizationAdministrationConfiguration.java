@@ -21,6 +21,16 @@ import com.codecore.organization.application.port.out.OfficeRepository;
 import com.codecore.organization.application.port.out.OrganizationAdminQueryRepository;
 import com.codecore.organization.application.port.out.OrganizationQueryPort;
 import com.codecore.organization.application.port.out.OrganizationRepository;
+import com.codecore.organization.application.port.in.CreateStaffAssignmentUseCase;
+import com.codecore.organization.application.port.in.DeleteStaffAssignmentUseCase;
+import com.codecore.organization.application.port.in.GetStaffAssignmentUseCase;
+import com.codecore.organization.application.port.in.ListStaffAssignmentsUseCase;
+import com.codecore.organization.application.port.in.UpdateStaffAssignmentUseCase;
+import com.codecore.organization.application.admin.StaffAssignmentAdministrationUseCaseImpl;
+import com.codecore.organization.application.port.out.MembershipReferencePort;
+import com.codecore.organization.application.port.out.StaffAssignmentAdminQueryRepository;
+import com.codecore.organization.application.port.out.StaffAssignmentQueryPort;
+import com.codecore.organization.application.port.out.StaffAssignmentRepository;
 import com.codecore.organization.application.port.out.TenantContextAccessor;
 import com.codecore.organization.infrastructure.adapters.IamTenantContextAccessor;
 import org.springframework.context.annotation.Bean;
@@ -130,6 +140,62 @@ public class OrganizationAdministrationConfiguration {
 
     @Bean
     public ActivateOfficeUseCase activateOfficeUseCase(OfficeAdministrationUseCaseImpl delegate) {
+        return delegate;
+    }
+
+    @Bean
+    public StaffAssignmentAdministrationUseCaseImpl staffAssignmentAdministrationUseCase(
+            TenantContextAccessor tenantContextAccessor,
+            StaffAssignmentAdminQueryRepository staffAssignmentAdminQueryRepository,
+            StaffAssignmentRepository staffAssignmentRepository,
+            StaffAssignmentQueryPort staffAssignmentQueryPort,
+            OrganizationQueryPort organizationQueryPort,
+            OfficeQueryPort officeQueryPort,
+            MembershipReferencePort membershipReferencePort,
+            TransactionalOperator transactionalOperator
+    ) {
+        return new StaffAssignmentAdministrationUseCaseImpl(
+                tenantContextAccessor,
+                staffAssignmentAdminQueryRepository,
+                staffAssignmentRepository,
+                staffAssignmentQueryPort,
+                organizationQueryPort,
+                officeQueryPort,
+                membershipReferencePort,
+                transactionalOperator
+        );
+    }
+
+    @Bean
+    public ListStaffAssignmentsUseCase listStaffAssignmentsUseCase(
+            StaffAssignmentAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public GetStaffAssignmentUseCase getStaffAssignmentUseCase(StaffAssignmentAdministrationUseCaseImpl delegate) {
+        return delegate;
+    }
+
+    @Bean
+    public CreateStaffAssignmentUseCase createStaffAssignmentUseCase(
+            StaffAssignmentAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public UpdateStaffAssignmentUseCase updateStaffAssignmentUseCase(
+            StaffAssignmentAdministrationUseCaseImpl delegate
+    ) {
+        return delegate;
+    }
+
+    @Bean
+    public DeleteStaffAssignmentUseCase deleteStaffAssignmentUseCase(
+            StaffAssignmentAdministrationUseCaseImpl delegate
+    ) {
         return delegate;
     }
 }

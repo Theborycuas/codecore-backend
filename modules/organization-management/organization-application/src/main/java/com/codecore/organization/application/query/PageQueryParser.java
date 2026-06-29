@@ -44,6 +44,27 @@ public final class PageQueryParser {
         return OFFICE_SORT_COLUMNS.getOrDefault(sortField, OFFICE_SORT_COLUMNS.get("createdAt"));
     }
 
+    private static final Map<String, String> STAFF_ASSIGNMENT_SORT_COLUMNS = Map.of(
+            "membershipId", "membership_id",
+            "organizationId", "organization_id",
+            "officeId", "office_id",
+            "createdAt", "created_at",
+            "updatedAt", "updated_at"
+    );
+
+    private static final Set<String> STAFF_ASSIGNMENT_ALLOWED_SORT = STAFF_ASSIGNMENT_SORT_COLUMNS.keySet();
+
+    public static PageQuery parseStaffAssignmentPageQuery(int page, int size, String sort) {
+        return parse(page, size, sort, STAFF_ASSIGNMENT_ALLOWED_SORT, "createdAt", PageQuery.SortDirection.DESC);
+    }
+
+    public static String staffAssignmentSqlOrderColumn(String sortField) {
+        return STAFF_ASSIGNMENT_SORT_COLUMNS.getOrDefault(
+                sortField,
+                STAFF_ASSIGNMENT_SORT_COLUMNS.get("createdAt")
+        );
+    }
+
     private static PageQuery parse(
             int page,
             int size,

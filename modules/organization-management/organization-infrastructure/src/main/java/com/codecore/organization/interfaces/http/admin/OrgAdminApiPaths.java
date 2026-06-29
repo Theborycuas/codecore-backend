@@ -5,6 +5,7 @@ public final class OrgAdminApiPaths {
     public static final String BASE = "/api/v1/org";
     public static final String ORGANIZATIONS = BASE + "/organizations";
     public static final String OFFICES = BASE + "/offices";
+    public static final String STAFF_ASSIGNMENTS = BASE + "/staff-assignments";
 
     private OrgAdminApiPaths() {
     }

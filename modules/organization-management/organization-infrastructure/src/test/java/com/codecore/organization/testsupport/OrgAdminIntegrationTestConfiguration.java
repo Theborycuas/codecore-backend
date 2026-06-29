@@ -32,12 +32,16 @@ import com.codecore.iam.interfaces.http.security.RequiresPermissionAspect;
 import com.codecore.iam.application.ReactorAuthorizationContextAccessor;
 import com.codecore.organization.testsupport.OrgR2dbcTestConfiguration;
 import com.codecore.organization.configuration.OrganizationModuleConfiguration;
+import com.codecore.organization.infrastructure.adapters.R2dbcMembershipReferenceAdapter;
+import com.codecore.organization.infrastructure.persistence.repository.R2dbcStaffAssignmentAdminQueryRepository;
+import com.codecore.organization.infrastructure.persistence.repository.R2dbcStaffAssignmentRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOfficeAdminQueryRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOfficeRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOrganizationAdminQueryRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOrganizationRepository;
 import com.codecore.organization.interfaces.http.OrgHttpExceptionHandler;
 import com.codecore.organization.interfaces.http.admin.OfficeAdminController;
+import com.codecore.organization.interfaces.http.admin.StaffAssignmentAdminController;
 import com.codecore.organization.interfaces.http.admin.OrganizationAdminController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -57,6 +61,9 @@ import org.springframework.context.annotation.Import;
         R2dbcOrganizationAdminQueryRepository.class,
         R2dbcOfficeRepository.class,
         R2dbcOfficeAdminQueryRepository.class,
+        R2dbcStaffAssignmentRepository.class,
+        R2dbcStaffAssignmentAdminQueryRepository.class,
+        R2dbcMembershipReferenceAdapter.class,
         R2dbcIdentityRepository.class,
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,
@@ -83,6 +90,7 @@ import org.springframework.context.annotation.Import;
         CreateTenantController.class,
         OrganizationAdminController.class,
         OfficeAdminController.class,
+        StaffAssignmentAdminController.class,
         IamHttpExceptionHandler.class,
         OrgHttpExceptionHandler.class
 })

@@ -1,6 +1,10 @@
 package com.codecore.organization.interfaces.http;
 
 import com.codecore.organization.domain.exception.InvalidDomainValueException;
+import com.codecore.organization.domain.exception.InvalidStaffAssignmentScopeException;
+import com.codecore.organization.domain.exception.MembershipNotInTenantException;
+import com.codecore.organization.domain.exception.StaffAssignmentAlreadyExistsException;
+import com.codecore.organization.domain.exception.StaffAssignmentNotFoundException;
 import com.codecore.organization.domain.exception.InvalidOfficeStateException;
 import com.codecore.organization.domain.exception.InvalidOrganizationStateException;
 import com.codecore.organization.domain.exception.OfficeAlreadyExistsException;
@@ -28,6 +32,16 @@ public class OrgHttpExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    @ExceptionHandler(StaffAssignmentNotFoundException.class)
+    public Mono<ResponseEntity<Void>> handleStaffAssignmentNotFound(StaffAssignmentNotFoundException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @ExceptionHandler(MembershipNotInTenantException.class)
+    public Mono<ResponseEntity<Void>> handleMembershipNotInTenant(MembershipNotInTenantException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
     @ExceptionHandler(OrganizationAlreadyExistsException.class)
     public Mono<ResponseEntity<Void>> handleOrganizationAlreadyExists(OrganizationAlreadyExistsException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
@@ -35,6 +49,13 @@ public class OrgHttpExceptionHandler {
 
     @ExceptionHandler(OfficeAlreadyExistsException.class)
     public Mono<ResponseEntity<Void>> handleOfficeAlreadyExists(OfficeAlreadyExistsException ex) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @ExceptionHandler(StaffAssignmentAlreadyExistsException.class)
+    public Mono<ResponseEntity<Void>> handleStaffAssignmentAlreadyExists(
+            StaffAssignmentAlreadyExistsException ex
+    ) {
         return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
@@ -62,6 +83,13 @@ public class OrgHttpExceptionHandler {
 
     @ExceptionHandler(InvalidOfficeStateException.class)
     public Mono<ResponseEntity<Void>> handleInvalidOfficeState(InvalidOfficeStateException ex) {
+        return Mono.just(ResponseEntity.badRequest().build());
+    }
+
+    @ExceptionHandler(InvalidStaffAssignmentScopeException.class)
+    public Mono<ResponseEntity<Void>> handleInvalidStaffAssignmentScope(
+            InvalidStaffAssignmentScopeException ex
+    ) {
         return Mono.just(ResponseEntity.badRequest().build());
     }
 

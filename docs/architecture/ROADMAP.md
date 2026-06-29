@@ -1,9 +1,10 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-06-22  
-**Módulo principal:** `identity-access-management`  
+**Última actualización:** 2026-06-28  
+**Módulo principal:** `identity-access-management` + `organization-management`  
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
-**IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)
+**IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
+**Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)
 
 ---
 
@@ -17,7 +18,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 En implementación | 16.3 authorization contract |
+| **16** | Organizations | 🟡 En implementación | 16.7 staff assignment ✅ — **siguiente: 16.8** |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -260,27 +261,28 @@ Tenant (IAM)
 
 Entregar jerarquía operativa tenant → organization → office, API administrativa `/api/v1/org/**`, asignación de staff por scope, y verificación E2E — sobre IAM Foundation Complete.
 
-## Modo de trabajo (FASE 16 — post 16.3.1)
+## Modo de trabajo (FASE 16+)
 
-Patrón estabilizado. **No** auditoría previa obligatoria en cada paso rutinario.
+Política completa (*Constitution Document*): **[DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)**
 
-| Fase del paso | Acción |
-|---------------|--------|
-| Implementación | Código + tests del paso |
-| Cierre | `PASO-16.x-*.md` + actualizar ROADMAP |
+Resumen:
 
-**Auditoría previa obligatoria solo** ante cambio de paradigma arquitectónico:
+| Principio | Regla |
+|-----------|--------|
+| **Filosofía** | Un framework de negocio coherente — no módulos aislados |
+| **Foco** | Dominio primero — nunca desde DB ni controller |
+| **Irreversibles** | Aggregate, ownership, BC, lifecycle, jerarquía → auditoría obligatoria |
+| **IDs** | Solo referencias por ID entre aggregates — nunca objetos completos |
+| **Consistencia** | Cada aggregate solo sus invariantes — sin transacciones cross-aggregate |
+| **Checklist** | 12 ítems en verde antes de escribir código |
+| **No reinventar** | Reutilizar patrones IAM / Organization salvo ADR |
+| **Orden** | Checklist → Auditoría → ADR → Dominio → … → ROADMAP |
 
-| Trigger | Motivo |
-|---------|--------|
-| **StaffAssignment** (16.7) | Alcance organizacional sobre Membership |
-| **Patient** (FASE 19) | Primer aggregate clínico |
-| **Appointment** (FASE 19+) | Conecta múltiples bounded contexts |
-| **Billing** (FASE 20) | Finanzas e invariantes propias |
+Pasos rutinarios (ej. 16.4–16.7): implementación directa + cierre documental.
 
-Pasos **16.4 → 16.6** (Organization/Office HTTP) siguen ADR-008, ADR-010 y [PASO-16.3.1](../audits/PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md) — implementación directa.
+**Próxima auditoría obligatoria:** ninguna hasta cambio de paradigma (16.8+ rutinario).
 
-Pasos iniciales 16.0–16.3.1 conservaron auditorías de fundación (cerradas).
+Pasos 16.0–16.3.1 y **16.7** conservaron auditorías (cerradas).
 
 ## Restricciones
 
@@ -315,8 +317,8 @@ Flujo **vía HTTP real**:
 | **16.4** | Organization Administration API | ✅ | CRUD `/api/v1/org/organizations` |
 | **16.5** | Office Domain & Persistence | ✅ | Aggregate `Office`, Flyway V16, R2DBC |
 | **16.6** | Office Administration API | ✅ | CRUD `/api/v1/org/offices` + guard archive org |
-| **16.7** | Staff Organizational Assignment | ⏳ **Siguiente** | `StaffAssignment`, `staff-assignment:*` |
-| **16.8** | Organization Authorization Patterns | ⏳ | Scoping tenant/org en use cases; doc Patient |
+| **16.7** | Staff Organizational Assignment | ✅ | `StaffAssignment`, `/staff-assignments`, V17 |
+| **16.8** | Organization Authorization Patterns | ⏳ **Siguiente** | Scoping tenant/org en use cases; doc Patient |
 | **16.9** | Organization Verification | ⏳ | E2E journey completo |
 | **16.10** | Organizations Closeout | ⏳ | Cierre fase + OpenAPI grupo `org-administration` |
 
@@ -384,13 +386,15 @@ Flujo **vía HTTP real**:
 - 3 ITs WebFlux (Docker)
 - Documentación: [PASO-16.6-OFFICE-ADMINISTRATION-API.md](../audits/PASO-16.6-OFFICE-ADMINISTRATION-API.md)
 
-### 16.7 Staff Organizational Assignment ⏳ **Siguiente**
+### 16.7 Staff Organizational Assignment ✅
 
-- Entidad/asociación `StaffAssignment(membershipId, organizationId?, officeId?)`
-- API administrativa; validación membership.tenantId == org.tenantId
-- Sin duplicar Identity/Membership
+- Aggregate `StaffAssignment` + Flyway V17 + `StaffAssignmentAdminController`
+- Cross-BC: `MembershipReferencePort` (IAM membership ACTIVE)
+- Delete físico (sin archive); scope org u office
+- Auditoría: [PASO-16.7-STAFF-ASSIGNMENT-AUDIT.md](../audits/PASO-16.7-STAFF-ASSIGNMENT-AUDIT.md)
+- Cierre: [PASO-16.7-STAFF-ORGANIZATIONAL-ASSIGNMENT.md](../audits/PASO-16.7-STAFF-ORGANIZATIONAL-ASSIGNMENT.md)
 
-### 16.8 Organization Authorization Patterns ⏳
+### 16.8 Organization Authorization Patterns ⏳ **Siguiente**
 
 - Filtros de aplicación por tenant/org/office en queries
 - Documentar patrón Patient visibility (implementación FASE 19)
