@@ -9,6 +9,7 @@ import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.MembershipRoleRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.RoleRepository;
+import com.codecore.iam.configuration.IamOpenApiConfiguration;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
@@ -21,10 +22,12 @@ import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.interfaces.http.dto.LoginRequest;
+import com.codecore.organization.configuration.OrgOpenApiConfiguration;
+import com.codecore.organization.interfaces.http.admin.dto.CreateOfficeRequest;
 import com.codecore.organization.interfaces.http.admin.dto.CreateOrganizationRequest;
-import com.codecore.organization.interfaces.http.admin.dto.UpdateOrganizationRequest;
+import com.codecore.organization.interfaces.http.admin.dto.CreateStaffAssignmentRequest;
 import com.codecore.organization.testsupport.AbstractOrgHttpIntegrationTest;
-import com.codecore.organization.testsupport.OrgAdminIntegrationTestConfiguration;
+import com.codecore.organization.testsupport.OrganizationAdministrationVerificationTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -40,8 +43,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * FASE 16.9 — end-to-end Organization Management verification (cierre FASE 16).
+ */
 @SpringBootTest(
-        classes = OrgAdminIntegrationTestConfiguration.class,
+        classes = OrganizationAdministrationVerificationTestConfiguration.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureWebTestClient
@@ -50,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         "security.jwt.issuer=codecore-test",
         "security.jwt.expiration=900s"
 })
-class OrganizationAdminControllerIT extends AbstractOrgHttpIntegrationTest {
+class OrganizationVerificationIT extends AbstractOrgHttpIntegrationTest {
 
     private static final String PASSWORD = "ValidPass1!";
 
@@ -73,51 +79,152 @@ class OrganizationAdminControllerIT extends AbstractOrgHttpIntegrationTest {
     private PasswordHasher passwordHasher;
 
     @Test
-    void shouldCreateAndListOrganizationsWhenAdmin() {
+    void verification1_fullOrganizationManagementJourney() {
         TenantId tenantId = provisionTenant();
-        String token = loginAs(tenantId, SystemRoleTemplate.ADMIN);
+        String adminToken = loginAs(tenantId, SystemRoleTemplate.ADMIN);
 
-        webTestClient.post()
-                .uri(OrgAdminApiPaths.ORGANIZATIONS)
-                .header("Authorization", "Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new CreateOrganizationRequest("DENTAL_NORTE", "Dental Norte"))
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody()
-                .jsonPath("$.code").isEqualTo("DENTAL_NORTE")
-                .jsonPath("$.status").isEqualTo("ACTIVE");
+        String orgNorth = createOrganization(adminToken, "DENTAL_NORTE", "Dental Norte");
+        String orgCenter = createOrganization(adminToken, "DENTAL_CENTRO", "Dental Centro");
+        createOrganization(adminToken, "DENTAL_SUR", "Dental Sur");
 
         webTestClient.get()
                 .uri(OrgAdminApiPaths.ORGANIZATIONS + "?page=0&size=20")
-                .header("Authorization", "Bearer " + token)
+                .header("Authorization", "Bearer " + adminToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.content.length()").value(count -> assertThat((Integer) count).isGreaterThanOrEqualTo(1));
+                .jsonPath("$.content.length()").isEqualTo(3);
+
+        AtomicReference<String> officeIdRef = new AtomicReference<>();
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.OFFICES)
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateOfficeRequest(UUID.fromString(orgNorth), "CONSULT_1", "Consultorio 1"))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.id").value(id -> officeIdRef.set(id.toString()));
+
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.OFFICES + "?organizationId=" + orgNorth)
+                .header("Authorization", "Bearer " + adminToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content.length()").isEqualTo(1);
+
+        IdentityTenantMembership staffMembership = persistActiveIdentity(tenantId, uniqueEmail("staff")).block();
+        assertThat(staffMembership).isNotNull();
+
+        AtomicReference<String> assignmentIdRef = new AtomicReference<>();
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.STAFF_ASSIGNMENTS)
+                .header("Authorization", "Bearer " + adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateStaffAssignmentRequest(
+                        staffMembership.id().value(),
+                        UUID.fromString(orgCenter),
+                        null
+                ))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.organizationId").isEqualTo(orgCenter)
+                .jsonPath("$.id").value(id -> assignmentIdRef.set(id.toString()));
+
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.STAFF_ASSIGNMENTS + "?organizationId=" + orgCenter)
+                .header("Authorization", "Bearer " + adminToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content.length()").isEqualTo(1);
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.OFFICES + "/" + officeIdRef.get() + "/archive")
+                .header("Authorization", "Bearer " + adminToken)
+                .exchange()
+                .expectStatus().isOk();
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgNorth + "/archive")
+                .header("Authorization", "Bearer " + adminToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo("ARCHIVED");
+
+        webTestClient.delete()
+                .uri(OrgAdminApiPaths.STAFF_ASSIGNMENTS + "/" + assignmentIdRef.get())
+                .header("Authorization", "Bearer " + adminToken)
+                .exchange()
+                .expectStatus().isNoContent();
     }
 
     @Test
-    void shouldArchiveOrganizationWhenAdmin() {
+    void verification2_rbacDeniesWithoutPermission() {
+        TenantId tenantId = provisionTenant();
+        String readerToken = loginAs(tenantId, SystemRoleTemplate.READ_ONLY);
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.ORGANIZATIONS)
+                .header("Authorization", "Bearer " + readerToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateOrganizationRequest("DENIED", "Denied"))
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
+    void verification3_crossTenantAccessReturns404() {
+        TenantId tenantA = provisionTenant();
+        TenantId tenantB = provisionTenant();
+
+        String adminA = loginAs(tenantA, SystemRoleTemplate.ADMIN);
+        String adminB = loginAs(tenantB, SystemRoleTemplate.ADMIN);
+        String orgInB = createOrganization(adminB, "TENANT_B", "Tenant B Org");
+
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgInB)
+                .header("Authorization", "Bearer " + adminA)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void verification4_orgArchiveBlockedWhenActiveOfficesExist() {
         TenantId tenantId = provisionTenant();
         String token = loginAs(tenantId, SystemRoleTemplate.ADMIN);
-        String orgId = createOrganization(token, "ARCHIVE_ME", "Archive Me");
+        String orgId = createOrganization(token, "WITH_OFFICE", "With Office");
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.OFFICES)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new CreateOfficeRequest(UUID.fromString(orgId), "ACTIVE_OFF", "Active Office"))
+                .exchange()
+                .expectStatus().isCreated();
 
         webTestClient.post()
                 .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgId + "/archive")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.status").isEqualTo("ARCHIVED");
+                .expectStatus().isEqualTo(409);
     }
 
     @Test
-    void shouldReturn403WhenManagerTriesToArchive() {
+    void verification5_managerCanReadButNotArchive() {
         TenantId tenantId = provisionTenant();
         String adminToken = loginAs(tenantId, SystemRoleTemplate.ADMIN);
         String managerToken = loginAs(tenantId, SystemRoleTemplate.MANAGER);
-        String orgId = createOrganization(adminToken, "NO_ARCHIVE", "No Archive");
+        String orgId = createOrganization(adminToken, "MANAGER_TEST", "Manager Test");
+
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgId)
+                .header("Authorization", "Bearer " + managerToken)
+                .exchange()
+                .expectStatus().isOk();
 
         webTestClient.post()
                 .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgId + "/archive")
@@ -127,57 +234,59 @@ class OrganizationAdminControllerIT extends AbstractOrgHttpIntegrationTest {
     }
 
     @Test
-    void shouldReturn404ForCrossTenantOrganization() {
-        TenantId tenantA = provisionTenant();
-        TenantId tenantB = provisionTenant();
-        String adminA = loginAs(tenantA, SystemRoleTemplate.ADMIN);
-        String adminB = loginAs(tenantB, SystemRoleTemplate.ADMIN);
-        String orgIdInB = createOrganization(adminB, "TENANT_B", "Tenant B Org");
-
-        webTestClient.get()
-                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgIdInB)
-                .header("Authorization", "Bearer " + adminA)
-                .exchange()
-                .expectStatus().isNotFound();
-    }
-
-    @Test
-    void shouldListArchivedWhenManagerRequestsFilter() {
-        TenantId tenantId = provisionTenant();
-        String adminToken = loginAs(tenantId, SystemRoleTemplate.ADMIN);
-        String managerToken = loginAs(tenantId, SystemRoleTemplate.MANAGER);
-        String orgId = createOrganization(adminToken, "ARCHIVED_ORG", "Archived Org");
-
-        webTestClient.post()
-                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgId + "/archive")
-                .header("Authorization", "Bearer " + adminToken)
-                .exchange()
-                .expectStatus().isOk();
-
-        webTestClient.get()
-                .uri(OrgAdminApiPaths.ORGANIZATIONS + "?status=ARCHIVED")
-                .header("Authorization", "Bearer " + managerToken)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.content.length()").value(count -> assertThat((Integer) count).isGreaterThanOrEqualTo(1));
-    }
-
-    @Test
-    void shouldUpdateOrganizationName() {
+    void verification6_staffAssignmentDuplicateScopeReturns409() {
         TenantId tenantId = provisionTenant();
         String token = loginAs(tenantId, SystemRoleTemplate.ADMIN);
-        String orgId = createOrganization(token, "RENAME_ME", "Original");
+        String orgId = createOrganization(token, "DUP_SCOPE", "Dup Scope");
+        IdentityTenantMembership membership = persistActiveIdentity(tenantId, uniqueEmail("dup")).block();
+        assertThat(membership).isNotNull();
 
-        webTestClient.put()
-                .uri(OrgAdminApiPaths.ORGANIZATIONS + "/" + orgId)
+        CreateStaffAssignmentRequest request = new CreateStaffAssignmentRequest(
+                membership.id().value(),
+                UUID.fromString(orgId),
+                null
+        );
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.STAFF_ASSIGNMENTS)
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new UpdateOrganizationRequest("Renamed"))
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isCreated();
+
+        webTestClient.post()
+                .uri(OrgAdminApiPaths.STAFF_ASSIGNMENTS)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isEqualTo(409);
+    }
+
+    @Test
+    void verification7_openApiDocumentsOrgAdministrationSurface() {
+        webTestClient.get()
+                .uri("/v3/api-docs/" + OrgOpenApiConfiguration.ORG_ADMINISTRATION_GROUP)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("Renamed");
+                .jsonPath("$.paths['" + OrgAdminApiPaths.ORGANIZATIONS + "']").exists()
+                .jsonPath("$.paths['" + OrgAdminApiPaths.OFFICES + "']").exists()
+                .jsonPath("$.paths['" + OrgAdminApiPaths.STAFF_ASSIGNMENTS + "']").exists();
+    }
+
+    @Test
+    void verification8_unauthenticatedRequestsReturn401() {
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.ORGANIZATIONS)
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        webTestClient.get()
+                .uri(OrgAdminApiPaths.OFFICES + "?organizationId=" + UUID.randomUUID())
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 
     private String createOrganization(String token, String code, String name) {

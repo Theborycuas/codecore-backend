@@ -41,7 +41,7 @@ public class JwtAuthenticationWebFilter implements WebFilter {
 
         try {
             AuthenticatedPrincipal principal = tokenValidator.validate(bearerToken);
-            return chain.filter(exchange)
+            return Mono.defer(() -> chain.filter(exchange))
                     .contextWrite(ctx -> AuthenticationContext.write(ctx, principal));
         } catch (InvalidTokenException | ExpiredTokenException ex) {
             return unauthorized(exchange);

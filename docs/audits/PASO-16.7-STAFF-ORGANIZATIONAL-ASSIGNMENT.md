@@ -47,4 +47,4 @@
 
 - Sin FK física a `iam.identity_tenant_membership` — referencia lógica por ID.
 - Archive org/office no muta assignments existentes (histórico preservado).
-- **Próximo:** 16.8 — filtrado operativo de assignments en lectura clínica.
+- **Próximo:** 16.9 — verificación E2E (`OrganizationVerificationIT`).

@@ -13,7 +13,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
  */
 @Configuration
 @EnableR2dbcRepositories(basePackages = "com.codecore.organization.infrastructure.persistence.repository")
-@Import(OrganizationAdministrationConfiguration.class)
+@Import({OrganizationAdministrationConfiguration.class, OrgOpenApiConfiguration.class})
 public class OrganizationModuleConfiguration {
 
     @Bean

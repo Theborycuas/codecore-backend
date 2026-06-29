@@ -130,6 +130,8 @@ La navegación entre aggregates se resuelve **siempre** mediante:
 
 Esta regla será crítica cuando aparezcan Patient, Appointment, MedicalRecord, Billing, etc.
 
+**Guía de consumo:** [ORGANIZATION-CONSUMPTION-GUIDE.md](ORGANIZATION-CONSUMPTION-GUIDE.md) · [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md)
+
 ---
 
 ## 5. Consistencia entre aggregates (DDD puro)

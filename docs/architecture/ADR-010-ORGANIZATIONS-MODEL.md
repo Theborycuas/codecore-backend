@@ -178,3 +178,4 @@ Organization domain defines `TenantId` as a **reference value object** (UUID) �
 | Version | Date | Change |
 |---------|------|--------|
 | 1.0 | 2026-06-22 | Initial acceptance — Organizations domain foundation |
+| 1.1 | 2026-06-22 | Superseded §8 permissions table — see V15 catalog; integration closed in ADR-011 |

@@ -162,7 +162,7 @@ Base: `/api/v1/org/staff-assignments`
 | Multi-tenant | `tenant_id` en todas las queries |
 | Multi-org / multi-office | Scope explícito + índices |
 | Miles de assignments/tenant | Paginación SQL, índices en FK lógicas |
-| Evolución | FASE 16.8 filtra assignments operativos vs históricos en lectura clínica |
+| Evolución | Lectura operativa vs histórica — ver ADR-011 §5 (16.8) |
 
 ---
 

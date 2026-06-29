@@ -43,12 +43,11 @@ public class AuthorizationContextWebFilter implements WebFilter {
         return AuthenticationContext.currentPrincipal()
                 .flatMap(principal -> assertTenantOperationalIfRequired(exchange, principal)
                         .then(authorizationContextAccessor.resolveForPrincipal(principal)))
-                .flatMap(ctx -> chain.filter(exchange)
+                .flatMap(ctx -> Mono.defer(() -> chain.filter(exchange))
                         .contextWrite(reactorCtx -> AuthorizationReactorContext.write(reactorCtx, ctx)))
                 .onErrorResume(IdentityNotMemberOfTenantException.class, ex -> forbidden(exchange))
                 .onErrorResume(TenantContextUnavailableException.class, ex -> forbidden(exchange))
-                .onErrorResume(TenantNotOperationalException.class, ex -> forbidden(exchange))
-                .switchIfEmpty(chain.filter(exchange));
+                .onErrorResume(TenantNotOperationalException.class, ex -> forbidden(exchange));
     }
 
     private Mono<Void> assertTenantOperationalIfRequired(

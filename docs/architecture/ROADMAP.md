@@ -18,7 +18,7 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | 🟡 En implementación | 16.7 staff assignment ✅ — **siguiente: 16.8** |
+| **16** | Organizations | ✅ Cerrada | 16.10 closeout — **FASE 17 Invitations** |
 | **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
 
 ---
@@ -229,6 +229,8 @@ IAM cerrado (FASE 15). Comienza el **dominio de negocio**. Organizations modela 
 - [PASO-16.0-ORGANIZATIONS-AUDIT.md](../audits/PASO-16.0-ORGANIZATIONS-AUDIT.md)
 - [PASO-16.0.1-ORGANIZATIONS-ROADMAP.md](../audits/PASO-16.0.1-ORGANIZATIONS-ROADMAP.md) — decisiones y definición de Organization
 - [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md) — Organizations Model ✅
+- [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) — Organization Integration Patterns ✅
+- [ORGANIZATION-CONSUMPTION-GUIDE.md](ORGANIZATION-CONSUMPTION-GUIDE.md) — cómo consumir Organization desde otros BC ✅
 - [CONTEXT-MAP.md](../../codecore-specifications/architecture/core/CONTEXT-MAP.md) §26 — `tenant != organization`
 
 ## Definición: ¿Qué es Organization?
@@ -280,9 +282,9 @@ Resumen:
 
 Pasos rutinarios (ej. 16.4–16.7): implementación directa + cierre documental.
 
-**Próxima auditoría obligatoria:** ninguna hasta cambio de paradigma (16.8+ rutinario).
+**16.8** valida y cierra el bounded context — **sin código** — vía ADR-011.
 
-Pasos 16.0–16.3.1 y **16.7** conservaron auditorías (cerradas).
+Pasos 16.0–16.3.1 y **16.7** conservaron auditorías de implementación (cerradas).
 
 ## Restricciones
 
@@ -318,9 +320,9 @@ Flujo **vía HTTP real**:
 | **16.5** | Office Domain & Persistence | ✅ | Aggregate `Office`, Flyway V16, R2DBC |
 | **16.6** | Office Administration API | ✅ | CRUD `/api/v1/org/offices` + guard archive org |
 | **16.7** | Staff Organizational Assignment | ✅ | `StaffAssignment`, `/staff-assignments`, V17 |
-| **16.8** | Organization Authorization Patterns | ⏳ **Siguiente** | Scoping tenant/org en use cases; doc Patient |
-| **16.9** | Organization Verification | ⏳ | E2E journey completo |
-| **16.10** | Organizations Closeout | ⏳ | Cierre fase + OpenAPI grupo `org-administration` |
+| **16.8** | Organization Validation & Integration Patterns | ✅ | ADR-011 + ORGANIZATION-CONSUMPTION-GUIDE |
+| **16.9** | Organization Verification | ✅ | `OrganizationVerificationIT` (8 checks) |
+| **16.10** | Organization Management Closeout | ✅ | OpenAPI `org-administration` · FASE 16 cerrada |
 
 ### 16.0 Organizations Audit ✅
 
@@ -394,22 +396,26 @@ Flujo **vía HTTP real**:
 - Auditoría: [PASO-16.7-STAFF-ASSIGNMENT-AUDIT.md](../audits/PASO-16.7-STAFF-ASSIGNMENT-AUDIT.md)
 - Cierre: [PASO-16.7-STAFF-ORGANIZATIONAL-ASSIGNMENT.md](../audits/PASO-16.7-STAFF-ORGANIZATIONAL-ASSIGNMENT.md)
 
-### 16.8 Organization Authorization Patterns ⏳ **Siguiente**
+### 16.8 Organization Validation & Integration Patterns ✅
 
-- Filtros de aplicación por tenant/org/office en queries
-- Documentar patrón Patient visibility (implementación FASE 19)
-- Sin organization-scoped roles
+- Validación modelo 16.1–16.7 vs escenarios Patient / Appointment / Billing / Inventory
+- Cierre oficial del bounded context Organization Management (v1)
+- [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) — reglas de integración cross-BC
+- [ORGANIZATION-CONSUMPTION-GUIDE.md](ORGANIZATION-CONSUMPTION-GUIDE.md) — guía por módulo
+- Sin código — documentación prescriptiva para FASE 17+
+- Cierre: [PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md](../audits/PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md)
 
-### 16.9 Organization Verification ⏳
+### 16.9 Organization Verification ✅
 
-- `OrganizationVerificationIT` — journey E2E multi-org, staff, isolation
-- Cierre técnico pre-closeout
+- `OrganizationVerificationIT` — 8 verificaciones E2E (journey, RBAC, tenant, archive guards, OpenAPI)
+- Fix WebTestClient: security headers disabled en `PlatformSecurityAutoConfiguration`
+- Documentación: [PASO-16.9-ORGANIZATION-VERIFICATION.md](../audits/PASO-16.9-ORGANIZATION-VERIFICATION.md)
 
-### 16.10 Organizations Closeout ⏳
+### 16.10 Organization Management Closeout ✅
 
-- OpenAPI grupo `org-administration`
-- Actualización ROADMAP · historial de cierres
-- FASE 16 → ✅ Cerrada
+- `OrgOpenApiConfiguration` — springdoc grupo `org-administration`
+- FASE 16 → **✅ Cerrada**
+- Documentación: [PASO-16.10-ORGANIZATION-MANAGEMENT-CLOSEOUT.md](../audits/PASO-16.10-ORGANIZATION-MANAGEMENT-CLOSEOUT.md)
 
 ---
 
@@ -488,7 +494,10 @@ Referencias: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-1
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
-| 2026-06-22 | 16.3 | Organization authorization contract — V15, 12 permisos, matriz RBAC |
+| 2026-06-22 | **16** | **ORGANIZATION MANAGEMENT COMPLETE** — ADR-010/011, V14–V17, E2E verification |
+| 2026-06-22 | 16.10 | OpenAPI org-administration + closeout |
+| 2026-06-22 | 16.9 | OrganizationVerificationIT — 8 checks E2E |
+| 2026-06-22 | 16.8 | ADR-011 integration patterns + consumption guide |
 | 2026-06-22 | 16.2 | Organization persistence — schema org, V14, R2DBC |
 | 2026-06-22 | 16.1 | Organizations domain foundation — ADR-010, aggregate, ports, tests |
 | 2026-06-22 | 16.0.1 | Organizations roadmap — decisiones arquitectónicas cerradas |

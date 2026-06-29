@@ -34,6 +34,12 @@ public class RequiresPermissionAspect {
     @Around("@annotation(requiresPermission)")
     public Object enforceRequiresPermission(ProceedingJoinPoint joinPoint, RequiresPermission requiresPermission) {
         PermissionCode permissionCode = PermissionCode.of(requiresPermission.value());
+        final Mono<?> endpoint;
+        try {
+            endpoint = (Mono<?>) joinPoint.proceed();
+        } catch (Throwable ex) {
+            return Mono.error(ex);
+        }
         return authorizationContextAccessor.current()
                 .switchIfEmpty(Mono.error(new AuthorizationDeniedException(CONTEXT_UNAVAILABLE)))
                 .flatMap(ctx -> authorizationService.hasPermission(ctx, permissionCode))
@@ -43,11 +49,7 @@ public class RequiresPermissionAspect {
                                 "Required permission denied: " + permissionCode.value()
                         ));
                     }
-                    try {
-                        return (Mono<?>) joinPoint.proceed();
-                    } catch (Throwable ex) {
-                        return Mono.error(ex);
-                    }
+                    return endpoint;
                 });
     }
 }

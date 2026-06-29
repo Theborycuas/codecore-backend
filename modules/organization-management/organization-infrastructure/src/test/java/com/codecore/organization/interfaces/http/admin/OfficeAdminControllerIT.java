@@ -23,7 +23,7 @@ import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.interfaces.http.dto.LoginRequest;
 import com.codecore.organization.interfaces.http.admin.dto.CreateOfficeRequest;
 import com.codecore.organization.interfaces.http.admin.dto.CreateOrganizationRequest;
-import com.codecore.organization.testsupport.AbstractPostgresIntegrationTest;
+import com.codecore.organization.testsupport.AbstractOrgHttpIntegrationTest;
 import com.codecore.organization.testsupport.OrgAdminIntegrationTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
         "security.jwt.issuer=codecore-test",
         "security.jwt.expiration=900s"
 })
-class OfficeAdminControllerIT extends AbstractPostgresIntegrationTest {
+class OfficeAdminControllerIT extends AbstractOrgHttpIntegrationTest {
 
     private static final String PASSWORD = "ValidPass1!";
-
-    @Autowired
-    private WebTestClient webTestClient;
 
     @Autowired
     private CreateTenantUseCase createTenantUseCase;
