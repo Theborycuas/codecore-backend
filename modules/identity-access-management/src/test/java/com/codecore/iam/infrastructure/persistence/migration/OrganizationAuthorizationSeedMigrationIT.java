@@ -22,7 +22,7 @@ class OrganizationAuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 28;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 32;
     private static final int EXPECTED_ORGANIZATION_PERMISSION_COUNT = 12;
 
     private static final String V15_SEED_SQL = """
@@ -72,6 +72,7 @@ class OrganizationAuthorizationSeedMigrationIT {
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .locations("classpath:db/migration")
+                .cleanDisabled(false)
                 .load()
                 .clean();
         Flyway.configure()
@@ -82,7 +83,7 @@ class OrganizationAuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
         assertThat(countOrganizationPermissions()).isEqualTo(EXPECTED_ORGANIZATION_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("15");
+        assertThat(appliedMigrationVersion()).isEqualTo("19");
 
         executeUpdate(V15_SEED_SQL);
         executeUpdate(V15_SEED_SQL);
@@ -118,7 +119,7 @@ class OrganizationAuthorizationSeedMigrationIT {
     private static String appliedMigrationVersion() throws SQLException {
         try (Connection connection = openConnection();
              PreparedStatement ps = connection.prepareStatement(
-                     "SELECT version FROM iam.flyway_schema_history ORDER BY installed_rank DESC LIMIT 1");
+                     "SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             rs.next();
             return rs.getString(1);

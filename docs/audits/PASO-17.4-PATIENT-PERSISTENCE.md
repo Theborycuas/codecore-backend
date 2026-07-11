@@ -122,7 +122,7 @@ HTTP · Controllers · OpenAPI · Use cases · Permissions · `PatientReferenceP
 
 ## Siguiente paso
 
-**PASO 17.5 — Patient Authorization Contract** — `patient:*` + seed IAM.
+**PASO 17.5.1 — Patient Admin API Audit** — autorización cerrada en [PASO-17.5](PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md).
 
 ---
 
@@ -131,5 +131,6 @@ HTTP · Controllers · OpenAPI · Use cases · Permissions · `PatientReferenceP
 - [ADR-012](../architecture/ADR-012-PATIENT-DOMAIN-MODEL.md)  
 - [ADR-013](../architecture/ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)  
 - [PASO-17.3](PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md)  
+- [PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md](PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md)  
 - [ROADMAP.md](../architecture/ROADMAP.md)  
 - Migración: `V18__create_patient_table.sql`  

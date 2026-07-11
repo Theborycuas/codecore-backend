@@ -21,7 +21,7 @@
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
-| **17** | Clinical Foundation | 🟡 En curso | **17.4** Patient Persistence — siguiente **17.5** |
+| **17** | Clinical Foundation | 🟡 En curso | **17.5** Patient Authorization Contract — siguiente **17.5.1** |
 | **18+** | Scheduling · Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -435,7 +435,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 |------|-----------------|--------|-------------------|
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
-| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.4 ✅ Persistence | ADR-012 · schema `clinical` · V18 |
+| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.5 ✅ Auth Contract | ADR-012 · `patient:*` · V19 |
 | **18** | **Scheduling** (`Appointment`) | ⏳ | Patient + StaffAssignment |
 | **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
@@ -514,7 +514,7 @@ Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, per
 | **17.2** | Bounded Context Reference Contracts | ✅ | [PASO-17.2](../audits/PASO-17.2-REFERENCE-CONTRACTS.md) | **ADR-013 Accepted** | Patrón ReferencePort + `OrganizationReferencePort` (+ adapter/tests); `OfficeReferencePort` declarado |
 | **17.3** | Patient Domain Foundation | ✅ | [PASO-17.3](../audits/PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md) | ADR-012 | Aggregate `Patient` + VOs + 28 domain tests; módulos Gradle; ports out |
 | **17.4** | Patient Persistence | ✅ | [PASO-17.4](../audits/PASO-17.4-PATIENT-PERSISTENCE.md) | — | V18 `clinical.patient` + R2DBC adapters + ITs |
-| **17.5** | Patient Authorization Contract | ⏳ | Mínima permisos | — | `patient:*` + seed |
+| **17.5** | Patient Authorization Contract | ✅ | [PASO-17.5](../audits/PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md) · [Audit](../audits/PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `PatientPermissionCatalog` + V19 seeds + RBAC matrix |
 | **17.5.1** | Patient Admin API Audit | ⏳ | **Obligatoria** | — | HTTP/DTO/paginación/archive |
 | **17.6** | Patient Administration API | ⏳ | — | — | CRUD `/api/v1/.../patients` |
 | **17.7** | Patient Verification | ⏳ | — | — | E2E verification IT |
@@ -583,9 +583,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 17.5 — Patient Authorization Contract** — permisos `patient:*` + seed IAM. Sin HTTP aún.
+**PASO 17.5.1 — Patient Admin API Audit** — auditoría HTTP/DTO/paginación/archive antes de implementar controllers.
 
-Referencias: [PASO-17.4-PATIENT-PERSISTENCE.md](../audits/PASO-17.4-PATIENT-PERSISTENCE.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md).
+Referencias: [PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md](../audits/PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md).
 
 ---
 
@@ -593,6 +593,7 @@ Referencias: [PASO-17.4-PATIENT-PERSISTENCE.md](../audits/PASO-17.4-PATIENT-PERS
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **17.5** | Patient Authorization Contract — `patient:*` + V19 + RBAC matrix |
 | 2026-07-11 | **17.4** | Patient Persistence — V18 clinical.patient + R2DBC |
 | 2026-07-11 | **17.3** | Patient Domain Foundation — Aggregate + VOs + 28 tests (ADR-012) |
 | 2026-07-11 | **17.2** | ADR-013 Accepted — Reference Contracts + `OrganizationReferencePort` |

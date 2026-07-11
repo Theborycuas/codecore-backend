@@ -2,14 +2,14 @@ package com.codecore.iam.application.authorization;
 
 import com.codecore.iam.domain.valueobject.PermissionCode;
 import com.codecore.organization.contract.authorization.OrganizationPermissionCatalog;
+import com.codecore.patient.contract.authorization.PatientPermissionCatalog;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
- * Platform permission contract: IAM foundation (FASE 14) + Organization Management (FASE 16.3).
+ * Platform permission contract: IAM foundation + Organization Management + Clinical Foundation (Patient).
  */
 public final class IamPermissionCatalog {
 
@@ -61,6 +61,15 @@ public final class IamPermissionCatalog {
     public static final PermissionCode STAFF_ASSIGNMENT_DELETE =
             PermissionCode.of(OrganizationPermissionCatalog.STAFF_ASSIGNMENT_DELETE);
 
+    public static final PermissionCode PATIENT_CREATE =
+            PermissionCode.of(PatientPermissionCatalog.PATIENT_CREATE);
+    public static final PermissionCode PATIENT_READ =
+            PermissionCode.of(PatientPermissionCatalog.PATIENT_READ);
+    public static final PermissionCode PATIENT_UPDATE =
+            PermissionCode.of(PatientPermissionCatalog.PATIENT_UPDATE);
+    public static final PermissionCode PATIENT_ARCHIVE =
+            PermissionCode.of(PatientPermissionCatalog.PATIENT_ARCHIVE);
+
     public static final Set<PermissionCode> IAM_FOUNDATION = Set.of(
             TENANT_READ,
             TENANT_UPDATE,
@@ -88,7 +97,15 @@ public final class IamPermissionCatalog {
     public static final Set<PermissionCode> ORGANIZATION_PLATFORM_ALL =
             codesOf(OrganizationPermissionCatalog.ALL);
 
-    public static final Set<PermissionCode> ALL = union(IAM_FOUNDATION, ORGANIZATION_PLATFORM_ALL);
+    public static final Set<PermissionCode> PATIENT_ALL = codesOf(PatientPermissionCatalog.ALL);
+    public static final Set<PermissionCode> PATIENT_READ_ONLY = codesOf(PatientPermissionCatalog.PATIENT_READ_ONLY);
+    public static final Set<PermissionCode> PATIENT_PLATFORM_ALL = PATIENT_ALL;
+
+    public static final Set<PermissionCode> ALL = union(
+            IAM_FOUNDATION,
+            ORGANIZATION_PLATFORM_ALL,
+            PATIENT_PLATFORM_ALL
+    );
 
     public static final Set<PermissionCode> MEMBERSHIP_ALL = Set.of(
             MEMBERSHIP_READ,
@@ -132,6 +149,9 @@ public final class IamPermissionCatalog {
             OFFICE_ALL,
             STAFF_ASSIGNMENT_ALL
     );
+
+    /** MANAGER Clinical Foundation grants — full patient registry lifecycle. */
+    public static final Set<PermissionCode> MANAGER_PATIENT = PATIENT_ALL;
 
     private IamPermissionCatalog() {
     }

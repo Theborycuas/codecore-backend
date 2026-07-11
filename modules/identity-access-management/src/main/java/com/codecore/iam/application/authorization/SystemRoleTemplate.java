@@ -9,12 +9,15 @@ import java.util.Set;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ADMIN_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ORGANIZATION;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_PATIENT;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.PATIENT_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.PATIENT_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.STRUCTURE_READ;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.union;
 
 /**
- * Tenant-scoped system role templates provisioned on tenant creation (FASE 14.8 + 16.3 org contract).
+ * Tenant-scoped system role templates (FASE 14.8 + 16.3 org + 17.5 patient).
  */
 public enum SystemRoleTemplate {
 
@@ -26,17 +29,17 @@ public enum SystemRoleTemplate {
     ADMIN(
             RoleCode.of("ADMIN"),
             RoleName.of("Administrator"),
-            union(ADMIN_IAM, ORGANIZATION_PLATFORM_ALL)
+            union(ADMIN_IAM, ORGANIZATION_PLATFORM_ALL, PATIENT_PLATFORM_ALL)
     ),
     MANAGER(
             RoleCode.of("MANAGER"),
             RoleName.of("Manager"),
-            union(MANAGER_IAM, MANAGER_ORGANIZATION)
+            union(MANAGER_IAM, MANAGER_ORGANIZATION, MANAGER_PATIENT)
     ),
     USER(
             RoleCode.of("USER"),
             RoleName.of("User"),
-            union(Set.of(IamPermissionCatalog.USER_READ), STRUCTURE_READ)
+            union(Set.of(IamPermissionCatalog.USER_READ), STRUCTURE_READ, PATIENT_READ_ONLY)
     ),
     READ_ONLY(
             RoleCode.of("READ_ONLY"),
@@ -47,7 +50,8 @@ public enum SystemRoleTemplate {
                             IamPermissionCatalog.MEMBERSHIP_READ,
                             IamPermissionCatalog.ROLE_READ
                     ),
-                    STRUCTURE_READ
+                    STRUCTURE_READ,
+                    PATIENT_READ_ONLY
             )
     );
 

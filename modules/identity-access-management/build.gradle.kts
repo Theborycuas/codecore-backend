@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.shared.sharedKernel)
 
     implementation(projects.modules.organizationManagement.organizationContract)
+    implementation(projects.modules.patientManagement.patientContract)
 
     // Outbound persistence adapters (R2DBC — infrastructure only)
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")

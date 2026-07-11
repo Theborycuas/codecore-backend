@@ -7,7 +7,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates Organization Management RBAC matrix (FASE 16.3) without database.
+ * Validates platform RBAC matrix (FASE 16.3 Organization + FASE 17.5 Patient) without database.
  */
 class SystemRoleTemplateTest {
 
@@ -18,10 +18,11 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void adminShouldReceiveOrganizationPlatformAndIamAdminWithoutTenantGovernance() {
+    void adminShouldReceiveOrgPatientAndIamAdminWithoutTenantGovernance() {
         assertThat(SystemRoleTemplate.ADMIN.permissions())
                 .containsAll(IamPermissionCatalog.ADMIN_IAM)
                 .containsAll(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL)
+                .containsAll(IamPermissionCatalog.PATIENT_PLATFORM_ALL)
                 .doesNotContain(
                         IamPermissionCatalog.TENANT_UPDATE,
                         IamPermissionCatalog.PERMISSION_READ
@@ -29,12 +30,15 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void managerShouldAdministerOfficesAndStaffAssignmentsButNotOrganizations() {
+    void managerShouldAdministerOfficesStaffAndPatientsButNotOrganizations() {
         assertThat(SystemRoleTemplate.MANAGER.permissions())
                 .contains(
                         IamPermissionCatalog.ORGANIZATION_READ,
                         IamPermissionCatalog.OFFICE_CREATE,
-                        IamPermissionCatalog.STAFF_ASSIGNMENT_DELETE
+                        IamPermissionCatalog.STAFF_ASSIGNMENT_DELETE,
+                        IamPermissionCatalog.PATIENT_CREATE,
+                        IamPermissionCatalog.PATIENT_UPDATE,
+                        IamPermissionCatalog.PATIENT_ARCHIVE
                 )
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
@@ -45,31 +49,37 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void userShouldReadStructureOnly() {
+    void userShouldReadStructureAndPatientsOnly() {
         assertThat(SystemRoleTemplate.USER.permissions())
                 .containsExactlyInAnyOrderElementsOf(
                         IamPermissionCatalog.union(
                                 Set.of(IamPermissionCatalog.USER_READ),
-                                IamPermissionCatalog.STRUCTURE_READ
+                                IamPermissionCatalog.STRUCTURE_READ,
+                                IamPermissionCatalog.PATIENT_READ_ONLY
                         )
                 );
     }
 
     @Test
-    void readOnlyShouldNavigateStructureWithoutWrites() {
+    void readOnlyShouldNavigateWithoutWrites() {
         assertThat(SystemRoleTemplate.READ_ONLY.permissions())
                 .containsAll(IamPermissionCatalog.STRUCTURE_READ)
+                .contains(IamPermissionCatalog.PATIENT_READ)
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
                         IamPermissionCatalog.OFFICE_CREATE,
                         IamPermissionCatalog.STAFF_ASSIGNMENT_CREATE,
+                        IamPermissionCatalog.PATIENT_CREATE,
+                        IamPermissionCatalog.PATIENT_UPDATE,
+                        IamPermissionCatalog.PATIENT_ARCHIVE,
                         IamPermissionCatalog.USER_UPDATE
                 );
     }
 
     @Test
-    void organizationPlatformCatalogShouldHaveTwelvePermissions() {
+    void platformCatalogShouldIncludeOrganizationAndPatientContracts() {
         assertThat(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL).hasSize(12);
-        assertThat(IamPermissionCatalog.ALL).hasSize(28);
+        assertThat(IamPermissionCatalog.PATIENT_PLATFORM_ALL).hasSize(4);
+        assertThat(IamPermissionCatalog.ALL).hasSize(32);
     }
 }
