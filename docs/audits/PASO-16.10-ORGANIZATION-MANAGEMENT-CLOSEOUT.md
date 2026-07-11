@@ -49,9 +49,9 @@ Cierre formal de **FASE 16 — Organization Management**.
 
 ## Próximo
 
-**FASE 17 — Invitations** (ADR-006 + membership) — ver [ROADMAP.md](../architecture/ROADMAP.md).
+**FASE 17 — Clinical Foundation** (`Patient`) — ver [ROADMAP.md](../architecture/ROADMAP.md) · [PASO-17.0](PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
-Los módulos de negocio (Patient FASE 19+) consumen Organization vía ADR-011 — **sin reabrir FASE 16**.
+Los módulos de negocio consumen Organization vía ADR-011 — **sin reabrir FASE 16**. Invitations se implementa en **FASE 22 Platform Services**, no antes del núcleo clínico.
 
 ---
 

@@ -155,7 +155,7 @@ Organization domain defines `TenantId` as a **reference value object** (UUID) â€
 - Flyway / R2DBC / HTTP / OpenAPI
 - Office, StaffAssignment aggregates
 - Permission seeds
-- Patient entity (FASE 19)
+- Patient entity (FASE 17 â€” Clinical Foundation)
 - `organizationId` in JWT
 
 ---

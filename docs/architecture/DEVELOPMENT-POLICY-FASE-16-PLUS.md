@@ -307,7 +307,9 @@ Comportarse como **arquitecto de software**, no solo como generador de código.
 
 ## Referencias
 
-- [ROADMAP.md](ROADMAP.md) — FASE 16 en curso
-- [ADR-010 — Organizations Model](ADR-010-ORGANIZATIONS-MODEL.md)
-- [ADR-008 — IAM Administration API](ADR-008-IAM-ADMINISTRATION-API.md)
+- [ROADMAP.md](ROADMAP.md) — FASE 16 cerrada; FASE 17 Clinical Foundation en curso  
+- [PASO-17.0 — Clinical Foundation Planning](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md)  
+- [ADR-010 — Organizations Model](ADR-010-ORGANIZATIONS-MODEL.md)  
+- [ADR-011 — Organization Integration Patterns](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md)  
+- [ADR-008 — IAM Administration API](ADR-008-IAM-ADMINISTRATION-API.md)  
 - [PASO-16.3.1 — Organization Admin API Audit](../audits/PASO-16.3.1-ORGANIZATION-ADMINISTRATION-AUDIT.md)

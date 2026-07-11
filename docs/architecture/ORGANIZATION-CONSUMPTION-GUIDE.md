@@ -71,29 +71,30 @@ Only. Never infrastructure or domain.
 
 ## Module recipes
 
-### Patient (FASE 19+)
+### Patient (FASE 17)
 
-**Owns:** demographic/clinical identity of the patient  
-**References:** `TenantId` (required), `OrganizationId` (typical), optional `OfficeId` (registration site)
+**Owns:** clinical registry identity of the care subject  
+**References:** `TenantId` (required, immutable), optional `PrimaryOrganizationId` (`OrganizationId`)
 
 ```text
 Patient
-  tenantId          ← ADR-003
-  organizationId    ← home clinic / primary org (optional policy)
-  officeId          ← optional registration office
+  tenantId                 ← ADR-003 (never changes)
+  primaryOrganizationId    ← optional — registration / default grouping (NOT ownership)
 ```
 
 **Never:**
 
+- Store `OfficeId` on Patient — office belongs on Appointment / Encounter / Inventory
 - Ask “what office does the logged-in user belong to?” to decide patient visibility
-- Call `OfficeRepository` from Patient module
+- Call `OfficeRepository` / `OrganizationRepository` from Patient module
+- Treat primary organization as ownership of the person/subject
 
 **Visibility pattern:**
 
 1. JWT → `tenantId`
 2. RBAC → `patient:read`
 3. Application filter → assignments of current user **or** explicit org filter on query
-4. Patient row stores its own `organizationId` — filter `WHERE tenant_id = ? AND organization_id IN (?)`
+4. Optional filter `WHERE tenant_id = ? AND primary_organization_id IN (?)`
 
 ---
 
@@ -137,7 +138,7 @@ MedicalRecord
 
 ---
 
-### Billing (FASE 20)
+### Billing (FASE 21)
 
 **Owns:** charges, invoices, payment allocation  
 **References:** `OrganizationId` (billing entity / cost center)

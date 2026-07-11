@@ -1,10 +1,12 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-06-28  
-**Módulo principal:** `identity-access-management` + `organization-management`  
+**Última actualización:** 2026-07-11  
+**Módulos de plataforma:** `identity-access-management` · `organization-management`  
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
 **IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
-**Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)
+**Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
+**Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
+**Planificación FASE 17:** [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md)
 
 ---
 
@@ -18,8 +20,9 @@
 | **13** | Identity Global Migration | ✅ Cerrada | 13.6 |
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
-| **16** | Organizations | ✅ Cerrada | 16.10 closeout — **FASE 17 Invitations** |
-| **17+** | Invitations · Billing · Business | ⏳ Pendiente | — |
+| **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
+| **17** | Clinical Foundation | 🟡 En curso | **17.0.1** audit ✅ — siguiente **17.1 ADR-012** |
+| **18+** | Scheduling · Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -215,7 +218,7 @@ Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINE
 
 ---
 
-# FASE 16 — Organizations 🟡 (16.1 completado)
+# FASE 16 — Organization Management ✅ (cerrada)
 
 ## Contexto
 
@@ -239,10 +242,11 @@ Unidad estructural de **negocio acotada por tenant** — subdivisión operativa 
 
 ```text
 Tenant (IAM)
- └── Organization (1..N)     ← FASE 16
+ └── Organization (1..N)     ← FASE 16 (cerrada)
       └── Office (0..N)
            └── StaffAssignment (membershipId + scope)
-           └── Patient scope   ← FASE 19
+
+Patient (Clinical Foundation)  ← FASE 17 — TenantId + opcional PrimaryOrganizationId
 ```
 
 ## Decisiones arquitectónicas (cerradas en 16.0.1)
@@ -254,7 +258,7 @@ Tenant (IAM)
 | 3 | Org sin tenant | **No** |
 | 4 | Office depende de | **Organization** (+ `tenant_id` denormalizado) |
 | 5 | Staff | **Membership** (IAM) + **StaffAssignment** (org/office) |
-| 6 | Patient | **Tenant** + opcional org/office (datos en FASE 19) |
+| 6 | Patient | **Tenant** + opcional org/office (datos en **FASE 17**) |
 | 7 | Organization aggregate root | **Sí**; Office = aggregate root separado |
 | 8 | Permisos propios | **Sí** — `organization:*`, `office:*`, `staff-assignment:*` |
 | 9 | Ubicación | **Nuevo módulo** `organization-management` + schema `org` |
@@ -419,29 +423,118 @@ Flujo **vía HTTP real**:
 
 ---
 
-## Roadmap futuro (post-FASE 16)
+# Etapa post-Organization — Roadmap por Bounded Context
 
-| Fase | Nombre | Dependencia |
-|------|--------|-------------|
-| **16** | Organizations | IAM Foundation Complete |
-| **17** | Invitations | ADR-006 + membership |
-| **18** | Business Module Framework | FASE 15+ |
-| **19** | Dental / PetNova | Módulos negocio |
-| **20** | Billing & Subscriptions | Membership seats |
-| **21** | Audit & Observability | Transversal |
-| **22** | Production Hardening | Transversal |
+**Cambio de mentalidad (2026-07-11):** CodeCore deja de evolucionar por “features sueltas” y avanza por **bounded contexts completos** (diseño → implementación → verificación → cierre), consumiendo Organization vía ADR-011 **sin reabrir FASE 16**.
+
+Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md)
+
+## Secuencia definitiva
+
+| Fase | Bounded Context | Estado | Dependencia clave |
+|------|-----------------|--------|-------------------|
+| **10–15** | IAM (plataforma) | ✅ | — |
+| **16** | Organization Management | ✅ | IAM Foundation |
+| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.0.1 ✅ | ADR-011 · Organization closed |
+| **18** | **Scheduling** (`Appointment`) | ⏳ | Patient + StaffAssignment |
+| **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
+| **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
+| **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
+| **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
+| **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
+| **24** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
+
+**Product packs** (Dental / PetNova / …): **después** de 17–19 (núcleo clínico estable). Componen BCs; no sustituyen FASE 17–19.
+
+### Por qué no Invitations como FASE 17
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| ¿Valida Organization? | **No** |
+| ¿Consume StaffAssignment? | **No** |
+| ¿Aporta dominio clínico? | **No** |
+| ¿Bloquea Patient si se aplaza? | **No** |
+| ¿Qué es? | **Platform Service** (IAM-adjacent) → **FASE 22** |
+
+Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
+
+### Qué pasó con fases anteriores del roadmap
+
+| Antes | Ahora | Rationale |
+|-------|-------|-----------|
+| 17 Invitations | **22 Platform Services** | No prueba ADR-011; onboarding de acceso ≠ clínica |
+| 18 Business Module Framework | **Disuelto** | [DEVELOPMENT-POLICY-FASE-16-PLUS](DEVELOPMENT-POLICY-FASE-16-PLUS.md) ya es el framework |
+| 19 Dental / PetNova | Product packs post 17–19 | Verticales sobre BCs clínicos |
+| Patient “en FASE 19” | **FASE 17** | Primer consumer de Organization (ADR-011) |
 
 ### Deuda técnica programada
 
 | Ítem | Origen | Cuándo |
 |------|--------|--------|
-| Password recovery | ADR-009 P1 | Pre-piloto / FASE 21+ |
-| Audit trail | ADR-009 P2 | FASE 21 |
-| JWT stale mitigation | ADR-009 P2 | FASE 22 |
-| OpenAPI auth group | ADR-009 P2 | FASE 22 |
-| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM |
+| Password recovery | ADR-009 P1 | **FASE 22** Platform Services |
+| Invitations | Roadmap histórico | **FASE 22** Platform Services |
+| Audit trail | ADR-009 P2 | **FASE 23** |
+| JWT stale mitigation | ADR-009 P2 | **FASE 24** |
+| OpenAPI auth group | ADR-009 P2 | **FASE 24** |
+| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM / FASE 22+ |
 | Consolidación datos 13.3 | Solo si prod duplicados | FUTURE-PROD |
-| JWT `tenantId` desde membership | Mejora opcional | FASE 16+ |
+| JWT `tenantId` desde membership | Mejora opcional | FASE 22+ |
+
+---
+
+# FASE 17 — Clinical Foundation 🟡
+
+## Contexto
+
+Organization Management está **cerrado**. El siguiente valor arquitectónico es el **primer bounded context clínico** que consume Organization por IDs + Query Ports (ADR-011), sin reabrir Org.
+
+## Objetivo
+
+Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, persistencia, contrato de autorización, API admin, verificación E2E y closeout — patrón idéntico a FASE 15/16.
+
+## Primer Aggregate Root: `Patient`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| ¿Por qué Patient? | Sujeto del cuidado; Appointment / MedicalRecord / billing clínico referencian `PatientId` |
+| ¿Por qué no Appointment? | Scheduling depende de Patient |
+| ¿Por qué no MedicalRecord? | Documentación pertenece a Patient |
+| Consume | IAM (`TenantId` JWT, inmutable) · Organization (`PrimaryOrganizationId` opcional vía contract ports) |
+| No conoce | `OfficeId`, StaffAssignment, Membership, Identity como “ser paciente”, Scheduling, Billing |
+| IDs | `PatientId`, `TenantId`, opcional `PrimaryOrganizationId` |
+| Invariantes | Tenant inmutable; primary org ACTIVE en altas; única identidad clínica registral del sujeto en el tenant; archive soft; sin consistencia TX cross-BC |
+
+## Pasos FASE 17
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **17.0** | Clinical Foundation Planning | ✅ | Este paso | — | ROADMAP + [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) |
+| **17.0.1** | Patient Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-012 | [PASO-17.0.1](../audits/PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md) · borrador ADR-012 |
+| **17.1** | Patient Model ADR | ⏳ | — | **ADR-012** | Aceptar [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md) (hoy Proposed) |
+| **17.2** | Organization Reference Ports | ⏳ | No (previsto ADR-011) | — | `OrganizationReferencePort` (+ tests); Office port no requerido por Patient v1 |
+| **17.3** | Patient Domain Foundation | ⏳ | — | — | Aggregate + VOs + tests |
+| **17.4** | Patient Persistence | ⏳ | — | — | Flyway + R2DBC + ITs |
+| **17.5** | Patient Authorization Contract | ⏳ | Mínima permisos | — | `patient:*` + seed |
+| **17.5.1** | Patient Admin API Audit | ⏳ | **Obligatoria** | — | HTTP/DTO/paginación/archive |
+| **17.6** | Patient Administration API | ⏳ | — | — | CRUD `/api/v1/.../patients` |
+| **17.7** | Patient Verification | ⏳ | — | — | E2E verification IT |
+| **17.8** | Clinical Foundation Closeout | ⏳ | — | — | OpenAPI · FASE 17 ✅ |
+
+## Restricciones FASE 17
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010/011.
+
+No introducir: CQRS · Event Sourcing · Microservicios · org-scoped RBAC · Invitations · Appointment.
+
+No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
+
+## Resultado esperado al cerrar FASE 17
+
+1. Paciente creado bajo tenant (+ org/office opcionales validados por ports)  
+2. Listado/archivo con RBAC `patient:*`  
+3. Cross-tenant → 404  
+4. Verification E2E verde  
+5. Siguiente fase = **18 Scheduling**  
 
 ---
 
@@ -459,6 +552,8 @@ Flujo **vía HTTP real**:
 | ADR-008 | IAM Administration API | Accepted (15.0) |
 | ADR-009 | Production Readiness Backlog | Accepted (15.9.2) |
 | ADR-010 | Organizations Model | Accepted (16.1) |
+| ADR-011 | Organization Integration Patterns | Accepted (16.8) |
+| ADR-012 | Patient Domain Model | **Proposed** (17.0.1) — aceptar en **17.1** |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -472,21 +567,24 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/007. Seeds de permisos en IAM son cambio acotado, no reescritura de RBAC.
 
+FASE 17 introduce **ADR-012** (Patient) y **consume** Organization vía ADR-011 — sin modificar ADR-010.
+
 ---
 
 ## Proceso autónomo Cursor
 
 1. Revisar este ROADMAP y ADRs vigentes  
-2. Revisar último `PASO-*.md` de la fase activa  
-3. Ejecutar el siguiente paso pendiente  
-4. Tests acotados al paso  
-5. Actualizar ROADMAP + audit de cierre  
+2. Revisar [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
+3. Revisar último `PASO-*.md` de la fase activa  
+4. Ejecutar el siguiente paso pendiente  
+5. Tests acotados al paso (cuando haya código)  
+6. Actualizar ROADMAP + audit de cierre  
 
 ### Siguiente acción
 
-**PASO 16.4 — Organization Administration API** — CRUD HTTP `/api/v1/org/organizations` con `@RequiresPermission`.
+**PASO 17.1 — Patient Model ADR** — aceptar [ADR-012-PATIENT-DOMAIN-MODEL.md](ADR-012-PATIENT-DOMAIN-MODEL.md) (hoy **Proposed**). Sin código.
 
-Referencias: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md).
+Referencias: [PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md](../audits/PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md) · ADR-011 · ORGANIZATION-CONSUMPTION-GUIDE.
 
 ---
 
@@ -494,6 +592,8 @@ Referencias: [PASO-16.3-ORGANIZATION-AUTHORIZATION-CONTRACT.md](../audits/PASO-1
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **17.0.1** | Patient Aggregate Audit — identidad clínica registral; ADR-012 Proposed |
+| 2026-07-11 | **17.0** | ROADMAP reorganizado por BC — Clinical Foundation planificada; Invitations → FASE 22 |
 | 2026-06-22 | **16** | **ORGANIZATION MANAGEMENT COMPLETE** — ADR-010/011, V14–V17, E2E verification |
 | 2026-06-22 | 16.10 | OpenAPI org-administration + closeout |
 | 2026-06-22 | 16.9 | OrganizationVerificationIT — 8 checks E2E |

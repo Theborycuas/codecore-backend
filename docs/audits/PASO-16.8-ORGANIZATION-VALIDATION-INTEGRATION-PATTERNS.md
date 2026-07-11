@@ -57,7 +57,7 @@ Cerrar **Organization Management** como bounded context **estable y reutilizable
 | Consultorios por clínica | ✅ | Office under Organization |
 | Médico solo en un consultorio | ✅ | StaffAssignment + officeId |
 | Médico en toda la clínica | ✅ | StaffAssignment, officeId null |
-| Paciente registrado en clínica X | ✅ | Patient aggregate stores `OrganizationId` (FASE 19) |
+| Paciente registrado en clínica X | ✅ | Patient aggregate stores `OrganizationId` (**FASE 17**) |
 | Cita con proveedor concreto | ✅ | Appointment stores `StaffAssignmentId` |
 | Historia clínica bajo custodia de org | ✅ | MedicalRecord stores `OrganizationId` |
 | Factura por clínica | ✅ | Billing stores `OrganizationId` |

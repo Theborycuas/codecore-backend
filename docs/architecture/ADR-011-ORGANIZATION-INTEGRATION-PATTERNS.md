@@ -72,8 +72,8 @@ organization-infrastructure    ← R2DBC, HTTP — NOT visible to consumers
 
 | Reference | Meaning | Use when |
 |-----------|---------|----------|
-| `OrganizationId` | Business entity scope (clinic, department, branch) | Patient home org, billing entity, report grouping |
-| `OfficeId` | Location scope under an organization | Inventory warehouse, room, physical site |
+| `OrganizationId` | Business entity scope (clinic, department, branch) | Patient **primary** org (optional), billing entity, report grouping |
+| `OfficeId` | Location scope under an organization | Appointment/Encounter site, inventory warehouse, room — **not** on Patient |
 | `StaffAssignmentId` | **Who operates where** (membership + scope) | Appointments, clinical actions, audit of performer |
 
 **Rule:** `StaffAssignmentId` answers *“where does this staff member operate?”*  
@@ -131,7 +131,7 @@ implementation(project(":modules:organization-management:organization-domain"))
 
 | Consumer BC | Primary references | Resolves scope via | Must NOT use |
 |-------------|-------------------|-------------------|--------------|
-| **Patient** | `TenantId` + optional `OrganizationId`, `OfficeId` | Patient **belongs** to org/office (data scope) — not staff scope | `OfficeRepository`; IAM `Membership` for patient location |
+| **Patient** | `TenantId` + optional `PrimaryOrganizationId` | Registry identity; org = default grouping — **not** ownership; **no** `OfficeId` | `OfficeRepository`; IAM `Membership` for patient “location”; parallel registry aggregates |
 | **Appointment** | `StaffAssignmentId`, `OrganizationId`, optional `OfficeId` | Provider = assignment, not membership | `MembershipRepository`; direct office lookup for “who treats” |
 | **Medical Record** | `OrganizationId` and/or `StaffAssignmentId` | Org = custodian; assignment = author context | `Office` aggregate for clinical content ownership |
 | **Billing** | `OrganizationId` | Invoice / subscription line entity | `Identity`, `Membership` |
@@ -166,7 +166,7 @@ implementation(project(":modules:organization-management:organization-domain"))
 | Admin CRUD without org-scoped RBAC | Global permissions on membership | ✅ |
 | Patient optional org scope | Not implemented — pattern defined in ADR-011 | ✅ Ready |
 | Appointment provider reference | `StaffAssignmentId` pattern defined | ✅ Ready |
-| Billing per organization | `OrganizationId` on billing aggregate (FASE 20) | ✅ Ready |
+| Billing per organization | `OrganizationId` on billing aggregate (**FASE 21**) | ✅ Ready |
 | Inventory per office | `OfficeId` on stock location (future) | ✅ Ready |
 
 **Conclusion:** Organization Management v1 is **architecturally sufficient** for downstream modules. Remaining work is **consumption** (contract ports + consumer aggregates), not Organization redesign.

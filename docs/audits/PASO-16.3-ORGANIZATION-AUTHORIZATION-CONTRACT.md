@@ -90,18 +90,21 @@ Leyenda: ✓ = grant · — = sin grant
 
 ---
 
-## Extensibilidad futura (FASE 17–20)
+## Extensibilidad futura (post-FASE 16)
 
 | Convención | Regla |
 |------------|-------|
 | Naming | `{resource}:{action}` lowercase; resource compuesto con `-` (ej. `staff-assignment`) |
 | Seeds | Nuevo Flyway por bounded context; `INSERT … WHERE NOT EXISTS` |
 | Roles | Nuevos grants vía `SystemRoleTemplate` + backfill SQL |
-| Clinical | Prefijos `patient:`, `appointment:` — **módulo Dental FASE 19** |
-| Billing | Prefijos `billing:`, `subscription:` — **FASE 20** |
-| Invitations | Prefijo `invitation:` — **FASE 17** |
+| Clinical | Prefijos `patient:` — **FASE 17**; `appointment:` — **FASE 18** |
+| Clinical Records | Prefijo `medical-record:` (u homólogo) — **FASE 19** |
+| Billing | Prefijos `billing:`, `subscription:` — **FASE 21** |
+| Invitations | Prefijo `invitation:` — **FASE 22 Platform Services** |
 
 El contrato 16.3 **no requiere rehacer** permisos org cuando lleguen Office (16.5) o StaffAssignment (16.7) — ya están sembrados.
+
+Ver secuencia vigente: [ROADMAP.md](../architecture/ROADMAP.md) · [PASO-17.0](PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 ---
 
