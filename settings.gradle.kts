@@ -52,6 +52,13 @@ include(
 )
 
 include(
+    ":modules:patient-management:patient-domain",
+    ":modules:patient-management:patient-application",
+    ":modules:patient-management:patient-infrastructure",
+    ":modules:patient-management:patient-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

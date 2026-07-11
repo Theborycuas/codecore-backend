@@ -176,7 +176,7 @@ Gradle: `organization-contract` → `api(reactor-core)`; `organization-infrastru
 
 ## Siguiente paso
 
-**PASO 17.3 — Patient Domain Foundation** — Aggregate + VOs + tests bajo ADR-012 frozen; use case de escritura usará `OrganizationReferencePort` cuando se implemente aplicación.
+**PASO 17.4 — Patient Persistence** — schema `clinical`, Flyway, R2DBC. Dominio cerrado en [PASO-17.3](PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md).
 
 ---
 
@@ -187,4 +187,5 @@ Gradle: `organization-contract` → `api(reactor-core)`; `organization-infrastru
 - [ADR-012](../architecture/ADR-012-PATIENT-DOMAIN-MODEL.md)  
 - [ORGANIZATION-CONSUMPTION-GUIDE.md](../architecture/ORGANIZATION-CONSUMPTION-GUIDE.md)  
 - [DEVELOPMENT-POLICY-FASE-16-PLUS.md](../architecture/DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
+- [PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md](PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md)  
 - [ROADMAP.md](../architecture/ROADMAP.md)  

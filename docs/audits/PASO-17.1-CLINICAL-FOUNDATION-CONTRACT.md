@@ -104,7 +104,7 @@ Validación de `PrimaryOrganizationId`: `OrganizationReferencePort` ([PASO 17.2]
 
 ## Siguiente paso
 
-**PASO 17.3 — Patient Domain Foundation** — Aggregate + VOs + tests bajo contrato congelado ADR-012; escritura validará `PrimaryOrganizationId` vía `OrganizationReferencePort` (ADR-013).
+**PASO 17.4 — Patient Persistence** — bajo dominio cerrado en [PASO-17.3](PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md).
 
 ---
 
@@ -114,6 +114,7 @@ Validación de `PrimaryOrganizationId`: `OrganizationReferencePort` ([PASO 17.2]
 - [PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md](PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md)  
 - [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md)  
 - [PASO-17.2-REFERENCE-CONTRACTS.md](PASO-17.2-REFERENCE-CONTRACTS.md)  
+- [PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md](PASO-17.3-PATIENT-DOMAIN-FOUNDATION.md)  
 - [ADR-011](../architecture/ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md)  
 - [ADR-013](../architecture/ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)  
 - [ORGANIZATION-CONSUMPTION-GUIDE.md](../architecture/ORGANIZATION-CONSUMPTION-GUIDE.md)  
