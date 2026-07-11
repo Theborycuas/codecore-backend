@@ -175,10 +175,11 @@ implementation(project(":modules:organization-management:organization-domain"))
 
 ## Contract evolution (post-16.8)
 
-When the first consumer module needs runtime validation, add to `organization-contract`:
+**Normative pattern:** [ADR-013 — Bounded Context Reference Contracts](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md) (Accepted PASO 17.2).
+
+Implemented in `organization-contract` / `organization-infrastructure`:
 
 ```java
-// Illustrative — implement in organization-infrastructure
 public interface OrganizationReferencePort {
     Mono<Boolean> existsActiveByIdAndTenant(OrganizationId id, TenantId tenantId);
 }
@@ -187,10 +188,7 @@ public interface OfficeReferencePort {
     Mono<Boolean> existsActiveInOrganization(OfficeId id, OrganizationId orgId, TenantId tenantId);
 }
 
-public interface StaffAssignmentReferencePort {
-    Mono<Optional<StaffAssignmentScopeView>> findByIdAndTenant(StaffAssignmentId id, TenantId tenantId);
-    Flux<StaffAssignmentScopeView> findActiveByMembership(MembershipId membershipId, TenantId tenantId);
-}
+// StaffAssignmentReferencePort — add when Appointment (or first consumer) needs it
 ```
 
 Shared ID value objects may be duplicated as lightweight UUID wrappers in contract (anti-corruption) or published as a shared kernel package — **never** import full aggregates.

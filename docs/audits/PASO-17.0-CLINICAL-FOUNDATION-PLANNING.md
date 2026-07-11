@@ -88,7 +88,7 @@ El primer consumidor que **prueba** Organization como BC estable es **Patient** 
 | Relación | BC | Cómo |
 |----------|-----|------|
 | **Consume** | IAM | Solo `TenantId` desde JWT (ADR-003). No carga Identity/Membership para “ser paciente”. |
-| **Consume** | Organization Management | `OrganizationId` / `OfficeId` opcionales vía **Query Ports** (`organization-contract`) — ADR-011 |
+| **Consume** | Organization Management | `PrimaryOrganizationId` opcional vía **Query Ports** (`organization-contract`) — ADR-011 / ADR-012 |
 | **No conoce** | Scheduling, Clinical Records, Billing, Inventory | Ellos referencian `PatientId` más adelante |
 | **No conoce** | StaffAssignment | Visibilidad operativa del staff ≠ pertenencia del paciente |
 

@@ -194,6 +194,7 @@ Responder explícitamente **en la auditoría** (§2–§3) antes de implementar:
 - **No** acoplar módulos innecesariamente.
 - Referencias **solo por ID** (§4).
 - Evitar dependencias directas entre bounded contexts en Gradle (contract module para permisos/contratos compartidos).
+- Validación runtime de referencias cross-BC: **ReferencePorts** en `{bc}-contract` ([ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)) — read-only, información mínima, sin aggregates ni mutaciones.
 - **No** introducir FK físicas entre módulos salvo decisión arquitectónica explícita (ADR).
 
 Independencia entre, entre otros:

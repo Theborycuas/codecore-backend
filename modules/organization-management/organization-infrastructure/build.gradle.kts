@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(projects.modules.organizationManagement.organizationDomain)
     implementation(projects.modules.organizationManagement.organizationApplication)
+    implementation(projects.modules.organizationManagement.organizationContract)
     implementation(projects.modules.identityAccessManagement)
 
     implementation(libs.reactor.core)

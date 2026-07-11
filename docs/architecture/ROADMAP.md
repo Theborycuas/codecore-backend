@@ -21,7 +21,7 @@
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
-| **17** | Clinical Foundation | 🟡 En curso | **17.0.1** audit ✅ — siguiente **17.1 ADR-012** |
+| **17** | Clinical Foundation | 🟡 En curso | **17.2** Reference Contracts (ADR-013) — siguiente **17.3** |
 | **18+** | Scheduling · Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -435,7 +435,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 |------|-----------------|--------|-------------------|
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
-| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.0.1 ✅ | ADR-011 · Organization closed |
+| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.2 ✅ Reference Contracts | ADR-012 · ADR-013 · Organization closed |
 | **18** | **Scheduling** (`Appointment`) | ⏳ | Patient + StaffAssignment |
 | **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
@@ -509,9 +509,9 @@ Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, per
 | Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
 |------|--------|--------|-----------|-----|----------------------|
 | **17.0** | Clinical Foundation Planning | ✅ | Este paso | — | ROADMAP + [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) |
-| **17.0.1** | Patient Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-012 | [PASO-17.0.1](../audits/PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md) · borrador ADR-012 |
-| **17.1** | Patient Model ADR | ⏳ | — | **ADR-012** | Aceptar [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md) (hoy Proposed) |
-| **17.2** | Organization Reference Ports | ⏳ | No (previsto ADR-011) | — | `OrganizationReferencePort` (+ tests); Office port no requerido por Patient v1 |
+| **17.0.1** | Patient Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-012 | [PASO-17.0.1](../audits/PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md) |
+| **17.1** | Clinical Foundation Contract | ✅ | — | **ADR-012 Accepted** | [PASO-17.1](../audits/PASO-17.1-CLINICAL-FOUNDATION-CONTRACT.md) · modelo **congelado** |
+| **17.2** | Bounded Context Reference Contracts | ✅ | [PASO-17.2](../audits/PASO-17.2-REFERENCE-CONTRACTS.md) | **ADR-013 Accepted** | Patrón ReferencePort + `OrganizationReferencePort` (+ adapter/tests); `OfficeReferencePort` declarado |
 | **17.3** | Patient Domain Foundation | ⏳ | — | — | Aggregate + VOs + tests |
 | **17.4** | Patient Persistence | ⏳ | — | — | Flyway + R2DBC + ITs |
 | **17.5** | Patient Authorization Contract | ⏳ | Mínima permisos | — | `patient:*` + seed |
@@ -522,7 +522,7 @@ Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, per
 
 ## Restricciones FASE 17
 
-Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010/011.
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010/011/012/013.
 
 No introducir: CQRS · Event Sourcing · Microservicios · org-scoped RBAC · Invitations · Appointment.
 
@@ -553,7 +553,8 @@ No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
 | ADR-009 | Production Readiness Backlog | Accepted (15.9.2) |
 | ADR-010 | Organizations Model | Accepted (16.1) |
 | ADR-011 | Organization Integration Patterns | Accepted (16.8) |
-| ADR-012 | Patient Domain Model | **Proposed** (17.0.1) — aceptar en **17.1** |
+| ADR-012 | Patient Domain Model | **Accepted** (17.1) — **frozen**; cambios → nuevo ADR |
+| ADR-013 | Bounded Context Reference Contracts | **Accepted** (17.2) — patrón oficial cross-BC |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -567,7 +568,7 @@ Cambios rutinarios en FASE 15 (CRUD admin sobre modelo existente) **no** requier
 
 FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/007. Seeds de permisos en IAM son cambio acotado, no reescritura de RBAC.
 
-FASE 17 introduce **ADR-012** (Patient) y **consume** Organization vía ADR-011 — sin modificar ADR-010.
+FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference Contracts para todo CodeCore) y **consume** Organization vía ADR-011/013 — sin modificar ADR-010.
 
 ---
 
@@ -582,9 +583,9 @@ FASE 17 introduce **ADR-012** (Patient) y **consume** Organization vía ADR-011 
 
 ### Siguiente acción
 
-**PASO 17.1 — Patient Model ADR** — aceptar [ADR-012-PATIENT-DOMAIN-MODEL.md](ADR-012-PATIENT-DOMAIN-MODEL.md) (hoy **Proposed**). Sin código.
+**PASO 17.3 — Patient Domain Foundation** — Aggregate `Patient` + VOs + tests bajo ADR-012 frozen. Validación de `PrimaryOrganizationId` vía `OrganizationReferencePort` (ADR-013) cuando exista la capa de aplicación.
 
-Referencias: [PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md](../audits/PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md) · ADR-011 · ORGANIZATION-CONSUMPTION-GUIDE.
+Referencias: [PASO-17.2-REFERENCE-CONTRACTS.md](../audits/PASO-17.2-REFERENCE-CONTRACTS.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md).
 
 ---
 
@@ -592,6 +593,8 @@ Referencias: [PASO-17.0.1-PATIENT-AGGREGATE-AUDIT.md](../audits/PASO-17.0.1-PATI
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **17.2** | ADR-013 Accepted — Reference Contracts + `OrganizationReferencePort` |
+| 2026-07-11 | **17.1** | ADR-012 Accepted — Patient contract frozen · Clinical Foundation |
 | 2026-07-11 | **17.0.1** | Patient Aggregate Audit — identidad clínica registral; ADR-012 Proposed |
 | 2026-07-11 | **17.0** | ROADMAP reorganizado por BC — Clinical Foundation planificada; Invitations → FASE 22 |
 | 2026-06-22 | **16** | **ORGANIZATION MANAGEMENT COMPLETE** — ADR-010/011, V14–V17, E2E verification |

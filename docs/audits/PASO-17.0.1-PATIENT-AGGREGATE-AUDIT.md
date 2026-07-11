@@ -100,6 +100,12 @@ Borrador formal: [ADR-012-PATIENT-DOMAIN-MODEL.md](../architecture/ADR-012-PATIE
 - Es el **ID estable** (`PatientId`) que otros BCs referencian.
 - Sus invariantes **no** incluyen consistencia de citas ni notas clínicas (política §5).
 
+### Principio de permanencia (ADR-012 §3)
+
+> **Patient is intentionally small.**
+
+Decisión **permanente** (no limitación de FASE 17): Patient solo identidad clínica registral + invariantes propias. Encounter, Appointment, Medical Record, notas, odontograma, Treatment Plan, documentos, billing, inventario y contexto operativo viven en **otros** aggregates. Embebidos en Patient = violación arquitectónica (**God Aggregate**). Detalle normativo: [ADR-012 §3](../architecture/ADR-012-PATIENT-DOMAIN-MODEL.md).
+
 ### ¿Por qué no Clinical Record / Medical Record?
 
 Documentan **eventos y contenido clínico**. Nacen después del Patient. Muchos records por patient. Ownership documental ≠ registro maestro.

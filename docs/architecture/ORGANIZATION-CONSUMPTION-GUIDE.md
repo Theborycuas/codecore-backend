@@ -1,8 +1,8 @@
 # Organization Consumption Guide
 
 **Audience:** Developers building modules after FASE 16 (Patient, Appointment, Billing, …)  
-**Authority:** [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) · [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md)  
-**Status:** Vigente desde PASO 16.8
+**Authority:** [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) · [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)  
+**Status:** Vigente desde PASO 16.8 · Reference Ports: PASO 17.2
 
 ---
 
@@ -37,7 +37,8 @@ Need to scope an ACTION to a STAFF MEMBER (appointment, signature)?
   → Store StaffAssignmentId — never MembershipId alone
 
 Need to validate org/office exists and is ACTIVE?
-  → OrganizationReferencePort / OfficeReferencePort (contract)
+  → OrganizationReferencePort / OfficeReferencePort (`organization-contract`, ADR-013)
+  → Never repositories, never full aggregates, never mutate via ports
 
 Need to list “where can I work today?” for logged-in user?
   → StaffAssignmentReferencePort.findActiveByMembership(membershipId, tenantId)
@@ -62,7 +63,7 @@ Only. Never infrastructure or domain.
 
 | ✅ Do | ❌ Don't |
 |-------|----------|
-| `OrganizationId orgId` field on Patient | `@Autowired R2dbcOrganizationRepository` |
+| `PrimaryOrganizationId` (`OrganizationId`) on Patient | `@Autowired R2dbcOrganizationRepository` |
 | Validate via Query Port in use case | `SELECT * FROM org.organization` in Patient module |
 | Filter by JWT `tenantId` always | Trust client-sent `tenantId` without JWT check |
 | Use `StaffAssignmentId` for provider on Appointment | Store `membershipId` as provider key |
@@ -218,3 +219,5 @@ When testing Patient or Appointment modules:
 - [ADR-010 — Organizations Model](ADR-010-ORGANIZATIONS-MODEL.md)
 - [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md) — §4 IDs, §5 consistency
 - [PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md](../audits/PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md)
+- [ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)
+- [PASO-17.2-REFERENCE-CONTRACTS.md](../audits/PASO-17.2-REFERENCE-CONTRACTS.md)
