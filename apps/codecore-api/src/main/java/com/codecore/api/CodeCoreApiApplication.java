@@ -3,7 +3,12 @@ package com.codecore.api;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"com.codecore.api", "com.codecore.iam", "com.codecore.organization"})
+@SpringBootApplication(scanBasePackages = {
+        "com.codecore.api",
+        "com.codecore.iam",
+        "com.codecore.organization",
+        "com.codecore.patient"
+})
 public class CodeCoreApiApplication {
 
     public static void main(String[] args) {

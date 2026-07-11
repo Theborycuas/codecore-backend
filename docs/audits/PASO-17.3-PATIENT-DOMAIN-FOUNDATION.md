@@ -103,7 +103,7 @@ Persistencia · Flyway · R2DBC · HTTP · controllers · use cases de escritura
 
 ## Siguiente paso
 
-**PASO 17.4 — Patient Persistence** — schema `clinical`, Flyway, R2DBC adapters de los puertos definidos aquí.
+**PASO 17.5 — Patient Authorization Contract** — persistencia cerrada en [PASO-17.4](PASO-17.4-PATIENT-PERSISTENCE.md).
 
 ---
 
@@ -111,6 +111,6 @@ Persistencia · Flyway · R2DBC · HTTP · controllers · use cases de escritura
 
 - [ADR-012](../architecture/ADR-012-PATIENT-DOMAIN-MODEL.md)  
 - [ADR-013](../architecture/ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)  
-- [PASO-17.1](PASO-17.1-CLINICAL-FOUNDATION-CONTRACT.md) · [PASO-17.2](PASO-17.2-REFERENCE-CONTRACTS.md)  
+- [PASO-17.1](PASO-17.1-CLINICAL-FOUNDATION-CONTRACT.md) · [PASO-17.2](PASO-17.2-REFERENCE-CONTRACTS.md) · [PASO-17.4](PASO-17.4-PATIENT-PERSISTENCE.md)  
 - [ROADMAP.md](../architecture/ROADMAP.md)  
 - [DEVELOPMENT-POLICY-FASE-16-PLUS.md](../architecture/DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
