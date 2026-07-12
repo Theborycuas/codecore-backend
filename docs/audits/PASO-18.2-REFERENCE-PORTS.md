@@ -112,7 +112,7 @@ Appointment domain/HTTP · mutaciones en ports · DTOs admin · Availability eng
 
 ## Siguiente paso
 
-**PASO 18.3 — Appointment Domain Foundation** — aggregate según ADR-014 (sin persistencia HTTP aún).
+**PASO 18.3 — Appointment Domain Foundation** — ✅ [PASO-18.3](PASO-18.3-APPOINTMENT-DOMAIN-FOUNDATION.md). Siguiente: **18.4 Persistence**.
 
 ---
 

@@ -59,6 +59,13 @@ include(
 )
 
 include(
+    ":modules:appointment-management:appointment-domain",
+    ":modules:appointment-management:appointment-application",
+    ":modules:appointment-management:appointment-infrastructure",
+    ":modules:appointment-management:appointment-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

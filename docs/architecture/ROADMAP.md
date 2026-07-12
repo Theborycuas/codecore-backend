@@ -25,7 +25,7 @@
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
-| **18** | Scheduling | 🟡 En curso | **18.2** Reference Ports ✅ — siguiente **18.3** Domain |
+| **18** | Scheduling | 🟡 En curso | **18.3** Domain Foundation ✅ — siguiente **18.4** Persistence |
 | **19+** | Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -577,7 +577,7 @@ Planificación: [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.m
 | **18.0.1** | Appointment Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-014 | [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md) |
 | **18.1** | Appointment Model ADR | ✅ | [PASO-18.1](../audits/PASO-18.1-APPOINTMENT-MODEL-CONTRACT.md) | **ADR-014 Accepted** | Modelo **congelado** |
 | **18.2** | Scheduling Reference Ports | ✅ | [PASO-18.2](../audits/PASO-18.2-REFERENCE-PORTS.md) | ADR-013 | Office + StaffAssignment ports + adapters |
-| **18.3** | Appointment Domain Foundation | ⏳ | — | ADR-014 | Aggregate + tests |
+| **18.3** | Appointment Domain Foundation | ✅ | [PASO-18.3](../audits/PASO-18.3-APPOINTMENT-DOMAIN-FOUNDATION.md) | ADR-014 | Aggregate `Appointment` + VOs + 20 domain tests; módulos Gradle; ports out |
 | **18.4** | Appointment Persistence | ⏳ | — | — | Schema `scheduling` |
 | **18.5** | Appointment Authorization Contract | ⏳ | — | — | `appointment:*` seeds |
 | **18.5.1** | Appointment Admin API Audit | ⏳ | **Obligatoria** | — | Contrato HTTP |
@@ -641,9 +641,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 18.3 — Appointment Domain Foundation** — implementar aggregate `Appointment` según [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) (sin persistencia/HTTP).
+**PASO 18.4 — Appointment Persistence** — schema `scheduling`, Flyway, R2DBC bajo dominio cerrado en [PASO-18.3](../audits/PASO-18.3-APPOINTMENT-DOMAIN-FOUNDATION.md).
 
-Referencias: [PASO-18.2](../audits/PASO-18.2-REFERENCE-PORTS.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
+Referencias: [PASO-18.3](../audits/PASO-18.3-APPOINTMENT-DOMAIN-FOUNDATION.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
 
 ---
 
@@ -651,6 +651,7 @@ Referencias: [PASO-18.2](../audits/PASO-18.2-REFERENCE-PORTS.md) · [ADR-014](AD
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **18.3** | Appointment Domain Foundation — aggregate + 20 tests (ADR-014) |
 | 2026-07-11 | **18.2** | Org ReferencePorts complete — Office + StaffAssignment adapters (ADR-013) |
 | 2026-07-11 | **18.1** | ADR-014 Accepted — Appointment model frozen (*intentionally small*) |
 | 2026-07-11 | **18.0.1** | Appointment Aggregate Audit — compromiso planificado; prep. ADR-014 |
