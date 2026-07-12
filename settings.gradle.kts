@@ -66,6 +66,13 @@ include(
 )
 
 include(
+    ":modules:encounter-management:encounter-domain",
+    ":modules:encounter-management:encounter-application",
+    ":modules:encounter-management:encounter-infrastructure",
+    ":modules:encounter-management:encounter-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

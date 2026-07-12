@@ -29,7 +29,7 @@
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
-| **19** | Clinical Records | 🟡 En curso | **19.1** ADR-015 ✅ — siguiente **19.2** Reference Readiness |
+| **19** | Clinical Records | 🟡 En curso | **19.3** Domain ✅ — siguiente **19.4** Persistence |
 | **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -445,7 +445,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`Encounter`) | 🟡 19.1 ✅ ADR-015 Accepted | Patient · Org/Office/Staff · Appointment? |
+| **19** | **Clinical Records** (`Encounter`) | 🟡 19.3 ✅ Domain foundation | Patient · Org/Office/Staff · Appointment? |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
@@ -629,8 +629,8 @@ Planificación: [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLAN
 | **19.0** | Clinical Records Foundation Planning | ✅ | Este paso | — | [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) |
 | **19.0.1** | Encounter Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-015 | [PASO-19.0.1](../audits/PASO-19.0.1-ENCOUNTER-AGGREGATE-AUDIT.md) |
 | **19.1** | Encounter Model ADR | ✅ | [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) | **ADR-015 Accepted** | Modelo **congelado** |
-| **19.2** | Clinical Records Reference Readiness | ⏳ | — | ADR-013 | Ports existentes / evolución mínima Appointment port |
-| **19.3** | Encounter Domain Foundation | ⏳ | — | ADR-015 | Aggregate + VOs + tests |
+| **19.2** | Clinical Records Reference Readiness | ✅ | [PASO-19.2](../audits/PASO-19.2-REFERENCE-READINESS.md) | ADR-013 | `findLinkableByIdAndTenant` + `AppointmentReferenceView` |
+| **19.3** | Encounter Domain Foundation | ✅ | [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) | ADR-015 | Aggregate `Encounter` + VOs + domain tests |
 | **19.4** | Encounter Persistence | ⏳ | — | — | Schema `records` (propuesta) + R2DBC |
 | **19.5** | Encounter Authorization Contract | ⏳ | — | — | `encounter:*` + seed |
 | **19.5.1** | Encounter Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape — sin código |
@@ -695,9 +695,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 19.2 — Clinical Records Reference Readiness** — evolucionar `AppointmentReferencePort` (mínimo: linkable SCHEDULED\|COMPLETED + `patientId`) según [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) §7/§10 — **sin** reabrir ADR-014 ni crear ports “por si acaso”.
+**PASO 19.4 — Encounter Persistence** — schema `records` · Flyway · R2DBC adapters · ITs según [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md).
 
-Referencias: [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-19.0.1](../audits/PASO-19.0.1-ENCOUNTER-AGGREGATE-AUDIT.md).
+Referencias: [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-19.2](../audits/PASO-19.2-REFERENCE-READINESS.md).
 
 ---
 
@@ -705,6 +705,8 @@ Referencias: [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) · [AD
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **19.3** | Encounter Domain Foundation — aggregate + VOs + domain tests (ADR-015) |
+| 2026-07-11 | **19.2** | AppointmentReferencePort linkable view — Encounter readiness (ADR-015) |
 | 2026-07-11 | **19.1** | ADR-015 Accepted — Encounter model frozen (*intentionally small*) |
 | 2026-07-11 | **19.0.1** | Encounter Aggregate Audit — episodio ocurrido; prep. ADR-015 |
 | 2026-07-11 | **19.0** | Clinical Records Foundation Planning — BC Clinical Records · primer root `Encounter` |

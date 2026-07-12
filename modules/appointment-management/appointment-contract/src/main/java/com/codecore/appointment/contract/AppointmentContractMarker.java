@@ -8,6 +8,7 @@ package com.codecore.appointment.contract;
  *   <li>{@link com.codecore.appointment.domain.valueobject.AppointmentId} (via {@code api} on appointment-domain)</li>
  *   <li>{@link com.codecore.appointment.contract.authorization.AppointmentPermissionCatalog}</li>
  *   <li>{@link com.codecore.appointment.contract.reference.AppointmentReferencePort}</li>
+ *   <li>{@link com.codecore.appointment.contract.reference.AppointmentReferenceView}</li>
  * </ul>
  * Consumers depend on {@code appointment-contract} only — never appointment-application
  * or appointment-infrastructure.

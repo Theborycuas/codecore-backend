@@ -36,7 +36,7 @@ Sin tablas · sin HTTP · sin persistencia · sin módulos Gradle en este paso.
 
 ## Siguiente paso
 
-**PASO 19.2 — Clinical Records Reference Readiness** — evolucionar `AppointmentReferencePort` (mínimo) para link SCHEDULED\|COMPLETED + `patientId` según ADR-015 §7 / §10. Sin ports “por si acaso”.
+**PASO 19.2 — Clinical Records Reference Readiness** — ✅ [PASO-19.2](PASO-19.2-REFERENCE-READINESS.md). Siguiente: **19.3 Domain Foundation**.
 
 ---
 

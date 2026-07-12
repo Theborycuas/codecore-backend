@@ -24,7 +24,8 @@ Tenant (IAM)
 | Pregunta | Dónde mirar |
 |----------|-------------|
 | ¿Cuál es el compromiso planificado? | `AppointmentId` |
-| ¿Puedo enlazar un Encounter / reminder a esta cita abierta? | `AppointmentReferencePort.existsScheduledByIdAndTenant` |
+| ¿Puedo enlazar un reminder a esta cita **abierta**? | `AppointmentReferencePort.existsScheduledByIdAndTenant` |
+| ¿Puedo enlazar un Encounter a esta cita? | `AppointmentReferencePort.findLinkableByIdAndTenant` (SCHEDULED \| COMPLETED + `patientId`) |
 | ¿Quién es el sujeto? | `PatientId` → `PatientReferencePort` |
 | ¿Quién atiende / dónde? | `StaffAssignmentId` / `OfficeId` → Org ports |
 | ¿El episodio clínico real? | **No en Appointment** — Encounter / Records |
@@ -38,8 +39,12 @@ Need to store a link to a planned commitment?
   → Store AppointmentId on your aggregate + tenantId
 
 Need to validate appointment exists and is SCHEDULED at write time?
-  → AppointmentReferencePort (`appointment-contract`, ADR-013)
+  → AppointmentReferencePort.existsScheduledByIdAndTenant
   → Never AppointmentRepository, never SQL against scheduling.appointment from another BC
+
+Need to link Encounter to an appointment (SCHEDULED or COMPLETED)?
+  → AppointmentReferencePort.findLinkableByIdAndTenant → check view.patientId
+  → CANCELLED → empty (blocks new Encounter links)
 
 Need patient / staff / office labels for display?
   → Prefer your own read model / Query Port later — do not import Appointment aggregate
@@ -71,45 +76,51 @@ Only. Never `appointment-application` or `appointment-infrastructure`.
 
 ---
 
-## Contract surface (FASE 18 closed)
+## Contract surface (Scheduling closed · port evolved 19.2)
 
 | Artifact | Module | Purpose |
 |----------|--------|---------|
 | `AppointmentId` | `appointment-contract` → domain VO | Hard identity |
 | `AppointmentPermissionCatalog` | `appointment-contract` | `appointment:create\|read\|update\|cancel` |
-| `AppointmentReferencePort` | `appointment-contract` | SCHEDULED + tenant existence check |
+| `AppointmentReferencePort` | `appointment-contract` | SCHEDULED check + Encounter linkable view |
+| `AppointmentReferenceView` | `appointment-contract` | `appointmentId` · `patientId` · `status` |
 | `R2dbcAppointmentReferenceAdapter` | `appointment-infrastructure` | In-process implementation (wired by codecore-api) |
 
 ```java
 public interface AppointmentReferencePort {
     Mono<Boolean> existsScheduledByIdAndTenant(AppointmentId appointmentId, TenantId tenantId);
+
+    Mono<Optional<AppointmentReferenceView>> findLinkableByIdAndTenant(
+            AppointmentId appointmentId,
+            TenantId tenantId
+    );
 }
 ```
 
-`CANCELLED` / `COMPLETED` → `false` (blocks **new** operational links to open commitments).  
-Historical existence for completed appointments → separate `existsByIdAndTenant` **only if** a consumer invariant requires it (ADR-013).
+`existsScheduled…`: `CANCELLED` / `COMPLETED` → `false` (open-commitment links only).  
+`findLinkable…`: `SCHEDULED` \| `COMPLETED` → view; `CANCELLED` / unknown → empty (ADR-015 Encounter).
 
 ---
 
 ## Module recipes
 
-### Encounter / Clinical episode (post-18)
+### Encounter / Clinical episode (FASE 19)
 
 **Owns:** occurred care episode  
-**References:** `AppointmentId?` (optional origin), `PatientId`, org/office as needed
+**References:** `AppointmentId?` (optional origin), `PatientId`, org/office/staff as needed
 
 ```text
 Encounter
-  appointmentId?     ← validate SCHEDULED via AppointmentReferencePort when linking an open commitment
+  appointmentId?     ← findLinkableByIdAndTenant; view.patientId must match
   patientId
 ```
 
 **Never:** embed Appointment time window as source of truth after the episode starts — Encounter owns occurrence.
 
-### Medical Record (FASE 19)
+### Medical Record / clinical documents (post-Encounter)
 
-**Owns:** clinical documentation  
-**References:** `PatientId` primarily; Appointment only if the record is explicitly tied to a planned visit.
+**Owns:** clinical documentation artifacts  
+**References:** `PatientId` primarily; `EncounterId` when tied to an episode.
 
 ### Billing (FASE 21)
 
