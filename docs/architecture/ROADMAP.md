@@ -6,9 +6,10 @@
 **IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
 **Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
+**Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
-**Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · audit [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md)  
+**Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -25,7 +26,7 @@
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
-| **18** | Scheduling | 🟡 En curso | **18.7** Verification ✅ — siguiente **18.8** Closeout |
+| **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19+** | Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -545,7 +546,7 @@ No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
 
 ---
 
-# FASE 18 — Scheduling 🟡
+# FASE 18 — Scheduling ✅ (cerrada)
 
 ## Contexto
 
@@ -583,7 +584,7 @@ Planificación: [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.m
 | **18.5.1** | Appointment Admin API Audit | ✅ | [PASO-18.5.1](../audits/PASO-18.5.1-APPOINTMENT-ADMINISTRATION-API-AUDIT.md) | — | HTTP/DTO/paginación/cancel·complete — espejo Patient; sin código |
 | **18.6** | Appointment Administration API | ✅ | [PASO-18.6](../audits/PASO-18.6-APPOINTMENT-ADMINISTRATION-API.md) | — | `/api/v1/scheduling/appointments` + multi-ReferencePort + ITs |
 | **18.7** | Appointment Verification | ✅ | [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md) | — | `AppointmentVerificationIT` 8/8 + auditoría Core |
-| **18.8** | Scheduling Closeout | ⏳ | — | — | Guía · FASE 18 ✅ |
+| **18.8** | Scheduling Closeout | ✅ | [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) | — | `AppointmentReferencePort` · guía · FASE 18 ✅ |
 
 ## Restricciones FASE 18
 
@@ -641,9 +642,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 18.8 — Scheduling Closeout** — `AppointmentReferencePort` · guía de consumo · FASE 18 ✅ bajo verificación en [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md).
+**FASE 19 — Clinical Records** — siguiente BC del Core Platform. Scheduling está **cerrado**: consumir `AppointmentId` + `AppointmentReferencePort` vía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md) **sin reabrir** FASE 18.
 
-Referencias: [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md) · [PASO-18.6](../audits/PASO-18.6-APPOINTMENT-ADMINISTRATION-API.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md).
+Referencias: [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md).
 
 ---
 
@@ -651,6 +652,7 @@ Referencias: [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md) · [PA
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **18.8** | **SCHEDULING COMPLETE** — AppointmentReferencePort · consumption guide · FASE 18 ✅ |
 | 2026-07-11 | **18.7** | Appointment Verification — E2E 8/8 + Core validation |
 | 2026-07-11 | **18.6** | Appointment Administration API — scheduling HTTP + multi-ReferencePort |
 | 2026-07-11 | **18.5.1** | Appointment Admin API Audit — espejo Patient; listo para 18.6 |

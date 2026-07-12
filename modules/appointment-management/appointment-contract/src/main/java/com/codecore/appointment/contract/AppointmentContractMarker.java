@@ -7,9 +7,10 @@ package com.codecore.appointment.contract;
  * <ul>
  *   <li>{@link com.codecore.appointment.domain.valueobject.AppointmentId} (via {@code api} on appointment-domain)</li>
  *   <li>{@link com.codecore.appointment.contract.authorization.AppointmentPermissionCatalog}</li>
+ *   <li>{@link com.codecore.appointment.contract.reference.AppointmentReferencePort}</li>
  * </ul>
- * {@code AppointmentReferencePort} is deferred to a later PASO. Consumers depend on
- * {@code appointment-contract} only — never appointment-application or appointment-infrastructure.
+ * Consumers depend on {@code appointment-contract} only — never appointment-application
+ * or appointment-infrastructure.
  */
 public final class AppointmentContractMarker {
 

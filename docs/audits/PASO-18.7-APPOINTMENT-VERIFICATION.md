@@ -208,7 +208,7 @@ Ningún riesgo obliga a modificar el dominio ahora.
 
 ## Siguiente paso
 
-**PASO 18.8 — Scheduling Closeout** — `AppointmentReferencePort` · guía de consumo · FASE 18 ✅.
+**PASO 18.8 — Scheduling Closeout** — `AppointmentReferencePort` · guía · FASE 18 ✅ — ver [PASO-18.8](PASO-18.8-SCHEDULING-CLOSEOUT.md).
 
 ---
 
