@@ -7,11 +7,11 @@
 **Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
-**Clinical Records:** 🟡 **EN CURSO** (FASE 19 — primer Aggregate `Encounter`)  
+**Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
-**Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · review [CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md)  
+**Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -29,7 +29,7 @@
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
-| **19** | Clinical Records | 🟡 En curso | **19.6** Administration API ✅ — siguiente **19.7** Verification |
+| **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
 | **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -445,7 +445,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`Encounter`) | 🟡 19.6 ✅ Administration API | Patient · Org/Office/Staff · Appointment? |
+| **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
@@ -599,11 +599,15 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · En
 
 ---
 
-# FASE 19 — Clinical Records 🟡
+# FASE 19 — Clinical Records ✅
+
+IAM · Organization · Clinical Foundation · Scheduling están **cerrados**. FASE 19 entregó **Clinical Records** (`Encounter`) — episodio de atención ocurrido *intentionally small* — **sin reabrir** FASE 16–18.
+
+Cierre: [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · Guía: [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)
 
 ## Contexto
 
-IAM · Organization · Clinical Foundation · Scheduling están **cerrados**. FASE 19 introduce **Clinical Records**: documentar lo que **ocurrió** en la atención — sin reabrir FASE 16–18 ([Scheduling Architecture Review](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md) · opción A).
+IAM · Organization · Clinical Foundation · Scheduling estaban **cerrados**. FASE 19 introdujo **Clinical Records**: documentar lo que **ocurrió** en la atención — sin reabrir FASE 16–18 ([Scheduling Architecture Review](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md) · opción A).
 
 ## Objetivo
 
@@ -635,8 +639,8 @@ Planificación: [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLAN
 | **19.5** | Encounter Authorization Contract | ✅ | [PASO-19.5](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT.md) · [AUDIT](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `encounter:*` + V23 + RBAC matrix |
 | **19.5.1** | Encounter Admin API Audit | ✅ | **Obligatoria** · [PASO-19.5.1](../audits/PASO-19.5.1-ENCOUNTER-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape — sin código |
 | **19.6** | Encounter Administration API | ✅ | [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md) | — | `/api/v1/records/encounters` |
-| **19.7** | Encounter Verification | ⏳ | — | — | E2E VerificationIT |
-| **19.8** | Clinical Records Closeout | ⏳ | — | — | `EncounterReferencePort` · guía · FASE 19 ✅ |
+| **19.7** | Encounter Verification | ✅ | [PASO-19.7](../audits/PASO-19.7-ENCOUNTER-VERIFICATION.md) | — | E2E VerificationIT 8/8 |
+| **19.8** | Clinical Records Closeout | ✅ | [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) | — | `EncounterReferencePort` · guía · FASE 19 ✅ |
 
 ## Restricciones FASE 19
 
@@ -695,9 +699,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 19.7 — Encounter Verification** — E2E VerificationIT sobre la API de [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md).
+**FASE 20 — Inventory** — primer Aggregate de inventario sobre Organization / Office (ReferencePorts) **sin reabrir** FASE 16–19.
 
-Referencias: [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md) · [PASO-19.5.1](../audits/PASO-19.5.1-ENCOUNTER-ADMINISTRATION-API-AUDIT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md).
+Referencias: [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md).
 
 ---
 
@@ -705,6 +709,8 @@ Referencias: [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md) ·
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **19.8** | **CLINICAL RECORDS COMPLETE** — EncounterReferencePort · consumption guide · FASE 19 ✅ |
+| 2026-07-11 | **19.7** | Encounter Verification — E2E 8/8 + Core validation |
 | 2026-07-11 | **19.6** | Encounter Administration API — `/api/v1/records/encounters` + multi-ReferencePort |
 | 2026-07-11 | **19.5.1** | Encounter Admin API Audit — HTTP shape `/api/v1/records/encounters` |
 | 2026-07-11 | **19.5** | Encounter Authorization Contract — `encounter:*` + V23 + RBAC matrix |

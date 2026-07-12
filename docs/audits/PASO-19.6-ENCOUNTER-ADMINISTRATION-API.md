@@ -99,7 +99,7 @@ EncounterReferencePort · Notes · SOAP · Diagnoses · Prescriptions · Attachm
 
 ## Siguiente paso
 
-**PASO 19.7 — Encounter Verification** — E2E VerificationIT.
+**PASO 19.7 — Encounter Verification** — ✅ [PASO-19.7](PASO-19.7-ENCOUNTER-VERIFICATION.md). Siguiente: **19.8 Closeout**.
 
 ---
 

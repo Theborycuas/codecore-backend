@@ -6,9 +6,12 @@ package com.codecore.encounter.contract;
  * Published surface:
  * <ul>
  *   <li>{@link com.codecore.encounter.domain.valueobject.EncounterId} (via {@code api} on encounter-domain)</li>
+ *   <li>{@link com.codecore.encounter.contract.authorization.EncounterPermissionCatalog}</li>
+ *   <li>{@link com.codecore.encounter.contract.reference.EncounterReferencePort}</li>
+ *   <li>{@link com.codecore.encounter.contract.reference.EncounterReferenceView}</li>
  * </ul>
- * {@code EncounterReferencePort} is deferred to closeout. Consumers depend on
- * {@code encounter-contract} only — never encounter-application or encounter-infrastructure.
+ * Consumers depend on {@code encounter-contract} only — never encounter-application
+ * or encounter-infrastructure.
  */
 public final class EncounterContractMarker {
 
