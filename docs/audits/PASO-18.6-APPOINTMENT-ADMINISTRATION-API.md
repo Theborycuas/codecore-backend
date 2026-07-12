@@ -95,7 +95,7 @@ AppointmentReferencePort · Availability · Slots · Double booking · Recurrenc
 
 ## Siguiente paso
 
-**PASO 18.7 — Appointment Verification**
+**PASO 18.7 — Appointment Verification** — ✅ [PASO-18.7](PASO-18.7-APPOINTMENT-VERIFICATION.md). Siguiente: **18.8 Closeout**.
 
 ---
 
