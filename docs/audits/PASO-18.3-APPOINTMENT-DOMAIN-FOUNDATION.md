@@ -102,7 +102,7 @@ Persistencia · Flyway · R2DBC · HTTP · controllers · use cases de escritura
 
 ## Siguiente paso
 
-**PASO 18.4 — Appointment Persistence** — schema `scheduling`, Flyway, R2DBC.
+**PASO 18.4 — Appointment Persistence** — ✅ [PASO-18.4](PASO-18.4-APPOINTMENT-PERSISTENCE.md). Siguiente: **18.5 Authorization Contract**.
 
 ---
 

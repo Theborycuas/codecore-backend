@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "com.codecore.api",
         "com.codecore.iam",
         "com.codecore.organization",
-        "com.codecore.patient"
+        "com.codecore.patient",
+        "com.codecore.appointment"
 })
 public class CodeCoreApiApplication {
 
