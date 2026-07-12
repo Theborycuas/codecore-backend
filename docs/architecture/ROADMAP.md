@@ -29,7 +29,7 @@
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
-| **19** | Clinical Records | 🟡 En curso | **19.3** Domain ✅ — siguiente **19.4** Persistence |
+| **19** | Clinical Records | 🟡 En curso | **19.4** Persistence ✅ — siguiente **19.5** Authorization |
 | **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -445,7 +445,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`Encounter`) | 🟡 19.3 ✅ Domain foundation | Patient · Org/Office/Staff · Appointment? |
+| **19** | **Clinical Records** (`Encounter`) | 🟡 19.4 ✅ Persistence | Patient · Org/Office/Staff · Appointment? |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
@@ -631,7 +631,7 @@ Planificación: [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLAN
 | **19.1** | Encounter Model ADR | ✅ | [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) | **ADR-015 Accepted** | Modelo **congelado** |
 | **19.2** | Clinical Records Reference Readiness | ✅ | [PASO-19.2](../audits/PASO-19.2-REFERENCE-READINESS.md) | ADR-013 | `findLinkableByIdAndTenant` + `AppointmentReferenceView` |
 | **19.3** | Encounter Domain Foundation | ✅ | [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) | ADR-015 | Aggregate `Encounter` + VOs + domain tests |
-| **19.4** | Encounter Persistence | ⏳ | — | — | Schema `records` (propuesta) + R2DBC |
+| **19.4** | Encounter Persistence | ✅ | [PASO-19.4](../audits/PASO-19.4-ENCOUNTER-PERSISTENCE.md) | — | V22 `records.encounter` + R2DBC + ITs |
 | **19.5** | Encounter Authorization Contract | ⏳ | — | — | `encounter:*` + seed |
 | **19.5.1** | Encounter Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape — sin código |
 | **19.6** | Encounter Administration API | ⏳ | — | — | `/api/v1/records/encounters` |
@@ -695,9 +695,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 19.4 — Encounter Persistence** — schema `records` · Flyway · R2DBC adapters · ITs según [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md).
+**PASO 19.5 — Encounter Authorization Contract** — `encounter:*` permissions + Flyway seed + RBAC matrix (espejo Appointment).
 
-Referencias: [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-19.2](../audits/PASO-19.2-REFERENCE-READINESS.md).
+Referencias: [PASO-19.4](../audits/PASO-19.4-ENCOUNTER-PERSISTENCE.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md).
 
 ---
 
@@ -705,6 +705,7 @@ Referencias: [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) · 
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **19.4** | Encounter Persistence — V22 records.encounter + R2DBC ITs |
 | 2026-07-11 | **19.3** | Encounter Domain Foundation — aggregate + VOs + domain tests (ADR-015) |
 | 2026-07-11 | **19.2** | AppointmentReferencePort linkable view — Encounter readiness (ADR-015) |
 | 2026-07-11 | **19.1** | ADR-015 Accepted — Encounter model frozen (*intentionally small*) |

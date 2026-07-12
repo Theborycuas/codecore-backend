@@ -101,7 +101,7 @@ Persistencia · Flyway · R2DBC · HTTP · controllers · use cases de escritura
 
 ## Siguiente paso
 
-**PASO 19.4 — Encounter Persistence** — schema `records` · Flyway · R2DBC · ITs.
+**PASO 19.4 — Encounter Persistence** — ✅ [PASO-19.4](PASO-19.4-ENCOUNTER-PERSISTENCE.md). Siguiente: **19.5 Authorization Contract**.
 
 ---
 
