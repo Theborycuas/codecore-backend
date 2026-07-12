@@ -7,7 +7,9 @@
 **Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
-**Planificación FASE 17:** [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)
+**Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
+**Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · audit [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md)  
+**Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
 
@@ -23,7 +25,8 @@
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
-| **18+** | Scheduling · Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
+| **18** | Scheduling | 🟡 En curso | **18.1** ADR-014 Accepted — siguiente **18.2** Reference Ports |
+| **19+** | Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -437,7 +440,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
-| **18** | **Scheduling** (`Appointment`) | ⏳ | Patient + StaffAssignment |
+| **18** | **Scheduling** (`Appointment`) | 🟡 18.1 ✅ ADR-014 frozen | Patient + StaffAssignment + Org/Office |
 | **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
@@ -542,6 +545,56 @@ No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
 
 ---
 
+# FASE 18 — Scheduling 🟡
+
+## Contexto
+
+Clinical Foundation e Organization están **cerrados**. FASE 18 introduce **Scheduling** como primer BC que consume el grafo completo Patient + StaffAssignment + Organization/Office **sin reabrir** FASE 16/17 — validación viva del Core Platform ([Architecture Review 17.9](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)).
+
+## Objetivo
+
+Entregar el BC **Scheduling** con aggregate **`Appointment`**: compromiso planificado de atención, vertical-agnóstico, *intentionally small*.
+
+Planificación: [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · Audit: [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md)
+
+## Primer Aggregate Root: `Appointment`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | El compromiso planificado de atención en el tiempo |
+| ¿Por qué no Encounter? | Encounter = episodio ocurrido |
+| ¿Por qué no Slot engine? | Sobreingeniería v1; capacidad diferida |
+| Consume | `PatientId` · `StaffAssignmentId` · `OrganizationId` · `OfficeId?` · `TenantId` |
+| No conoce | Membership/Identity como proveedor · MedicalRecord · Odontogram · Billing |
+| Lifecycle v1 | `SCHEDULED` → `CANCELLED` \| `COMPLETED` |
+| IDs | Solo referencias; validación vía ReferencePorts (ADR-013) |
+
+## Pasos FASE 18
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **18.0** | Scheduling Foundation Planning | ✅ | Este paso | — | [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) |
+| **18.0.1** | Appointment Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-014 | [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md) |
+| **18.1** | Appointment Model ADR | ✅ | [PASO-18.1](../audits/PASO-18.1-APPOINTMENT-MODEL-CONTRACT.md) | **ADR-014 Accepted** | Modelo **congelado** |
+| **18.2** | Scheduling Reference Ports | ⏳ | — | ADR-013 | Office adapter + StaffAssignmentReferencePort |
+| **18.3** | Appointment Domain Foundation | ⏳ | — | ADR-014 | Aggregate + tests |
+| **18.4** | Appointment Persistence | ⏳ | — | — | Schema `scheduling` |
+| **18.5** | Appointment Authorization Contract | ⏳ | — | — | `appointment:*` seeds |
+| **18.5.1** | Appointment Admin API Audit | ⏳ | **Obligatoria** | — | Contrato HTTP |
+| **18.6** | Appointment Administration API | ⏳ | — | — | `/api/v1/scheduling/appointments` |
+| **18.7** | Appointment Verification | ⏳ | — | — | E2E IT |
+| **18.8** | Scheduling Closeout | ⏳ | — | — | Guía · FASE 18 ✅ |
+
+## Restricciones FASE 18
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010/011/012/013.
+
+**No modificar:** aggregates ni schemas IAM · Organization · Patient.
+
+No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · Encounter · MedicalRecord · motor de slots · product packs verticales.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -559,6 +612,7 @@ No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
 | ADR-011 | Organization Integration Patterns | Accepted (16.8) |
 | ADR-012 | Patient Domain Model | **Accepted** (17.1) — **frozen**; cambios → nuevo ADR |
 | ADR-013 | Bounded Context Reference Contracts | **Accepted** (17.2) — patrón oficial cross-BC |
+| ADR-014 | Appointment Domain Model | **Accepted** (18.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -587,9 +641,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**FASE 18 — Scheduling (`Appointment`)** — primer consumidor de `PatientId` + `PatientReferencePort` (+ StaffAssignment / Org ports). No reabrir FASE 17.
+**PASO 18.2 — Scheduling Reference Ports** — `OfficeReferencePort` adapter + `StaffAssignmentReferencePort` según [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) / ADR-013. No reabrir Org ni Patient.
 
-Referencias: [PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md) · [PATIENT-CONSUMPTION-GUIDE.md](PATIENT-CONSUMPTION-GUIDE.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
+Referencias: [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [PASO-18.1](../audits/PASO-18.1-APPOINTMENT-MODEL-CONTRACT.md) · [PASO-18.0.1](../audits/PASO-18.0.1-APPOINTMENT-AGGREGATE-AUDIT.md).
 
 ---
 
@@ -597,6 +651,10 @@ Referencias: [PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md](../audits/PASO-17.8-CLI
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **18.1** | ADR-014 Accepted — Appointment model frozen (*intentionally small*) |
+| 2026-07-11 | **18.0.1** | Appointment Aggregate Audit — compromiso planificado; prep. ADR-014 |
+| 2026-07-11 | **18.0** | Scheduling Foundation Planning — FASE 18 definida |
+| 2026-07-11 | **17.9** | Core Architecture Review — listo para FASE 18 (score 8.2) |
 | 2026-07-11 | **17.8** | Clinical Foundation Closeout — FASE 17 ✅ · PatientReferencePort · consumption guide |
 | 2026-07-11 | **17.7** | Patient Verification — E2E 8/8 + Core validation; BC listo para consumo |
 | 2026-07-11 | **17.6** | Patient Administration API — `/api/v1/clinical/patients` espejo Org; ITs verdes |
