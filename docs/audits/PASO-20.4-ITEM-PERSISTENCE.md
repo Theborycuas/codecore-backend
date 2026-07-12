@@ -101,7 +101,7 @@ HTTP · Controllers · OpenAPI · Use cases · Permissions · `ItemReferencePort
 
 ## Siguiente paso
 
-**PASO 20.5 — Item Authorization Contract** — seed `item:*` + matriz RBAC (espejo Patient).
+**PASO 20.5 — Item Authorization Contract** ✅ — [PASO-20.5](PASO-20.5-ITEM-AUTHORIZATION-CONTRACT.md). Siguiente: **20.5.1 Admin API Audit**.
 
 ---
 

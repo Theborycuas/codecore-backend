@@ -32,7 +32,7 @@
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
-| **20** | Inventory (Item) | 🟡 En curso | 20.4 ✅ Persistence · siguiente 20.5 Auth |
+| **20** | Inventory (Item) | 🟡 En curso | 20.5.1 ✅ API Audit · siguiente 20.6 Admin API |
 | **21+** | Billing · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -681,8 +681,9 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 | **20.2** | Inventory Reference Readiness | ✅ | [PASO-20.2](../audits/PASO-20.2-INVENTORY-REFERENCE-READINESS.md) | ADR-013 | Org port suficiente — **sin evolución** |
 | **20.3** | Item Domain Foundation | ✅ | [PASO-20.3](../audits/PASO-20.3-ITEM-DOMAIN-FOUNDATION.md) | ADR-016 | Aggregate `Item` + VOs + 27 domain tests |
 | **20.4** | Item Persistence | ✅ | [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) | — | V24 `inventory.item` + R2DBC + ITs 12/12 |
-| **20.5** | Item Authorization Contract | ⏳ | — | — | `item:*` + seed |
-| **20.5.1** | Item Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape |
+| **20.5** | Item Authorization Contract | ✅ | [PASO-20.5](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT.md) · [AUDIT](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `item:*` + V25 + RBAC matrix |
+| **20.5.1** | Item Admin API Audit | ✅ | **Obligatoria** · [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/inventory/items` |
+| **20.6** | Item Administration API | ⏳ | — | — | `/api/v1/inventory/items` |
 | **20.6** | Item Administration API | ⏳ | — | — | `/api/v1/inventory/items` |
 | **20.7** | Item Verification | ⏳ | — | — | VerificationIT |
 | **20.8** | Inventory Closeout (Item) | ⏳ | — | — | `ItemReferencePort` · guía |
@@ -747,9 +748,9 @@ FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization 
 
 ### Siguiente acción
 
-**PASO 20.5 — Item Authorization Contract** — seed `item:*` + matriz RBAC ([ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)).
+**PASO 20.6 — Item Administration API** — use cases + controller + ITs según [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md).
 
-Referencias: [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) · [PASO-20.3](../audits/PASO-20.3-ITEM-DOMAIN-FOUNDATION.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
+Referencias: [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md) · [PASO-20.5](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
 
 ---
 
@@ -757,6 +758,8 @@ Referencias: [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) · [PASO-20.3]
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **20.5.1** | Item Admin API Audit — HTTP shape `/api/v1/inventory/items` |
+| 2026-07-12 | **20.5** | Item Authorization Contract — `item:*` + V25 + RBAC matrix (ALL 44) |
 | 2026-07-12 | **20.4** | Item Persistence — V24 inventory.item + R2DBC ITs 12/12 |
 | 2026-07-12 | **20.3** | Item Domain Foundation — aggregate + VOs + 27 domain tests (ADR-016) |
 | 2026-07-12 | **20.2** | Inventory Reference Readiness — `OrganizationReferencePort` suficiente; sin evolución |

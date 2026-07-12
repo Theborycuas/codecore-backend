@@ -11,9 +11,12 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.AP
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.APPOINTMENT_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_READ_ONLY;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ITEM_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ITEM_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_APPOINTMENT;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ENCOUNTER;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_IAM;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ITEM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ORGANIZATION;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_PATIENT;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL;
@@ -24,7 +27,7 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.un
 
 /**
  * Tenant-scoped system role templates
- * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter).
+ * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter + 20.5 item).
  */
 public enum SystemRoleTemplate {
 
@@ -41,7 +44,8 @@ public enum SystemRoleTemplate {
                     ORGANIZATION_PLATFORM_ALL,
                     PATIENT_PLATFORM_ALL,
                     APPOINTMENT_PLATFORM_ALL,
-                    ENCOUNTER_PLATFORM_ALL
+                    ENCOUNTER_PLATFORM_ALL,
+                    ITEM_PLATFORM_ALL
             )
     ),
     MANAGER(
@@ -52,7 +56,8 @@ public enum SystemRoleTemplate {
                     MANAGER_ORGANIZATION,
                     MANAGER_PATIENT,
                     MANAGER_APPOINTMENT,
-                    MANAGER_ENCOUNTER
+                    MANAGER_ENCOUNTER,
+                    MANAGER_ITEM
             )
     ),
     USER(
@@ -63,7 +68,8 @@ public enum SystemRoleTemplate {
                     STRUCTURE_READ,
                     PATIENT_READ_ONLY,
                     APPOINTMENT_READ_ONLY,
-                    ENCOUNTER_READ_ONLY
+                    ENCOUNTER_READ_ONLY,
+                    ITEM_READ_ONLY
             )
     ),
     READ_ONLY(
@@ -78,7 +84,8 @@ public enum SystemRoleTemplate {
                     STRUCTURE_READ,
                     PATIENT_READ_ONLY,
                     APPOINTMENT_READ_ONLY,
-                    ENCOUNTER_READ_ONLY
+                    ENCOUNTER_READ_ONLY,
+                    ITEM_READ_ONLY
             )
     );
 

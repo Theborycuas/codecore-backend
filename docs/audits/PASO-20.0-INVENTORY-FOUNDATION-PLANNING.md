@@ -13,7 +13,7 @@
 
 1. BC = **Inventory** · primer Aggregate Root = **`Item`** (identidad inventariable / catálogo stockable)  
 2. Consumo **solo** IDs + ReferencePorts (**Organization** opcional · **Office no** en Item v1)  
-3. Siguiente: **PASO 20.4** Persistence ✅ · siguiente **20.5** Authorization
+3. Siguiente: **PASO 20.5.1** Admin API Audit ✅ · siguiente **20.6** Administration API
 
 **Sin código. Sin tablas. Sin endpoints. Sin DTOs. Sin stock qty / movimientos / precios / BOM.**
 
@@ -347,7 +347,7 @@ IAM → Organization → (Patient → Appointment → Encounter)
 
 **PASO 20.0.1 — Item Aggregate Audit** ✅ · **PASO 20.1 — ADR-016** ✅.
 
-**Siguiente:** **PASO 20.5 — Item Authorization Contract**.
+**Siguiente:** **PASO 20.6 — Item Administration API**.
 
 ---
 

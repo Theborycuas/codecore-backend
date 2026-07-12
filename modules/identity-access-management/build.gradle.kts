@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.modules.patientManagement.patientContract)
     implementation(projects.modules.appointmentManagement.appointmentContract)
     implementation(projects.modules.encounterManagement.encounterContract)
+    implementation(projects.modules.inventoryManagement.inventoryContract)
 
     // Outbound persistence adapters (R2DBC — infrastructure only)
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
