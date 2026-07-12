@@ -103,7 +103,7 @@ HTTP · Controllers · OpenAPI · Use cases · Permissions · `EncounterReferenc
 
 ## Siguiente paso
 
-**PASO 19.5 — Encounter Authorization Contract** — `encounter:*` + seed Flyway + matriz RBAC.
+**PASO 19.5 — Encounter Authorization Contract** — ✅ [PASO-19.5](PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT.md). Siguiente: **19.5.1 Admin API Audit**.
 
 ---
 

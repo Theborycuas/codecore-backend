@@ -22,7 +22,7 @@ class PatientAuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 36;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 40;
     private static final int EXPECTED_PATIENT_PERMISSION_COUNT = 4;
 
     private static final String V19_SEED_SQL = """
@@ -75,7 +75,7 @@ class PatientAuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
         assertThat(countPatientPermissions()).isEqualTo(EXPECTED_PATIENT_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("21");
+        assertThat(appliedMigrationVersion()).isEqualTo("23");
 
         executeUpdate(V19_SEED_SQL);
         executeUpdate(V19_SEED_SQL);

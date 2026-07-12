@@ -13,18 +13,19 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates Flyway V13 IAM permission seeds are idempotent.
+ * Validates Flyway V23 Encounter permission seeds are idempotent.
  */
-class AuthorizationSeedMigrationIT {
+class EncounterAuthorizationSeedMigrationIT {
 
     private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("db_codecore")
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_PERMISSION_COUNT = 40;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 40;
+    private static final int EXPECTED_ENCOUNTER_PERMISSION_COUNT = 4;
 
-    private static final String V13_SEED_SQL = """
+    private static final String V23_SEED_SQL = """
             INSERT INTO iam.permission (
                 permission_id,
                 code,
@@ -42,22 +43,10 @@ class AuthorizationSeedMigrationIT {
                 NOW()
             FROM (
                 VALUES
-                    ('tenant:read',        'Read tenant metadata'),
-                    ('tenant:update',      'Update tenant metadata'),
-                    ('membership:read',    'Read tenant memberships'),
-                    ('membership:create',  'Create tenant memberships'),
-                    ('membership:update',  'Update tenant memberships'),
-                    ('membership:delete',  'Delete tenant memberships'),
-                    ('role:read',          'Read tenant roles'),
-                    ('role:create',        'Create tenant roles'),
-                    ('role:update',        'Update tenant roles'),
-                    ('role:delete',        'Delete tenant roles'),
-                    ('permission:read',    'Read global permission catalog'),
-                    ('permission:assign',  'Assign permissions to roles'),
-                    ('user:read',          'Read tenant users'),
-                    ('user:create',        'Create tenant users'),
-                    ('user:update',        'Update tenant users'),
-                    ('user:delete',        'Delete tenant users')
+                    ('encounter:create',  'Create occurred care episodes (encounters)'),
+                    ('encounter:read',    'Read occurred care episodes (encounters)'),
+                    ('encounter:update',  'Update occurred care episodes (refs, time bounds, complete)'),
+                    ('encounter:cancel',  'Cancel occurred care episodes (encounters)')
             ) AS v(code, description)
             WHERE NOT EXISTS (
                 SELECT 1
@@ -71,31 +60,28 @@ class AuthorizationSeedMigrationIT {
     }
 
     @Test
-    void shouldSeedIamPermissionsIdempotently() throws SQLException {
+    void shouldSeedEncounterPermissionsIdempotently() throws SQLException {
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .locations("classpath:db/migration")
-                .schemas("iam")
-                .createSchemas(true)
                 .cleanDisabled(false)
                 .load()
                 .clean();
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .locations("classpath:db/migration")
-                .schemas("iam")
-                .createSchemas(true)
                 .load()
                 .migrate();
 
-        assertThat(countPermissions()).isEqualTo(EXPECTED_PERMISSION_COUNT);
-        assertThat(countSystemPermissions()).isEqualTo(EXPECTED_PERMISSION_COUNT);
+        assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
+        assertThat(countEncounterPermissions()).isEqualTo(EXPECTED_ENCOUNTER_PERMISSION_COUNT);
         assertThat(appliedMigrationVersion()).isEqualTo("23");
 
-        executeUpdate(V13_SEED_SQL);
-        executeUpdate(V13_SEED_SQL);
+        executeUpdate(V23_SEED_SQL);
+        executeUpdate(V23_SEED_SQL);
 
-        assertThat(countPermissions()).isEqualTo(EXPECTED_PERMISSION_COUNT);
+        assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
+        assertThat(countEncounterPermissions()).isEqualTo(EXPECTED_ENCOUNTER_PERMISSION_COUNT);
     }
 
     private static int countPermissions() throws SQLException {
@@ -107,21 +93,21 @@ class AuthorizationSeedMigrationIT {
         }
     }
 
-    private static int countSystemPermissions() throws SQLException {
+    private static int countEncounterPermissions() throws SQLException {
         try (Connection connection = openConnection();
-             PreparedStatement ps = connection.prepareStatement(
-                     "SELECT COUNT(*) FROM iam.permission WHERE system_permission = TRUE")) {
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                return rs.getInt(1);
-            }
+             PreparedStatement ps = connection.prepareStatement("""
+                     SELECT COUNT(*) FROM iam.permission WHERE code LIKE 'encounter:%'
+                     """);
+             ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            return rs.getInt(1);
         }
     }
 
     private static String appliedMigrationVersion() throws SQLException {
         try (Connection connection = openConnection();
              PreparedStatement ps = connection.prepareStatement(
-                     "SELECT version FROM iam.flyway_schema_history ORDER BY installed_rank DESC LIMIT 1");
+                     "SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1");
              ResultSet rs = ps.executeQuery()) {
             rs.next();
             return rs.getString(1);

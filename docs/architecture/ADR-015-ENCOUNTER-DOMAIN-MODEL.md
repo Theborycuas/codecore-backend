@@ -241,15 +241,15 @@ Gradle: `encounter-application` depends on `patient-contract`, `organization-con
 
 Archived Patient / Organization / Office **block new** encounter links; historical Encounters remain readable.
 
-### 11. Permissions (deferred to 19.5)
+### 11. Permissions (seeded in PASO 19.5)
 
-Draft catalog (not seeded by this ADR):
+Catalog:
 
 `encounter:read` · `encounter:create` · `encounter:update` · `encounter:cancel`
 
 `complete` maps to `encounter:update` (mirror Appointment / Patient activate) — **no** vertical verbs.
 
-RBAC remains membership-scoped (ADR-007).
+RBAC remains membership-scoped (ADR-007). Seed: `V23__seed_encounter_authorization_contract.sql`.
 
 ### 12. Multi-organization attendance
 

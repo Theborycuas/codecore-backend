@@ -9,7 +9,10 @@ import java.util.Set;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ADMIN_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.APPOINTMENT_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.APPOINTMENT_READ_ONLY;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_APPOINTMENT;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ENCOUNTER;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ORGANIZATION;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_PATIENT;
@@ -20,7 +23,8 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.ST
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.union;
 
 /**
- * Tenant-scoped system role templates (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment).
+ * Tenant-scoped system role templates
+ * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter).
  */
 public enum SystemRoleTemplate {
 
@@ -32,12 +36,24 @@ public enum SystemRoleTemplate {
     ADMIN(
             RoleCode.of("ADMIN"),
             RoleName.of("Administrator"),
-            union(ADMIN_IAM, ORGANIZATION_PLATFORM_ALL, PATIENT_PLATFORM_ALL, APPOINTMENT_PLATFORM_ALL)
+            union(
+                    ADMIN_IAM,
+                    ORGANIZATION_PLATFORM_ALL,
+                    PATIENT_PLATFORM_ALL,
+                    APPOINTMENT_PLATFORM_ALL,
+                    ENCOUNTER_PLATFORM_ALL
+            )
     ),
     MANAGER(
             RoleCode.of("MANAGER"),
             RoleName.of("Manager"),
-            union(MANAGER_IAM, MANAGER_ORGANIZATION, MANAGER_PATIENT, MANAGER_APPOINTMENT)
+            union(
+                    MANAGER_IAM,
+                    MANAGER_ORGANIZATION,
+                    MANAGER_PATIENT,
+                    MANAGER_APPOINTMENT,
+                    MANAGER_ENCOUNTER
+            )
     ),
     USER(
             RoleCode.of("USER"),
@@ -46,7 +62,8 @@ public enum SystemRoleTemplate {
                     Set.of(IamPermissionCatalog.USER_READ),
                     STRUCTURE_READ,
                     PATIENT_READ_ONLY,
-                    APPOINTMENT_READ_ONLY
+                    APPOINTMENT_READ_ONLY,
+                    ENCOUNTER_READ_ONLY
             )
     ),
     READ_ONLY(
@@ -60,7 +77,8 @@ public enum SystemRoleTemplate {
                     ),
                     STRUCTURE_READ,
                     PATIENT_READ_ONLY,
-                    APPOINTMENT_READ_ONLY
+                    APPOINTMENT_READ_ONLY,
+                    ENCOUNTER_READ_ONLY
             )
     );
 

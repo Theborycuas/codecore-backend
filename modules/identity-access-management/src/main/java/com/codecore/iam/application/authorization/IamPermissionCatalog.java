@@ -1,6 +1,7 @@
 package com.codecore.iam.application.authorization;
 
 import com.codecore.appointment.contract.authorization.AppointmentPermissionCatalog;
+import com.codecore.encounter.contract.authorization.EncounterPermissionCatalog;
 import com.codecore.iam.domain.valueobject.PermissionCode;
 import com.codecore.organization.contract.authorization.OrganizationPermissionCatalog;
 import com.codecore.patient.contract.authorization.PatientPermissionCatalog;
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Platform permission contract: IAM + Organization + Patient + Appointment (Scheduling).
+ * Platform permission contract: IAM + Organization + Patient + Appointment + Encounter.
  */
 public final class IamPermissionCatalog {
 
@@ -80,6 +81,15 @@ public final class IamPermissionCatalog {
     public static final PermissionCode APPOINTMENT_CANCEL =
             PermissionCode.of(AppointmentPermissionCatalog.APPOINTMENT_CANCEL);
 
+    public static final PermissionCode ENCOUNTER_CREATE =
+            PermissionCode.of(EncounterPermissionCatalog.ENCOUNTER_CREATE);
+    public static final PermissionCode ENCOUNTER_READ =
+            PermissionCode.of(EncounterPermissionCatalog.ENCOUNTER_READ);
+    public static final PermissionCode ENCOUNTER_UPDATE =
+            PermissionCode.of(EncounterPermissionCatalog.ENCOUNTER_UPDATE);
+    public static final PermissionCode ENCOUNTER_CANCEL =
+            PermissionCode.of(EncounterPermissionCatalog.ENCOUNTER_CANCEL);
+
     public static final Set<PermissionCode> IAM_FOUNDATION = Set.of(
             TENANT_READ,
             TENANT_UPDATE,
@@ -116,11 +126,17 @@ public final class IamPermissionCatalog {
             codesOf(AppointmentPermissionCatalog.APPOINTMENT_READ_ONLY);
     public static final Set<PermissionCode> APPOINTMENT_PLATFORM_ALL = APPOINTMENT_ALL;
 
+    public static final Set<PermissionCode> ENCOUNTER_ALL = codesOf(EncounterPermissionCatalog.ALL);
+    public static final Set<PermissionCode> ENCOUNTER_READ_ONLY =
+            codesOf(EncounterPermissionCatalog.ENCOUNTER_READ_ONLY);
+    public static final Set<PermissionCode> ENCOUNTER_PLATFORM_ALL = ENCOUNTER_ALL;
+
     public static final Set<PermissionCode> ALL = union(
             IAM_FOUNDATION,
             ORGANIZATION_PLATFORM_ALL,
             PATIENT_PLATFORM_ALL,
-            APPOINTMENT_PLATFORM_ALL
+            APPOINTMENT_PLATFORM_ALL,
+            ENCOUNTER_PLATFORM_ALL
     );
 
     public static final Set<PermissionCode> MEMBERSHIP_ALL = Set.of(
@@ -171,6 +187,9 @@ public final class IamPermissionCatalog {
 
     /** MANAGER Scheduling grants — full appointment planned-commitment lifecycle. */
     public static final Set<PermissionCode> MANAGER_APPOINTMENT = APPOINTMENT_ALL;
+
+    /** MANAGER Clinical Records grants — full encounter occurred-episode lifecycle. */
+    public static final Set<PermissionCode> MANAGER_ENCOUNTER = ENCOUNTER_ALL;
 
     private IamPermissionCatalog() {
     }
