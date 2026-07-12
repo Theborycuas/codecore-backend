@@ -32,7 +32,7 @@
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
-| **20** | Inventory (Item) | 🟡 En curso | 20.5.1 ✅ API Audit · siguiente 20.6 Admin API |
+| **20** | Inventory (Item) | 🟡 En curso | 20.7 ✅ Verification · siguiente 20.8 Closeout |
 | **21+** | Billing · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -683,9 +683,8 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 | **20.4** | Item Persistence | ✅ | [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) | — | V24 `inventory.item` + R2DBC + ITs 12/12 |
 | **20.5** | Item Authorization Contract | ✅ | [PASO-20.5](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT.md) · [AUDIT](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `item:*` + V25 + RBAC matrix |
 | **20.5.1** | Item Admin API Audit | ✅ | **Obligatoria** · [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/inventory/items` |
-| **20.6** | Item Administration API | ⏳ | — | — | `/api/v1/inventory/items` |
-| **20.6** | Item Administration API | ⏳ | — | — | `/api/v1/inventory/items` |
-| **20.7** | Item Verification | ⏳ | — | — | VerificationIT |
+| **20.6** | Item Administration API | ✅ | [PASO-20.6](../audits/PASO-20.6-ITEM-ADMINISTRATION-API.md) | — | `/api/v1/inventory/items` + ITs 6/6 |
+| **20.7** | Item Verification | ✅ | [PASO-20.7](../audits/PASO-20.7-ITEM-VERIFICATION.md) | — | `ItemVerificationIT` 8/8 |
 | **20.8** | Inventory Closeout (Item) | ⏳ | — | — | `ItemReferencePort` · guía |
 
 ### Restricciones FASE 20
@@ -748,9 +747,9 @@ FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization 
 
 ### Siguiente acción
 
-**PASO 20.6 — Item Administration API** — use cases + controller + ITs según [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md).
+**PASO 20.8 — Inventory Closeout (Item)** — `ItemReferencePort` + guía de consumo. Cierra FASE 20 (Item slice).
 
-Referencias: [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md) · [PASO-20.5](../audits/PASO-20.5-ITEM-AUTHORIZATION-CONTRACT.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
+Referencias: [PASO-20.7](../audits/PASO-20.7-ITEM-VERIFICATION.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
 
 ---
 
@@ -758,6 +757,7 @@ Referencias: [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.m
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **20.6** | Item Administration API — `/api/v1/inventory/items` + unit 3/3 · IT 6/6 |
 | 2026-07-12 | **20.5.1** | Item Admin API Audit — HTTP shape `/api/v1/inventory/items` |
 | 2026-07-12 | **20.5** | Item Authorization Contract — `item:*` + V25 + RBAC matrix (ALL 44) |
 | 2026-07-12 | **20.4** | Item Persistence — V24 inventory.item + R2DBC ITs 12/12 |

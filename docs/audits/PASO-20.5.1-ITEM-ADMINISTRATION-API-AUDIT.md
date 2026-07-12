@@ -3,8 +3,8 @@
 **Veredicto:** la API administrativa de Item debe **reutilizar el patrón Organization/Patient** (soft-entity). No hace falta un diseño distinto ni un ADR nuevo.
 
 **Fecha:** 2026-07-12  
-**Estado:** ✅ Auditoría cerrada — lista para implementación (PASO 20.6)  
-**Tipo:** Solo diseño — sin código  
+**Estado:** ✅ Auditoría cerrada — implementado en [PASO-20.6](PASO-20.6-ITEM-ADMINISTRATION-API.md)  
+**Tipo:** Solo diseño — sin código (diseño) · implementación en 20.6  
 **Fuentes:** PASO-17.5.1 · PASO-16.3.1 · ADR-016 · ADR-013 · ADR-007 · PASO-20.5 · PASO-20.4 · PASO-20.2
 
 ---
@@ -281,7 +281,7 @@ Verification E2E completa (20.7) · OpenAPI closeout (20.8) · `ItemReferencePor
 
 ## Siguiente paso
 
-**PASO 20.6 — Item Administration API** — implementar use cases + controller + ITs según este contrato.
+**PASO 20.6 — Item Administration API** — ✅ [PASO-20.6](PASO-20.6-ITEM-ADMINISTRATION-API.md). Siguiente: **20.7 Verification**.
 
 ---
 
