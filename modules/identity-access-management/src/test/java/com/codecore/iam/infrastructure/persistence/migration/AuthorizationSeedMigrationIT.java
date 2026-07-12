@@ -22,7 +22,7 @@ class AuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_PERMISSION_COUNT = 32;
+    private static final int EXPECTED_PERMISSION_COUNT = 36;
 
     private static final String V13_SEED_SQL = """
             INSERT INTO iam.permission (
@@ -90,7 +90,7 @@ class AuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_PERMISSION_COUNT);
         assertThat(countSystemPermissions()).isEqualTo(EXPECTED_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("19");
+        assertThat(appliedMigrationVersion()).isEqualTo("21");
 
         executeUpdate(V13_SEED_SQL);
         executeUpdate(V13_SEED_SQL);

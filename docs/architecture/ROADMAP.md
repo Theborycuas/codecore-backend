@@ -25,7 +25,7 @@
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
-| **18** | Scheduling | 🟡 En curso | **18.4** Persistence ✅ — siguiente **18.5** Authorization |
+| **18** | Scheduling | 🟡 En curso | **18.5** Authorization ✅ — siguiente **18.5.1** Admin API Audit |
 | **19+** | Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -579,7 +579,7 @@ Planificación: [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.m
 | **18.2** | Scheduling Reference Ports | ✅ | [PASO-18.2](../audits/PASO-18.2-REFERENCE-PORTS.md) | ADR-013 | Office + StaffAssignment ports + adapters |
 | **18.3** | Appointment Domain Foundation | ✅ | [PASO-18.3](../audits/PASO-18.3-APPOINTMENT-DOMAIN-FOUNDATION.md) | ADR-014 | Aggregate `Appointment` + VOs + 20 domain tests; módulos Gradle; ports out |
 | **18.4** | Appointment Persistence | ✅ | [PASO-18.4](../audits/PASO-18.4-APPOINTMENT-PERSISTENCE.md) | — | V20 `scheduling.appointment` + R2DBC adapters + ITs |
-| **18.5** | Appointment Authorization Contract | ⏳ | — | — | `appointment:*` seeds |
+| **18.5** | Appointment Authorization Contract | ✅ | [PASO-18.5](../audits/PASO-18.5-APPOINTMENT-AUTHORIZATION-CONTRACT.md) · [Audit](../audits/PASO-18.5-APPOINTMENT-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `AppointmentPermissionCatalog` + V21 seeds + RBAC matrix |
 | **18.5.1** | Appointment Admin API Audit | ⏳ | **Obligatoria** | — | Contrato HTTP |
 | **18.6** | Appointment Administration API | ⏳ | — | — | `/api/v1/scheduling/appointments` |
 | **18.7** | Appointment Verification | ⏳ | — | — | E2E IT |
@@ -641,9 +641,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 18.5 — Appointment Authorization Contract** — seeds `appointment:*` bajo persistencia cerrada en [PASO-18.4](../audits/PASO-18.4-APPOINTMENT-PERSISTENCE.md).
+**PASO 18.5.1 — Appointment Admin API Audit** — contrato HTTP bajo autorización cerrada en [PASO-18.5](../audits/PASO-18.5-APPOINTMENT-AUTHORIZATION-CONTRACT.md).
 
-Referencias: [PASO-18.4](../audits/PASO-18.4-APPOINTMENT-PERSISTENCE.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [ADR-007](ADR-007-AUTHORIZATION-MODEL.md).
+Referencias: [PASO-18.5](../audits/PASO-18.5-APPOINTMENT-AUTHORIZATION-CONTRACT.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [ADR-007](ADR-007-AUTHORIZATION-MODEL.md).
 
 ---
 
@@ -651,6 +651,7 @@ Referencias: [PASO-18.4](../audits/PASO-18.4-APPOINTMENT-PERSISTENCE.md) · [ADR
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **18.5** | Appointment Authorization Contract — `appointment:*` + V21 + RBAC matrix |
 | 2026-07-11 | **18.4** | Appointment Persistence — V20 scheduling.appointment + R2DBC |
 | 2026-07-11 | **18.3** | Appointment Domain Foundation — aggregate + 20 tests (ADR-014) |
 | 2026-07-11 | **18.2** | Org ReferencePorts complete — Office + StaffAssignment adapters (ADR-013) |

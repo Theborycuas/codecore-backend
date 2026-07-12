@@ -7,7 +7,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates platform RBAC matrix (FASE 16.3 Organization + FASE 17.5 Patient) without database.
+ * Validates platform RBAC matrix (Org + Patient + Appointment) without database.
  */
 class SystemRoleTemplateTest {
 
@@ -18,11 +18,12 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void adminShouldReceiveOrgPatientAndIamAdminWithoutTenantGovernance() {
+    void adminShouldReceiveOrgPatientAppointmentAndIamAdminWithoutTenantGovernance() {
         assertThat(SystemRoleTemplate.ADMIN.permissions())
                 .containsAll(IamPermissionCatalog.ADMIN_IAM)
                 .containsAll(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL)
                 .containsAll(IamPermissionCatalog.PATIENT_PLATFORM_ALL)
+                .containsAll(IamPermissionCatalog.APPOINTMENT_PLATFORM_ALL)
                 .doesNotContain(
                         IamPermissionCatalog.TENANT_UPDATE,
                         IamPermissionCatalog.PERMISSION_READ
@@ -30,7 +31,7 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void managerShouldAdministerOfficesStaffAndPatientsButNotOrganizations() {
+    void managerShouldAdministerOfficesStaffPatientsAndAppointmentsButNotOrganizations() {
         assertThat(SystemRoleTemplate.MANAGER.permissions())
                 .contains(
                         IamPermissionCatalog.ORGANIZATION_READ,
@@ -38,7 +39,10 @@ class SystemRoleTemplateTest {
                         IamPermissionCatalog.STAFF_ASSIGNMENT_DELETE,
                         IamPermissionCatalog.PATIENT_CREATE,
                         IamPermissionCatalog.PATIENT_UPDATE,
-                        IamPermissionCatalog.PATIENT_ARCHIVE
+                        IamPermissionCatalog.PATIENT_ARCHIVE,
+                        IamPermissionCatalog.APPOINTMENT_CREATE,
+                        IamPermissionCatalog.APPOINTMENT_UPDATE,
+                        IamPermissionCatalog.APPOINTMENT_CANCEL
                 )
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
@@ -49,13 +53,14 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void userShouldReadStructureAndPatientsOnly() {
+    void userShouldReadStructurePatientsAndAppointmentsOnly() {
         assertThat(SystemRoleTemplate.USER.permissions())
                 .containsExactlyInAnyOrderElementsOf(
                         IamPermissionCatalog.union(
                                 Set.of(IamPermissionCatalog.USER_READ),
                                 IamPermissionCatalog.STRUCTURE_READ,
-                                IamPermissionCatalog.PATIENT_READ_ONLY
+                                IamPermissionCatalog.PATIENT_READ_ONLY,
+                                IamPermissionCatalog.APPOINTMENT_READ_ONLY
                         )
                 );
     }
@@ -65,6 +70,7 @@ class SystemRoleTemplateTest {
         assertThat(SystemRoleTemplate.READ_ONLY.permissions())
                 .containsAll(IamPermissionCatalog.STRUCTURE_READ)
                 .contains(IamPermissionCatalog.PATIENT_READ)
+                .contains(IamPermissionCatalog.APPOINTMENT_READ)
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
                         IamPermissionCatalog.OFFICE_CREATE,
@@ -72,14 +78,18 @@ class SystemRoleTemplateTest {
                         IamPermissionCatalog.PATIENT_CREATE,
                         IamPermissionCatalog.PATIENT_UPDATE,
                         IamPermissionCatalog.PATIENT_ARCHIVE,
+                        IamPermissionCatalog.APPOINTMENT_CREATE,
+                        IamPermissionCatalog.APPOINTMENT_UPDATE,
+                        IamPermissionCatalog.APPOINTMENT_CANCEL,
                         IamPermissionCatalog.USER_UPDATE
                 );
     }
 
     @Test
-    void platformCatalogShouldIncludeOrganizationAndPatientContracts() {
+    void platformCatalogShouldIncludeOrganizationPatientAndAppointmentContracts() {
         assertThat(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL).hasSize(12);
         assertThat(IamPermissionCatalog.PATIENT_PLATFORM_ALL).hasSize(4);
-        assertThat(IamPermissionCatalog.ALL).hasSize(32);
+        assertThat(IamPermissionCatalog.APPOINTMENT_PLATFORM_ALL).hasSize(4);
+        assertThat(IamPermissionCatalog.ALL).hasSize(36);
     }
 }

@@ -13,9 +13,9 @@ import java.sql.SQLException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates Flyway V15 Organization Management permission seeds are idempotent.
+ * Validates Flyway V21 Appointment permission seeds are idempotent.
  */
-class OrganizationAuthorizationSeedMigrationIT {
+class AppointmentAuthorizationSeedMigrationIT {
 
     private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("db_codecore")
@@ -23,9 +23,9 @@ class OrganizationAuthorizationSeedMigrationIT {
             .withPassword("codecore0803861400");
 
     private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 36;
-    private static final int EXPECTED_ORGANIZATION_PERMISSION_COUNT = 12;
+    private static final int EXPECTED_APPOINTMENT_PERMISSION_COUNT = 4;
 
-    private static final String V15_SEED_SQL = """
+    private static final String V21_SEED_SQL = """
             INSERT INTO iam.permission (
                 permission_id,
                 code,
@@ -43,18 +43,10 @@ class OrganizationAuthorizationSeedMigrationIT {
                 NOW()
             FROM (
                 VALUES
-                    ('organization:create',           'Create organizations'),
-                    ('organization:read',             'Read organizations'),
-                    ('organization:update',           'Update organizations'),
-                    ('organization:archive',          'Archive organizations'),
-                    ('office:create',                 'Create offices'),
-                    ('office:read',                   'Read offices'),
-                    ('office:update',                 'Update offices'),
-                    ('office:archive',                'Archive offices'),
-                    ('staff-assignment:create',       'Create staff organizational assignments'),
-                    ('staff-assignment:read',         'Read staff organizational assignments'),
-                    ('staff-assignment:update',       'Update staff organizational assignments'),
-                    ('staff-assignment:delete',       'Delete staff organizational assignments')
+                    ('appointment:create',  'Create planned care commitments (appointments)'),
+                    ('appointment:read',    'Read planned care commitments (appointments)'),
+                    ('appointment:update',  'Update planned care commitments (reschedule, reassign, complete)'),
+                    ('appointment:cancel',  'Cancel planned care commitments (appointments)')
             ) AS v(code, description)
             WHERE NOT EXISTS (
                 SELECT 1
@@ -68,7 +60,7 @@ class OrganizationAuthorizationSeedMigrationIT {
     }
 
     @Test
-    void shouldSeedOrganizationPermissionsIdempotently() throws SQLException {
+    void shouldSeedAppointmentPermissionsIdempotently() throws SQLException {
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .locations("classpath:db/migration")
@@ -82,14 +74,14 @@ class OrganizationAuthorizationSeedMigrationIT {
                 .migrate();
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
-        assertThat(countOrganizationPermissions()).isEqualTo(EXPECTED_ORGANIZATION_PERMISSION_COUNT);
+        assertThat(countAppointmentPermissions()).isEqualTo(EXPECTED_APPOINTMENT_PERMISSION_COUNT);
         assertThat(appliedMigrationVersion()).isEqualTo("21");
 
-        executeUpdate(V15_SEED_SQL);
-        executeUpdate(V15_SEED_SQL);
+        executeUpdate(V21_SEED_SQL);
+        executeUpdate(V21_SEED_SQL);
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
-        assertThat(countOrganizationPermissions()).isEqualTo(EXPECTED_ORGANIZATION_PERMISSION_COUNT);
+        assertThat(countAppointmentPermissions()).isEqualTo(EXPECTED_APPOINTMENT_PERMISSION_COUNT);
     }
 
     private static int countPermissions() throws SQLException {
@@ -101,18 +93,14 @@ class OrganizationAuthorizationSeedMigrationIT {
         }
     }
 
-    private static int countOrganizationPermissions() throws SQLException {
+    private static int countAppointmentPermissions() throws SQLException {
         try (Connection connection = openConnection();
              PreparedStatement ps = connection.prepareStatement("""
-                     SELECT COUNT(*) FROM iam.permission
-                     WHERE code LIKE 'organization:%'
-                        OR code LIKE 'office:%'
-                        OR code LIKE 'staff-assignment:%'
-                     """)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                return rs.getInt(1);
-            }
+                     SELECT COUNT(*) FROM iam.permission WHERE code LIKE 'appointment:%'
+                     """);
+             ResultSet rs = ps.executeQuery()) {
+            rs.next();
+            return rs.getInt(1);
         }
     }
 

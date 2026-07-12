@@ -139,7 +139,7 @@ HTTP · Controllers · OpenAPI · Use cases · Permissions · `AppointmentRefere
 
 ## Siguiente paso
 
-**PASO 18.5 — Appointment Authorization Contract** — seeds `appointment:*`.
+**PASO 18.5 — Appointment Authorization Contract** — ✅ [PASO-18.5](PASO-18.5-APPOINTMENT-AUTHORIZATION-CONTRACT.md). Siguiente: **18.5.1 Admin API Audit**.
 
 ---
 
