@@ -7,14 +7,14 @@ import java.lang.reflect.Modifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrganizationReferencePortContractTest {
+class OfficeReferencePortContractTest {
 
     @Test
-    void shouldExposeOnlyExistsActiveByIdAndTenant() {
-        Method[] methods = OrganizationReferencePort.class.getDeclaredMethods();
+    void shouldExposeOnlyExistsActiveInOrganization() {
+        Method[] methods = OfficeReferencePort.class.getDeclaredMethods();
         assertThat(methods).hasSize(1);
-        assertThat(methods[0].getName()).isEqualTo("existsActiveByIdAndTenant");
-        assertThat(methods[0].getParameterCount()).isEqualTo(2);
+        assertThat(methods[0].getName()).isEqualTo("existsActiveInOrganization");
+        assertThat(methods[0].getParameterCount()).isEqualTo(3);
         assertThat(Modifier.isPublic(methods[0].getModifiers())).isTrue();
     }
 }

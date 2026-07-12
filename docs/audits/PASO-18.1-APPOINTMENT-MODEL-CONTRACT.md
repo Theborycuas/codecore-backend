@@ -34,7 +34,7 @@ Sin tablas · sin HTTP · sin persistencia · sin módulos Gradle en este paso.
 
 ## Siguiente paso
 
-**PASO 18.2 — Scheduling Reference Ports** — adapter `OfficeReferencePort` + `StaffAssignmentReferencePort` (sin reabrir Org aggregates).
+**PASO 18.2 — Scheduling Reference Ports** — ✅ [PASO-18.2](PASO-18.2-REFERENCE-PORTS.md). Siguiente: **18.3 Domain Foundation**.
 
 ---
 

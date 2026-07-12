@@ -33,7 +33,9 @@ import com.codecore.iam.application.ReactorAuthorizationContextAccessor;
 import com.codecore.organization.testsupport.OrgR2dbcTestConfiguration;
 import com.codecore.organization.configuration.OrganizationModuleConfiguration;
 import com.codecore.organization.infrastructure.adapters.R2dbcMembershipReferenceAdapter;
+import com.codecore.organization.infrastructure.adapters.R2dbcOfficeReferenceAdapter;
 import com.codecore.organization.infrastructure.adapters.R2dbcOrganizationReferenceAdapter;
+import com.codecore.organization.infrastructure.adapters.R2dbcStaffAssignmentReferenceAdapter;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcStaffAssignmentAdminQueryRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcStaffAssignmentRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOfficeAdminQueryRepository;
@@ -66,6 +68,8 @@ import org.springframework.context.annotation.Import;
         R2dbcStaffAssignmentAdminQueryRepository.class,
         R2dbcMembershipReferenceAdapter.class,
         R2dbcOrganizationReferenceAdapter.class,
+        R2dbcOfficeReferenceAdapter.class,
+        R2dbcStaffAssignmentReferenceAdapter.class,
         R2dbcIdentityRepository.class,
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,

@@ -7,12 +7,13 @@ import reactor.core.publisher.Mono;
 
 /**
  * Cross-BC reference contract for Office (ADR-013).
- * Declared for the family; first consumers: Appointment / Inventory (not Patient v1).
+ * Read-only; minimal surface for consumer write-time invariants (Appointment, Inventory, …).
  */
 public interface OfficeReferencePort {
 
     /**
-     * {@code true} when the office exists in the tenant, is ACTIVE, and belongs to the organization.
+     * {@code true} when the office exists in the tenant, status is {@code ACTIVE},
+     * and it belongs to the given organization.
      */
     Mono<Boolean> existsActiveInOrganization(
             OfficeId officeId,

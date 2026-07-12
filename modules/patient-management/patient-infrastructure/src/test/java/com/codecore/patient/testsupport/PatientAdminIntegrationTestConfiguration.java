@@ -32,7 +32,9 @@ import com.codecore.iam.interfaces.http.security.JwtAuthenticationWebFilter;
 import com.codecore.iam.interfaces.http.security.RequiresPermissionAspect;
 import com.codecore.organization.configuration.OrganizationModuleConfiguration;
 import com.codecore.organization.infrastructure.adapters.R2dbcMembershipReferenceAdapter;
+import com.codecore.organization.infrastructure.adapters.R2dbcOfficeReferenceAdapter;
 import com.codecore.organization.infrastructure.adapters.R2dbcOrganizationReferenceAdapter;
+import com.codecore.organization.infrastructure.adapters.R2dbcStaffAssignmentReferenceAdapter;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOfficeAdminQueryRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOfficeRepository;
 import com.codecore.organization.infrastructure.persistence.repository.R2dbcOrganizationAdminQueryRepository;
@@ -73,6 +75,8 @@ import org.springframework.context.annotation.Import;
         R2dbcStaffAssignmentAdminQueryRepository.class,
         R2dbcMembershipReferenceAdapter.class,
         R2dbcOrganizationReferenceAdapter.class,
+        R2dbcOfficeReferenceAdapter.class,
+        R2dbcStaffAssignmentReferenceAdapter.class,
         R2dbcPatientRepository.class,
         R2dbcPatientAdminQueryRepository.class,
         R2dbcPatientReferenceAdapter.class,

@@ -2,7 +2,7 @@
 
 **Audience:** Developers building modules after FASE 16 (Patient, Appointment, Billing, …)  
 **Authority:** [ADR-011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) · [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)  
-**Status:** Vigente desde PASO 16.8 · Reference Ports: PASO 17.2
+**Status:** Vigente desde PASO 16.8 · Reference Ports: PASO 17.2 + **18.2** (Office + StaffAssignment complete)
 
 ---
 
@@ -37,16 +37,27 @@ Need to scope an ACTION to a STAFF MEMBER (appointment, signature)?
   → Store StaffAssignmentId — never MembershipId alone
 
 Need to validate org/office exists and is ACTIVE?
-  → OrganizationReferencePort / OfficeReferencePort (`organization-contract`, ADR-013)
+  → OrganizationReferencePort.existsActiveByIdAndTenant
+  → OfficeReferencePort.existsActiveInOrganization
   → Never repositories, never full aggregates, never mutate via ports
 
-Need to list “where can I work today?” for logged-in user?
-  → StaffAssignmentReferencePort.findActiveByMembership(membershipId, tenantId)
+Need StaffAssignment scope for Appointment coherence (org + optional office)?
+  → StaffAssignmentReferencePort.findScopeByIdAndTenant → StaffAssignmentReferenceView
+  → Never load StaffAssignment aggregate; never MembershipId as provider
 
 Need permission to admin org structure?
   → organization:* / office:* / staff-assignment:* via @RequiresPermission
 ```
 
+### Published ReferencePorts (`organization-contract`)
+
+| Port | Method | Returns |
+|------|--------|---------|
+| `OrganizationReferencePort` | `existsActiveByIdAndTenant` | `Mono<Boolean>` |
+| `OfficeReferencePort` | `existsActiveInOrganization` | `Mono<Boolean>` |
+| `StaffAssignmentReferencePort` | `findScopeByIdAndTenant` | `Mono<Optional<StaffAssignmentReferenceView>>` |
+
+`StaffAssignmentReferenceView`: `staffAssignmentId` · `organizationId` · `officeId?` only (ADR-013 minimal view).
 ---
 
 ## Dependency rules
@@ -100,25 +111,31 @@ Patient
 
 ---
 
-### Appointment
+### Appointment (FASE 18 — ADR-014)
 
-**Owns:** scheduled encounter  
-**References:** `StaffAssignmentId` (provider), `OrganizationId`, optional `OfficeId` (room/site)
+**Owns:** planned commitment of care (`Appointment`)  
+**References:** `PatientId`, `StaffAssignmentId`, `OrganizationId` (denormalized), optional `OfficeId`
 
 ```text
 Appointment
-  staffAssignmentId   ← who performs (NOT membershipId)
-  organizationId
-  officeId              ← where it happens
-  patientId
+  patientId             ← PatientReferencePort
+  staffAssignmentId     ← StaffAssignmentReferencePort.findScopeByIdAndTenant
+  organizationId        ← must match assignment.organizationId (application)
+  officeId?             ← OfficeReferencePort; must respect assignment office if fixed
 ```
+
+**Write-time coherence (application only):**
+
+1. Load `StaffAssignmentReferenceView`  
+2. `appointment.organizationId == view.organizationId`  
+3. If view has office → appointment office must equal it  
+4. If org-wide → optional office via `OfficeReferencePort`
 
 **Never:**
 
-- Load `Membership` to resolve provider name at write time without a port
-- Infer provider office by walking Organization tree
-
-**Read path:** resolve display name via IAM Query Port (identity) + optional org label via `OrganizationReferencePort`.
+- Load `Membership` / `StaffAssignment` aggregate  
+- SQL against `org.*` from Scheduling module  
+- Infer provider office by walking Organization tree  
 
 ---
 
@@ -221,4 +238,6 @@ When testing Patient or Appointment modules:
 - [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md) — §4 IDs, §5 consistency
 - [PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md](../audits/PASO-16.8-ORGANIZATION-VALIDATION-INTEGRATION-PATTERNS.md)
 - [ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md)
-- [PASO-17.2-REFERENCE-CONTRACTS.md](../audits/PASO-17.2-REFERENCE-CONTRACTS.md)
+- [PASO-17.2-REFERENCE-CONTRACTS.md](../audits/PASO-17.2-REFERENCE-CONTRACTS.md)  
+- [PASO-18.2-REFERENCE-PORTS.md](../audits/PASO-18.2-REFERENCE-PORTS.md)  
+- [ADR-014-APPOINTMENT-DOMAIN-MODEL.md](ADR-014-APPOINTMENT-DOMAIN-MODEL.md)  
