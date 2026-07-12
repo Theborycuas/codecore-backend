@@ -63,7 +63,7 @@ HTTP · `@RequiresPermission` en controllers · use cases · `EncounterReference
 
 ## Siguiente paso
 
-**PASO 19.5.1 — Encounter Admin API Audit** — shape HTTP `/api/v1/records/encounters` — sin código de implementación.
+**PASO 19.5.1 — Encounter Admin API Audit** — ✅ [PASO-19.5.1](PASO-19.5.1-ENCOUNTER-ADMINISTRATION-API-AUDIT.md). Siguiente: **19.6 Administration API**.
 
 ---
 

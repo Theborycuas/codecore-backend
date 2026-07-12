@@ -279,7 +279,7 @@ Patient’s optional `PrimaryOrganizationId` is **not** a substitute for Encount
 
 ### Neutral
 
-- Permission seed and HTTP shape deferred to 19.5 / 19.5.1  
+- Permission seed and HTTP shape deferred to 19.5 / 19.5.1 — **done** (19.5 seed · 19.5.1 HTTP audit)  
 - `EncounterReferencePort` deferred to closeout 19.8  
 
 ---

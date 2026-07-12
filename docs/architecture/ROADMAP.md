@@ -29,7 +29,7 @@
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
-| **19** | Clinical Records | 🟡 En curso | **19.5** Authorization ✅ — siguiente **19.5.1** Admin API Audit |
+| **19** | Clinical Records | 🟡 En curso | **19.6** Administration API ✅ — siguiente **19.7** Verification |
 | **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -445,7 +445,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`Encounter`) | 🟡 19.5 ✅ Authorization | Patient · Org/Office/Staff · Appointment? |
+| **19** | **Clinical Records** (`Encounter`) | 🟡 19.6 ✅ Administration API | Patient · Org/Office/Staff · Appointment? |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
@@ -633,8 +633,8 @@ Planificación: [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLAN
 | **19.3** | Encounter Domain Foundation | ✅ | [PASO-19.3](../audits/PASO-19.3-ENCOUNTER-DOMAIN-FOUNDATION.md) | ADR-015 | Aggregate `Encounter` + VOs + domain tests |
 | **19.4** | Encounter Persistence | ✅ | [PASO-19.4](../audits/PASO-19.4-ENCOUNTER-PERSISTENCE.md) | — | V22 `records.encounter` + R2DBC + ITs |
 | **19.5** | Encounter Authorization Contract | ✅ | [PASO-19.5](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT.md) · [AUDIT](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `encounter:*` + V23 + RBAC matrix |
-| **19.5.1** | Encounter Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape — sin código |
-| **19.6** | Encounter Administration API | ⏳ | — | — | `/api/v1/records/encounters` |
+| **19.5.1** | Encounter Admin API Audit | ✅ | **Obligatoria** · [PASO-19.5.1](../audits/PASO-19.5.1-ENCOUNTER-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape — sin código |
+| **19.6** | Encounter Administration API | ✅ | [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md) | — | `/api/v1/records/encounters` |
 | **19.7** | Encounter Verification | ⏳ | — | — | E2E VerificationIT |
 | **19.8** | Clinical Records Closeout | ⏳ | — | — | `EncounterReferencePort` · guía · FASE 19 ✅ |
 
@@ -695,9 +695,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 19.5.1 — Encounter Admin API Audit** — shape HTTP `/api/v1/records/encounters` (espejo Appointment 18.5.1) — sin código.
+**PASO 19.7 — Encounter Verification** — E2E VerificationIT sobre la API de [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md).
 
-Referencias: [PASO-19.5](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-18.5.1](../audits/PASO-18.5.1-APPOINTMENT-ADMINISTRATION-API-AUDIT.md).
+Referencias: [PASO-19.6](../audits/PASO-19.6-ENCOUNTER-ADMINISTRATION-API.md) · [PASO-19.5.1](../audits/PASO-19.5.1-ENCOUNTER-ADMINISTRATION-API-AUDIT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md).
 
 ---
 
@@ -705,6 +705,8 @@ Referencias: [PASO-19.5](../audits/PASO-19.5-ENCOUNTER-AUTHORIZATION-CONTRACT.md
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **19.6** | Encounter Administration API — `/api/v1/records/encounters` + multi-ReferencePort |
+| 2026-07-11 | **19.5.1** | Encounter Admin API Audit — HTTP shape `/api/v1/records/encounters` |
 | 2026-07-11 | **19.5** | Encounter Authorization Contract — `encounter:*` + V23 + RBAC matrix |
 | 2026-07-11 | **19.4** | Encounter Persistence — V22 records.encounter + R2DBC ITs |
 | 2026-07-11 | **19.3** | Encounter Domain Foundation — aggregate + VOs + domain tests (ADR-015) |
