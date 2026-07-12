@@ -4,8 +4,9 @@ plugins {
 }
 
 dependencies {
-    // Future consumers depend on this module for PatientId (and later PatientReferencePort).
+    // Consumers depend on this module for PatientId, permissions, and PatientReferencePort (ADR-013).
     api(projects.modules.patientManagement.patientDomain)
+    api(libs.reactor.core)
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

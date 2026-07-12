@@ -5,8 +5,9 @@
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
 **IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
 **Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
+**Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
-**Planificación FASE 17:** [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md)
+**Planificación FASE 17:** [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)
 
 ---
 
@@ -21,7 +22,7 @@
 | **14** | Authorization Foundation | ✅ Cerrada | 14.9 + 14.9.1 audit |
 | **15** | IAM Administration | ✅ Cerrada | 15.9.4 |
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
-| **17** | Clinical Foundation | 🟡 En curso | **17.6** Admin API ✅ — siguiente **17.7** |
+| **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18+** | Scheduling · Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -435,7 +436,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 |------|-----------------|--------|-------------------|
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
-| **17** | **Clinical Foundation** (`Patient`) | 🟡 17.6 ✅ Admin API | siguiente Verification 17.7 |
+| **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ⏳ | Patient + StaffAssignment |
 | **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
@@ -482,15 +483,17 @@ Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 ---
 
-# FASE 17 — Clinical Foundation 🟡
+# FASE 17 — Clinical Foundation ✅
 
 ## Contexto
 
-Organization Management está **cerrado**. El siguiente valor arquitectónico es el **primer bounded context clínico** que consume Organization por IDs + Query Ports (ADR-011), sin reabrir Org.
+Organization Management está **cerrado**. FASE 17 entregó el **primer bounded context clínico** que consume Organization por IDs + Query Ports (ADR-011/013), sin reabrir Org.
 
 ## Objetivo
 
 Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, persistencia, contrato de autorización, API admin, verificación E2E y closeout — patrón idéntico a FASE 15/16.
+
+**Cierre:** [PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md) · consumo [PATIENT-CONSUMPTION-GUIDE.md](PATIENT-CONSUMPTION-GUIDE.md)
 
 ## Primer Aggregate Root: `Patient`
 
@@ -517,8 +520,8 @@ Entregar el BC **Clinical Foundation** con aggregate **`Patient`**: dominio, per
 | **17.5** | Patient Authorization Contract | ✅ | [PASO-17.5](../audits/PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT.md) · [Audit](../audits/PASO-17.5-PATIENT-AUTHORIZATION-CONTRACT-AUDIT.md) | — | `PatientPermissionCatalog` + V19 seeds + RBAC matrix |
 | **17.5.1** | Patient Admin API Audit | ✅ | [PASO-17.5.1](../audits/PASO-17.5.1-PATIENT-ADMINISTRATION-API-AUDIT.md) | — | HTTP/DTO/paginación/archive — espejo Org; sin código |
 | **17.6** | Patient Administration API | ✅ | [PASO-17.6](../audits/PASO-17.6-PATIENT-ADMINISTRATION-API.md) | — | CRUD `/api/v1/clinical/patients` |
-| **17.7** | Patient Verification | ⏳ | — | — | E2E verification IT |
-| **17.8** | Clinical Foundation Closeout | ⏳ | — | — | OpenAPI · FASE 17 ✅ |
+| **17.7** | Patient Verification | ✅ | [PASO-17.7](../audits/PASO-17.7-PATIENT-VERIFICATION.md) | — | E2E + Core validation (BC listo para consumo) |
+| **17.8** | Clinical Foundation Closeout | ✅ | [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md) | — | OpenAPI · `PatientReferencePort` · guía · FASE 17 ✅ |
 
 ## Restricciones FASE 17
 
@@ -528,13 +531,14 @@ No introducir: CQRS · Event Sourcing · Microservicios · org-scoped RBAC · In
 
 No modificar: aggregates IAM ni Organization/Office/StaffAssignment.
 
-## Resultado esperado al cerrar FASE 17
+## Resultado al cerrar FASE 17
 
-1. Paciente creado bajo tenant (+ org/office opcionales validados por ports)  
-2. Listado/archivo con RBAC `patient:*`  
-3. Cross-tenant → 404  
-4. Verification E2E verde  
-5. Siguiente fase = **18 Scheduling**  
+1. Paciente creado bajo tenant (+ org opcional validada por ports) ✅  
+2. Listado/archivo con RBAC `patient:*` ✅  
+3. Cross-tenant → 404 ✅  
+4. Verification E2E verde ✅  
+5. `PatientReferencePort` publicado ✅  
+6. Siguiente fase = **18 Scheduling**  
 
 ---
 
@@ -583,9 +587,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**PASO 17.7 — Patient Verification** — journey E2E (RBAC, tenant, primary org refs, OpenAPI) sobre la API de [PASO-17.6](../audits/PASO-17.6-PATIENT-ADMINISTRATION-API.md).
+**FASE 18 — Scheduling (`Appointment`)** — primer consumidor de `PatientId` + `PatientReferencePort` (+ StaffAssignment / Org ports). No reabrir FASE 17.
 
-Referencias: [PASO-17.6-PATIENT-ADMINISTRATION-API.md](../audits/PASO-17.6-PATIENT-ADMINISTRATION-API.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
+Referencias: [PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md) · [PATIENT-CONSUMPTION-GUIDE.md](PATIENT-CONSUMPTION-GUIDE.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
 
 ---
 
@@ -593,6 +597,8 @@ Referencias: [PASO-17.6-PATIENT-ADMINISTRATION-API.md](../audits/PASO-17.6-PATIE
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **17.8** | Clinical Foundation Closeout — FASE 17 ✅ · PatientReferencePort · consumption guide |
+| 2026-07-11 | **17.7** | Patient Verification — E2E 8/8 + Core validation; BC listo para consumo |
 | 2026-07-11 | **17.6** | Patient Administration API — `/api/v1/clinical/patients` espejo Org; ITs verdes |
 | 2026-07-11 | **17.5.1** | Patient Admin API Audit — espejo Org; listo para 17.6 |
 | 2026-07-11 | **17.5** | Patient Authorization Contract — `patient:*` + V19 + RBAC matrix |

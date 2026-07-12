@@ -72,10 +72,11 @@ Only. Never infrastructure or domain.
 
 ## Module recipes
 
-### Patient (FASE 17)
+### Patient (FASE 17 — closed)
 
 **Owns:** clinical registry identity of the care subject  
-**References:** `TenantId` (required, immutable), optional `PrimaryOrganizationId` (`OrganizationId`)
+**References:** `TenantId` (required, immutable), optional `PrimaryOrganizationId` (`OrganizationId`)  
+**Published for consumers:** [PATIENT-CONSUMPTION-GUIDE.md](PATIENT-CONSUMPTION-GUIDE.md) · `PatientReferencePort`
 
 ```text
 Patient

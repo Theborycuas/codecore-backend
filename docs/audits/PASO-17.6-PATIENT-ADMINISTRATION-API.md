@@ -94,7 +94,7 @@ PatientReferencePort · Appointment · Encounter · MedicalRecord · Billing · 
 
 ## Siguiente paso
 
-**PASO 17.7 — Patient Verification** — journey E2E (RBAC, tenant, org refs, OpenAPI).
+**PASO 17.7 — Patient Verification** — ✅ [PASO-17.7](PASO-17.7-PATIENT-VERIFICATION.md). Siguiente: **17.8 Closeout**.
 
 ---
 

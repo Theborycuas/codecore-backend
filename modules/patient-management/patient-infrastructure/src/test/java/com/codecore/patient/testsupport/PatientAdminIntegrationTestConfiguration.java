@@ -44,6 +44,7 @@ import com.codecore.organization.interfaces.http.admin.OfficeAdminController;
 import com.codecore.organization.interfaces.http.admin.OrganizationAdminController;
 import com.codecore.organization.interfaces.http.admin.StaffAssignmentAdminController;
 import com.codecore.patient.configuration.PatientModuleConfiguration;
+import com.codecore.patient.infrastructure.adapters.R2dbcPatientReferenceAdapter;
 import com.codecore.patient.infrastructure.persistence.repository.R2dbcPatientAdminQueryRepository;
 import com.codecore.patient.infrastructure.persistence.repository.R2dbcPatientRepository;
 import com.codecore.patient.interfaces.http.PatientHttpExceptionHandler;
@@ -74,6 +75,7 @@ import org.springframework.context.annotation.Import;
         R2dbcOrganizationReferenceAdapter.class,
         R2dbcPatientRepository.class,
         R2dbcPatientAdminQueryRepository.class,
+        R2dbcPatientReferenceAdapter.class,
         R2dbcIdentityRepository.class,
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,
