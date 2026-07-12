@@ -8,12 +8,12 @@
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
 **Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
-**Inventory:** 🟡 **EN CURSO** (FASE 20 · ADR-016 Accepted — Item frozen)  
+**Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
-**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)  
+**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -32,8 +32,8 @@
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
-| **20** | Inventory (Item) | 🟡 En curso | 20.7 ✅ Verification · siguiente 20.8 Closeout |
-| **21+** | Billing · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
+| **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
+| **21+** | Billing · Stock · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -449,7 +449,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
 | **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
-| **20** | **Inventory** | 🟡 | ADR-016 frozen · Reference readiness next · Stock después del slice Item |
+| **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
 | **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
@@ -655,9 +655,10 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 
 ---
 
-## FASE 20 — Inventory (Item slice)
+## FASE 20 — Inventory (Item slice) ✅
 
-**Estado:** 🟡 En curso · **ADR-016 Accepted** (Item frozen)  
+**Estado:** ✅ Cerrada · **ADR-016 Accepted** (Item frozen)  
+**Cierre:** [PASO-20.8-INVENTORY-CLOSEOUT.md](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · consumo [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md)  
 **Plan:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)
 
 ### Primer Aggregate Root: `Item`
@@ -685,7 +686,7 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 | **20.5.1** | Item Admin API Audit | ✅ | **Obligatoria** · [PASO-20.5.1](../audits/PASO-20.5.1-ITEM-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/inventory/items` |
 | **20.6** | Item Administration API | ✅ | [PASO-20.6](../audits/PASO-20.6-ITEM-ADMINISTRATION-API.md) | — | `/api/v1/inventory/items` + ITs 6/6 |
 | **20.7** | Item Verification | ✅ | [PASO-20.7](../audits/PASO-20.7-ITEM-VERIFICATION.md) | — | `ItemVerificationIT` 8/8 |
-| **20.8** | Inventory Closeout (Item) | ⏳ | — | — | `ItemReferencePort` · guía |
+| **20.8** | Inventory Closeout (Item) | ✅ | [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) | — | `ItemReferencePort` · guía · FASE 20 ✅ |
 
 ### Restricciones FASE 20
 
@@ -747,9 +748,9 @@ FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization 
 
 ### Siguiente acción
 
-**PASO 20.8 — Inventory Closeout (Item)** — `ItemReferencePort` + guía de consumo. Cierra FASE 20 (Item slice).
+**Stock (mismo BC Inventory)** o **FASE 21 — Billing** — consumen `ItemId` + `ItemReferencePort` **sin reabrir** ADR-016 ni FASE 16–20 Item.
 
-Referencias: [PASO-20.7](../audits/PASO-20.7-ITEM-VERIFICATION.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md).
+Referencias: [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
 
 ---
 
@@ -757,6 +758,8 @@ Referencias: [PASO-20.7](../audits/PASO-20.7-ITEM-VERIFICATION.md) · [ADR-016](
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **20.8** | **INVENTORY ITEM SLICE COMPLETE** — ItemReferencePort · consumption guide · FASE 20 ✅ |
+| 2026-07-12 | **20.7** | Item Verification — E2E 8/8 + Core validation |
 | 2026-07-12 | **20.6** | Item Administration API — `/api/v1/inventory/items` + unit 3/3 · IT 6/6 |
 | 2026-07-12 | **20.5.1** | Item Admin API Audit — HTTP shape `/api/v1/inventory/items` |
 | 2026-07-12 | **20.5** | Item Authorization Contract — `item:*` + V25 + RBAC matrix (ALL 44) |

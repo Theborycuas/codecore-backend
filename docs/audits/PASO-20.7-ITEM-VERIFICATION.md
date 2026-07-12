@@ -207,7 +207,7 @@ Ningún riesgo obliga a modificar el dominio ahora.
 
 ## Siguiente paso
 
-**PASO 20.8 — Inventory Closeout (Item)** — `ItemReferencePort` + guía de consumo. Cierra FASE 20 (Item slice).
+**PASO 20.8 — Inventory Closeout (Item)** — ✅ [PASO-20.8](PASO-20.8-INVENTORY-CLOSEOUT.md). **FASE 20 Item slice ✅**.
 
 ---
 

@@ -31,6 +31,7 @@ import com.codecore.iam.interfaces.http.security.AuthorizationContextWebFilter;
 import com.codecore.iam.interfaces.http.security.JwtAuthenticationWebFilter;
 import com.codecore.iam.interfaces.http.security.RequiresPermissionAspect;
 import com.codecore.inventory.configuration.InventoryModuleConfiguration;
+import com.codecore.inventory.infrastructure.adapters.R2dbcItemReferenceAdapter;
 import com.codecore.inventory.infrastructure.persistence.repository.R2dbcItemAdminQueryRepository;
 import com.codecore.inventory.infrastructure.persistence.repository.R2dbcItemRepository;
 import com.codecore.inventory.interfaces.http.ItemHttpExceptionHandler;
@@ -78,6 +79,7 @@ import org.springframework.context.annotation.Import;
         R2dbcStaffAssignmentReferenceAdapter.class,
         R2dbcItemRepository.class,
         R2dbcItemAdminQueryRepository.class,
+        R2dbcItemReferenceAdapter.class,
         R2dbcIdentityRepository.class,
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,
