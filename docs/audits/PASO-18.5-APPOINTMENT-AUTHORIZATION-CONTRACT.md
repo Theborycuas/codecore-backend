@@ -63,7 +63,7 @@ HTTP · `@RequiresPermission` en controllers · use cases · `AppointmentReferen
 
 ## Siguiente paso
 
-**PASO 18.5.1 — Appointment Admin API Audit** (antes de HTTP 18.6).
+**PASO 18.5.1 — Appointment Admin API Audit** — ✅ [PASO-18.5.1](PASO-18.5.1-APPOINTMENT-ADMINISTRATION-API-AUDIT.md). Siguiente: **18.6 Administration API**.
 
 ---
 
