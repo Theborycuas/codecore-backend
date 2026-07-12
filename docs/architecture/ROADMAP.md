@@ -7,9 +7,11 @@
 **Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
+**Clinical Records:** 🟡 **EN CURSO** (FASE 19 — primer Aggregate `Encounter`)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
+**Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · review [CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -27,7 +29,8 @@
 | **16** | Organization Management | ✅ Cerrada | 16.10 — BC estable (ADR-011) |
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
-| **19+** | Records · Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
+| **19** | Clinical Records | 🟡 En curso | **19.1** ADR-015 ✅ — siguiente **19.2** Reference Readiness |
+| **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -441,8 +444,8 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
-| **18** | **Scheduling** (`Appointment`) | 🟡 18.2 ✅ Org ReferencePorts complete | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`MedicalRecord`) | ⏳ | Patient · OrganizationId custodian |
+| **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
+| **19** | **Clinical Records** (`Encounter`) | 🟡 19.1 ✅ ADR-015 Accepted | Patient · Org/Office/Staff · Appointment? |
 | **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
@@ -596,6 +599,55 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · En
 
 ---
 
+# FASE 19 — Clinical Records 🟡
+
+## Contexto
+
+IAM · Organization · Clinical Foundation · Scheduling están **cerrados**. FASE 19 introduce **Clinical Records**: documentar lo que **ocurrió** en la atención — sin reabrir FASE 16–18 ([Scheduling Architecture Review](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md) · opción A).
+
+## Objetivo
+
+Entregar el BC **Clinical Records** con primer aggregate **`Encounter`**: episodio de atención ocurrido, vertical-agnóstico, *intentionally small*.
+
+Planificación: [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md)
+
+## Primer Aggregate Root: `Encounter`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | El episodio de atención que **ocurrió** para un sujeto de cuidado en un contexto operativo |
+| ¿Por qué no MedicalRecord? | Chart longitudinal → God Aggregate; proyección o aggregate posterior |
+| ¿Por qué no Appointment? | Appointment **planifica**; Encounter **registra ocurrencia** |
+| Consume | `PatientId` · `StaffAssignmentId` · `OrganizationId` · `OfficeId?` · `AppointmentId?` · `TenantId` |
+| No conoce | Membership/Identity como proveedor · SOAP · Odontogram · Billing · Inventory |
+| IDs | Solo referencias; validación vía ReferencePorts (ADR-013) |
+
+## Pasos FASE 19
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **19.0** | Clinical Records Foundation Planning | ✅ | Este paso | — | [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) |
+| **19.0.1** | Encounter Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-015 | [PASO-19.0.1](../audits/PASO-19.0.1-ENCOUNTER-AGGREGATE-AUDIT.md) |
+| **19.1** | Encounter Model ADR | ✅ | [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) | **ADR-015 Accepted** | Modelo **congelado** |
+| **19.2** | Clinical Records Reference Readiness | ⏳ | — | ADR-013 | Ports existentes / evolución mínima Appointment port |
+| **19.3** | Encounter Domain Foundation | ⏳ | — | ADR-015 | Aggregate + VOs + tests |
+| **19.4** | Encounter Persistence | ⏳ | — | — | Schema `records` (propuesta) + R2DBC |
+| **19.5** | Encounter Authorization Contract | ⏳ | — | — | `encounter:*` + seed |
+| **19.5.1** | Encounter Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape — sin código |
+| **19.6** | Encounter Administration API | ⏳ | — | — | `/api/v1/records/encounters` |
+| **19.7** | Encounter Verification | ⏳ | — | — | E2E VerificationIT |
+| **19.8** | Clinical Records Closeout | ⏳ | — | — | `EncounterReferencePort` · guía · FASE 19 ✅ |
+
+## Restricciones FASE 19
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010/011/012/013/014/015.
+
+**No modificar / no reabrir:** IAM · Organization · Patient · Appointment · ADR-010…015.
+
+No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SOAP/odontogram/recetas en el Core · MedicalRecord God Aggregate · product packs verticales · event bus preventivo.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -614,6 +666,7 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · En
 | ADR-012 | Patient Domain Model | **Accepted** (17.1) — **frozen**; cambios → nuevo ADR |
 | ADR-013 | Bounded Context Reference Contracts | **Accepted** (17.2) — patrón oficial cross-BC |
 | ADR-014 | Appointment Domain Model | **Accepted** (18.1) — **frozen**; cambios → nuevo ADR |
+| ADR-015 | Encounter Domain Model | **Accepted** (19.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -642,9 +695,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**FASE 19 — Clinical Records** — siguiente BC del Core Platform. Scheduling está **cerrado**: consumir `AppointmentId` + `AppointmentReferencePort` vía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md) **sin reabrir** FASE 18.
+**PASO 19.2 — Clinical Records Reference Readiness** — evolucionar `AppointmentReferencePort` (mínimo: linkable SCHEDULED\|COMPLETED + `patientId`) según [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) §7/§10 — **sin** reabrir ADR-014 ni crear ports “por si acaso”.
 
-Referencias: [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [PASO-18.7](../audits/PASO-18.7-APPOINTMENT-VERIFICATION.md).
+Referencias: [PASO-19.1](../audits/PASO-19.1-ENCOUNTER-MODEL-CONTRACT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [PASO-19.0.1](../audits/PASO-19.0.1-ENCOUNTER-AGGREGATE-AUDIT.md).
 
 ---
 
@@ -652,6 +705,9 @@ Referencias: [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · [ADR-014
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-11 | **19.1** | ADR-015 Accepted — Encounter model frozen (*intentionally small*) |
+| 2026-07-11 | **19.0.1** | Encounter Aggregate Audit — episodio ocurrido; prep. ADR-015 |
+| 2026-07-11 | **19.0** | Clinical Records Foundation Planning — BC Clinical Records · primer root `Encounter` |
 | 2026-07-11 | **18.8** | **SCHEDULING COMPLETE** — AppointmentReferencePort · consumption guide · FASE 18 ✅ |
 | 2026-07-11 | **18.7** | Appointment Verification — E2E 8/8 + Core validation |
 | 2026-07-11 | **18.6** | Appointment Administration API — scheduling HTTP + multi-ReferencePort |
