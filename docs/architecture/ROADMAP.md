@@ -1,6 +1,6 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-07-11  
+**Última actualización:** 2026-07-12  
 **Módulos de plataforma:** `identity-access-management` · `organization-management`  
 **Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
 **IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
@@ -8,10 +8,12 @@
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
 **Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
+**Inventory:** 🟡 **EN CURSO** (FASE 20 · ADR-016 Accepted — Item frozen)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
+**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -30,7 +32,8 @@
 | **17** | Clinical Foundation | ✅ Cerrada | 17.8 — BC estable (ADR-012/013) |
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
-| **20+** | Inventory · Billing · Platform | ⏳ Pendiente | Ver § Roadmap por BC |
+| **20** | Inventory (Item) | 🟡 En curso | 20.4 ✅ Persistence · siguiente 20.5 Auth |
+| **21+** | Billing · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -446,7 +449,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
 | **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
-| **20** | **Inventory** | ⏳ | OfficeId · OrganizationId |
+| **20** | **Inventory** | 🟡 | ADR-016 frozen · Reference readiness next · Stock después del slice Item |
 | **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
 | **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
@@ -652,6 +655,48 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 
 ---
 
+## FASE 20 — Inventory (Item slice)
+
+**Estado:** 🟡 En curso · **ADR-016 Accepted** (Item frozen)  
+**Plan:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)
+
+### Primer Aggregate Root: `Item`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | Identidad inventariable de algo que puede stockearse, moverse o consumirse bajo un Tenant |
+| ¿Por qué no Stock? | Qty necesita `ItemId`; Stock es aggregate posterior del mismo BC |
+| ¿Por qué no Product? | Sesgo comercio; `code` opcional cubre SKU |
+| Consume | `TenantId` · `PrimaryOrganizationId?` · `OrganizationReferencePort` |
+| No conoce | `OfficeId` · qty · price · BOM · Encounter/Patient · UoM en v1 |
+| IDs | Solo referencias; validación vía ReferencePorts (ADR-013) |
+
+### Pasos FASE 20
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **20.0** | Inventory Foundation Planning | ✅ | Este paso | — | [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) |
+| **20.0.1** | Item Aggregate Audit | ✅ | **Obligatoria** | Prep. ADR-016 | [PASO-20.0.1](../audits/PASO-20.0.1-ITEM-AGGREGATE-AUDIT.md) |
+| **20.1** | Item Model ADR | ✅ | [PASO-20.1](../audits/PASO-20.1-ITEM-MODEL-CONTRACT.md) | **ADR-016 Accepted** | Modelo **congelado** |
+| **20.2** | Inventory Reference Readiness | ✅ | [PASO-20.2](../audits/PASO-20.2-INVENTORY-REFERENCE-READINESS.md) | ADR-013 | Org port suficiente — **sin evolución** |
+| **20.3** | Item Domain Foundation | ✅ | [PASO-20.3](../audits/PASO-20.3-ITEM-DOMAIN-FOUNDATION.md) | ADR-016 | Aggregate `Item` + VOs + 27 domain tests |
+| **20.4** | Item Persistence | ✅ | [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) | — | V24 `inventory.item` + R2DBC + ITs 12/12 |
+| **20.5** | Item Authorization Contract | ⏳ | — | — | `item:*` + seed |
+| **20.5.1** | Item Admin API Audit | ⏳ | **Obligatoria** | — | HTTP shape |
+| **20.6** | Item Administration API | ⏳ | — | — | `/api/v1/inventory/items` |
+| **20.7** | Item Verification | ⏳ | — | — | VerificationIT |
+| **20.8** | Inventory Closeout (Item) | ⏳ | — | — | `ItemReferencePort` · guía |
+
+### Restricciones FASE 20
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010–016.
+
+**No modificar / no reabrir:** IAM · Organization · Patient · Appointment · Encounter · ADR-010…015.
+
+No introducir: Stock/qty en Item · precios · BOM · lotes · ports clínicos preventivos · org-scoped RBAC · WMS/POS en el Core · event bus preventivo.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -671,6 +716,7 @@ No introducir: CQRS · Event Sourcing · microservicios · org-scoped RBAC · SO
 | ADR-013 | Bounded Context Reference Contracts | **Accepted** (17.2) — patrón oficial cross-BC |
 | ADR-014 | Appointment Domain Model | **Accepted** (18.1) — **frozen**; cambios → nuevo ADR |
 | ADR-015 | Encounter Domain Model | **Accepted** (19.1) — **frozen**; cambios → nuevo ADR |
+| ADR-016 | Item Domain Model | **Accepted** (20.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -686,6 +732,8 @@ FASE 16 introduce **ADR-010** (dominio de negocio nuevo) sin modificar ADR-006/0
 
 FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference Contracts para todo CodeCore) y **consume** Organization vía ADR-011/013 — sin modificar ADR-010.
 
+FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization vía ADR-011/013 — sin modificar ADR-010…015 ni BCs clínicos.
+
 ---
 
 ## Proceso autónomo Cursor
@@ -699,9 +747,9 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 ### Siguiente acción
 
-**FASE 20 — Inventory** — primer Aggregate de inventario sobre Organization / Office (ReferencePorts) **sin reabrir** FASE 16–19.
+**PASO 20.5 — Item Authorization Contract** — seed `item:*` + matriz RBAC ([ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)).
 
-Referencias: [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md).
+Referencias: [PASO-20.4](../audits/PASO-20.4-ITEM-PERSISTENCE.md) · [PASO-20.3](../audits/PASO-20.3-ITEM-DOMAIN-FOUNDATION.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
 
 ---
 
@@ -709,6 +757,12 @@ Referencias: [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · [C
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **20.4** | Item Persistence — V24 inventory.item + R2DBC ITs 12/12 |
+| 2026-07-12 | **20.3** | Item Domain Foundation — aggregate + VOs + 27 domain tests (ADR-016) |
+| 2026-07-12 | **20.2** | Inventory Reference Readiness — `OrganizationReferencePort` suficiente; sin evolución |
+| 2026-07-12 | **20.1** | ADR-016 Accepted — Item model frozen (*intentionally small*) |
+| 2026-07-12 | **20.0.1** | Item Aggregate Audit — identidad inventariable; tenant-scoped; prep. ADR-016 |
+| 2026-07-12 | **20.0** | Inventory Foundation Planning — BC Inventory · primer root `Item` |
 | 2026-07-11 | **19.8** | **CLINICAL RECORDS COMPLETE** — EncounterReferencePort · consumption guide · FASE 19 ✅ |
 | 2026-07-11 | **19.7** | Encounter Verification — E2E 8/8 + Core validation |
 | 2026-07-11 | **19.6** | Encounter Administration API — `/api/v1/records/encounters` + multi-ReferencePort |

@@ -30,6 +30,7 @@ dependencies {
     implementation(projects.modules.patientManagement.patientInfrastructure)
     implementation(projects.modules.appointmentManagement.appointmentInfrastructure)
     implementation(projects.modules.encounterManagement.encounterInfrastructure)
+    implementation(projects.modules.inventoryManagement.inventoryInfrastructure)
 
     implementation(libs.springdoc.openapi.starter.webflux.ui)
 

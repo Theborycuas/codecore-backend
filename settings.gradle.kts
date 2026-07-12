@@ -73,6 +73,13 @@ include(
 )
 
 include(
+    ":modules:inventory-management:inventory-domain",
+    ":modules:inventory-management:inventory-application",
+    ":modules:inventory-management:inventory-infrastructure",
+    ":modules:inventory-management:inventory-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",
