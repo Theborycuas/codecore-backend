@@ -34,21 +34,26 @@ import com.codecore.access.domain.valueobject.InvitationRoleCode;
 import com.codecore.access.domain.valueobject.InvitationTokenHash;
 import com.codecore.access.domain.valueobject.MembershipId;
 import com.codecore.access.domain.valueobject.TenantId;
+import com.codecore.audit.contract.append.AuditAppendPort;
 import com.codecore.iam.contract.provision.TenantAccessProvisionPort;
 import com.codecore.iam.contract.reference.IamActiveMembershipByEmailPort;
 import com.codecore.iam.contract.reference.IamMembershipReferencePort;
 import com.codecore.iam.contract.reference.IamSystemRoleReferencePort;
 import com.codecore.iam.domain.valueobject.RawPassword;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Invitation administration + public accept use cases (FASE 23.6) — write-time validation via
  * IAM contract ports (ADR-013 / ADR-019). {@code revoke} does not revalidate IAM ports.
+ * Best-effort audit append via {@link AuditAppendPort} (FASE 24) — failures never break business.
  */
 public final class InvitationAdministrationUseCaseImpl
         implements ListInvitationsUseCase,
@@ -56,6 +61,8 @@ public final class InvitationAdministrationUseCaseImpl
         CreateInvitationUseCase,
         RevokeInvitationUseCase,
         AcceptInvitationUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(InvitationAdministrationUseCaseImpl.class);
 
     public static final Duration DEFAULT_INVITATION_TTL = Duration.ofDays(7);
 
@@ -69,6 +76,7 @@ public final class InvitationAdministrationUseCaseImpl
     private final IamSystemRoleReferencePort iamSystemRoleReferencePort;
     private final TenantAccessProvisionPort tenantAccessProvisionPort;
     private final SendInvitationEmailPort sendInvitationEmailPort;
+    private final AuditAppendPort auditAppendPort;
     private final TransactionalOperator transactionalOperator;
     private final Duration invitationTtl;
 
@@ -83,6 +91,7 @@ public final class InvitationAdministrationUseCaseImpl
             IamSystemRoleReferencePort iamSystemRoleReferencePort,
             TenantAccessProvisionPort tenantAccessProvisionPort,
             SendInvitationEmailPort sendInvitationEmailPort,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator
     ) {
         this(
@@ -96,6 +105,7 @@ public final class InvitationAdministrationUseCaseImpl
                 iamSystemRoleReferencePort,
                 tenantAccessProvisionPort,
                 sendInvitationEmailPort,
+                auditAppendPort,
                 transactionalOperator,
                 DEFAULT_INVITATION_TTL
         );
@@ -112,6 +122,7 @@ public final class InvitationAdministrationUseCaseImpl
             IamSystemRoleReferencePort iamSystemRoleReferencePort,
             TenantAccessProvisionPort tenantAccessProvisionPort,
             SendInvitationEmailPort sendInvitationEmailPort,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator,
             Duration invitationTtl
     ) {
@@ -146,6 +157,7 @@ public final class InvitationAdministrationUseCaseImpl
                 sendInvitationEmailPort,
                 "sendInvitationEmailPort"
         );
+        this.auditAppendPort = Objects.requireNonNull(auditAppendPort, "auditAppendPort");
         this.transactionalOperator = Objects.requireNonNull(transactionalOperator, "transactionalOperator");
         this.invitationTtl = Objects.requireNonNull(invitationTtl, "invitationTtl");
     }
@@ -184,8 +196,19 @@ public final class InvitationAdministrationUseCaseImpl
         return tenantContextAccessor.currentTenantId()
                 .flatMap(tenantId -> loadInTenant(tenantId, invitationId)
                         .flatMap(invitation -> {
-                            invitation.revoke(Instant.now());
-                            return invitationRepository.save(invitation);
+                            Instant now = Instant.now();
+                            invitation.revoke(now);
+                            return invitationRepository.save(invitation)
+                                    .flatMap(saved -> resolveRevokeActor(saved)
+                                            .flatMap(actorId -> appendAuditBestEffort(
+                                                    saved.tenantId().value(),
+                                                    "invitation.revoked",
+                                                    actorId,
+                                                    "invitation",
+                                                    saved.id().value(),
+                                                    now
+                                            ))
+                                            .thenReturn(saved));
                         })
                         .map(this::toView))
                 .as(transactionalOperator::transactional);
@@ -237,10 +260,17 @@ public final class InvitationAdministrationUseCaseImpl
                             now
                     );
                     return invitationRepository.save(invitation)
-                            .flatMap(saved -> sendInvitationEmailPort
+                            .flatMap(saved -> appendAuditBestEffort(
+                                    saved.tenantId().value(),
+                                    "invitation.created",
+                                    invitedBy.value(),
+                                    "invitation",
+                                    saved.id().value(),
+                                    now
+                            ).then(sendInvitationEmailPort
                                     .send(tenantId, saved.id(), email, rawToken)
                                     .onErrorResume(ex -> Mono.empty())
-                                    .thenReturn(new CreateInvitationResult(toView(saved), rawToken)));
+                                    .thenReturn(new CreateInvitationResult(toView(saved), rawToken))));
                 }));
     }
 
@@ -256,7 +286,6 @@ public final class InvitationAdministrationUseCaseImpl
         }
         if (!now.isBefore(invitation.expiresAt())) {
             invitation.expire(now);
-            // Commit EXPIRED before surfacing the error — an error inside the same TX would roll back.
             return invitationRepository.save(invitation)
                     .as(transactionalOperator::transactional)
                     .then(Mono.error(new InvalidInvitationStateException("Cannot accept an expired invitation")));
@@ -280,9 +309,46 @@ public final class InvitationAdministrationUseCaseImpl
                     MembershipId resulting = MembershipId.of(iamMembershipId.value());
                     invitation.accept(now, resulting);
                     return invitationRepository.save(invitation)
-                            .map(saved -> new AcceptInvitationResult(toView(saved), resulting.value()));
+                            .flatMap(saved -> appendAuditBestEffort(
+                                    saved.tenantId().value(),
+                                    "invitation.accepted",
+                                    resulting.value(),
+                                    "invitation",
+                                    saved.id().value(),
+                                    now
+                            ).thenReturn(new AcceptInvitationResult(toView(saved), resulting.value())));
                 })
                 .as(transactionalOperator::transactional);
+    }
+
+    private Mono<UUID> appendAuditBestEffort(
+            UUID tenantId,
+            String actionCode,
+            UUID actorMembershipIdOrNull,
+            String resourceType,
+            UUID resourceId,
+            Instant occurredAt
+    ) {
+        return auditAppendPort.append(new AuditAppendPort.AppendAuditCommand(
+                        tenantId,
+                        actionCode,
+                        actorMembershipIdOrNull,
+                        resourceType,
+                        resourceId,
+                        "SUCCESS",
+                        occurredAt
+                ))
+                .onErrorResume(ex -> {
+                    log.warn("Best-effort audit append failed for action={}: {}", actionCode, ex.toString());
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<UUID> resolveRevokeActor(Invitation invitation) {
+        return membershipContextAccessor.currentMembershipId()
+                .map(MembershipId::value)
+                .onErrorResume(ex -> Mono.empty())
+                .switchIfEmpty(Mono.fromSupplier(() -> invitation.invitedByMembershipId().value()));
     }
 
     private Mono<MembershipId> resolveInvitedByMembershipId(CreateInvitationCommand command) {

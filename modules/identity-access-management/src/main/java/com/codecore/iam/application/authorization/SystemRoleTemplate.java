@@ -9,6 +9,8 @@ import java.util.Set;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ADMIN_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.APPOINTMENT_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.APPOINTMENT_READ_ONLY;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.AUDIT_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.AUDIT_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ENCOUNTER_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.INVOICE_PLATFORM_ALL;
@@ -18,6 +20,7 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.IN
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ITEM_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ITEM_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_APPOINTMENT;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_AUDIT;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ENCOUNTER;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_IAM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_INVOICE;
@@ -37,7 +40,7 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.un
 /**
  * Tenant-scoped system role templates
  * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter + 20.5 item + 21.5 invoice
- * + 22.5 payment + 23.5 invitation).
+ * + 22.5 payment + 23.5 invitation + 24.5 audit).
  */
 public enum SystemRoleTemplate {
 
@@ -58,7 +61,8 @@ public enum SystemRoleTemplate {
                     ITEM_PLATFORM_ALL,
                     INVOICE_PLATFORM_ALL,
                     PAYMENT_PLATFORM_ALL,
-                    INVITATION_PLATFORM_ALL
+                    INVITATION_PLATFORM_ALL,
+                    AUDIT_PLATFORM_ALL
             )
     ),
     MANAGER(
@@ -73,7 +77,8 @@ public enum SystemRoleTemplate {
                     MANAGER_ITEM,
                     MANAGER_INVOICE,
                     MANAGER_PAYMENT,
-                    MANAGER_INVITATION
+                    MANAGER_INVITATION,
+                    MANAGER_AUDIT
             )
     ),
     USER(
@@ -88,7 +93,8 @@ public enum SystemRoleTemplate {
                     ITEM_READ_ONLY,
                     INVOICE_READ_ONLY,
                     PAYMENT_READ_ONLY,
-                    INVITATION_READ_ONLY
+                    INVITATION_READ_ONLY,
+                    AUDIT_READ_ONLY
             )
     ),
     READ_ONLY(
@@ -107,7 +113,8 @@ public enum SystemRoleTemplate {
                     ITEM_READ_ONLY,
                     INVOICE_READ_ONLY,
                     PAYMENT_READ_ONLY,
-                    INVITATION_READ_ONLY
+                    INVITATION_READ_ONLY,
+                    AUDIT_READ_ONLY
             )
     );
 

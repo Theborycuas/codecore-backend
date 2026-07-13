@@ -34,6 +34,7 @@ dependencies {
     implementation(projects.modules.billingManagement.billingInfrastructure)
     implementation(projects.modules.paymentManagement.paymentInfrastructure)
     implementation(projects.modules.accessManagement.accessInfrastructure)
+    implementation(projects.modules.auditManagement.auditInfrastructure)
 
     implementation(libs.springdoc.openapi.starter.webflux.ui)
 

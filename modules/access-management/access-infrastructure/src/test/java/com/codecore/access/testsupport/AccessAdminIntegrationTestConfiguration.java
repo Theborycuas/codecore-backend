@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * Full Access administration stack for FASE 23.7 verification (E2E HTTP).
+ * Uses IAM {@code @ConditionalOnMissingBean} noop {@code AuditAppendPort} unless Audit is imported.
  */
 @Configuration
 @EnableAutoConfiguration

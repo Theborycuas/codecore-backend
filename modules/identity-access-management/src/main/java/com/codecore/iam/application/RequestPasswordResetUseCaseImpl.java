@@ -1,5 +1,6 @@
 package com.codecore.iam.application;
 
+import com.codecore.audit.contract.append.AuditAppendPort;
 import com.codecore.iam.application.command.RequestPasswordResetCommand;
 import com.codecore.iam.application.port.in.RequestPasswordResetUseCase;
 import com.codecore.iam.application.port.out.IdentityRepository;
@@ -13,6 +14,8 @@ import com.codecore.iam.domain.valueobject.ResetTokenHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 import com.codecore.iam.domain.valueobject.TokenExpiration;
 import com.codecore.iam.infrastructure.security.Sha256TokenHasher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Mono;
 
@@ -22,8 +25,11 @@ import java.util.Objects;
 
 /**
  * Starts password recovery. Always completes successfully to avoid email enumeration.
+ * Best-effort audit append via {@link AuditAppendPort} (FASE 24).
  */
 public final class RequestPasswordResetUseCaseImpl implements RequestPasswordResetUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(RequestPasswordResetUseCaseImpl.class);
 
     static final Duration TOKEN_TTL = Duration.ofHours(1);
 
@@ -31,6 +37,7 @@ public final class RequestPasswordResetUseCaseImpl implements RequestPasswordRes
     private final MembershipRepository membershipRepository;
     private final PasswordResetRepository passwordResetRepository;
     private final SendPasswordResetEmailPort sendPasswordResetEmailPort;
+    private final AuditAppendPort auditAppendPort;
     private final TransactionalOperator transactionalOperator;
 
     public RequestPasswordResetUseCaseImpl(
@@ -38,6 +45,7 @@ public final class RequestPasswordResetUseCaseImpl implements RequestPasswordRes
             MembershipRepository membershipRepository,
             PasswordResetRepository passwordResetRepository,
             SendPasswordResetEmailPort sendPasswordResetEmailPort,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator
     ) {
         this.identityRepository = Objects.requireNonNull(identityRepository, "identityRepository");
@@ -50,6 +58,7 @@ public final class RequestPasswordResetUseCaseImpl implements RequestPasswordRes
                 sendPasswordResetEmailPort,
                 "sendPasswordResetEmailPort"
         );
+        this.auditAppendPort = Objects.requireNonNull(auditAppendPort, "auditAppendPort");
         this.transactionalOperator = Objects.requireNonNull(transactionalOperator, "transactionalOperator");
     }
 
@@ -92,8 +101,26 @@ public final class RequestPasswordResetUseCaseImpl implements RequestPasswordRes
         );
 
         Mono<Void> persistAndSend = passwordResetRepository.save(request)
-                .then(sendPasswordResetEmailPort.send(email, rawToken));
+                .flatMap(saved -> appendAuditBestEffort(tenantId, identityId, now)
+                        .then(sendPasswordResetEmailPort.send(email, rawToken)));
 
         return persistAndSend.as(transactionalOperator::transactional);
+    }
+
+    private Mono<Void> appendAuditBestEffort(TenantId tenantId, IdentityId identityId, Instant now) {
+        return auditAppendPort.append(new AuditAppendPort.AppendAuditCommand(
+                        tenantId.value(),
+                        "password_reset.requested",
+                        null,
+                        "identity",
+                        identityId.value(),
+                        "SUCCESS",
+                        now
+                ))
+                .onErrorResume(ex -> {
+                    log.warn("Best-effort audit append failed for password_reset.requested: {}", ex.toString());
+                    return Mono.empty();
+                })
+                .then();
     }
 }

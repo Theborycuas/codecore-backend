@@ -43,7 +43,7 @@ Adopt a formal backlog with three priority tiers. Items closed in PASO 15.9.2–
 
 | Item | Status | Target phase | Notes |
 |------|--------|--------------|-------|
-| **Audit Trail** — admin mutations, IAM lifecycle events | Deferred | FASE 21 | No structured audit log today |
+| **Audit Trail** — admin mutations, IAM lifecycle events | **Done (FASE 24)** | FASE 24 | `AuditEntry` append-only · V33–V34 · `AuditAppendPort` |
 | **JWT stale token mitigation** — revalidate identity status on each request | Deferred | FASE 22 | Tokens valid until expiry after disable |
 | **OpenAPI improvements** — `@ApiResponse`, examples, auth group | Deferred | FASE 22 | Admin group operational; auth/bootstrap undocumented |
 | **Logging / Observability** — structured logs, metrics, tracing | Deferred | FASE 21 | Transversal |
@@ -62,7 +62,7 @@ Adopt a formal backlog with three priority tiers. Items closed in PASO 15.9.2–
 ## Consequences
 
 - FASE 16 may start when 15.9.2–15.9.4 are closed and IAM is marked **FOUNDATION COMPLETE**.
-- P1 Password Recovery is **Done (FASE 23)**. All P2 items remain tracked here until explicitly scheduled.
+- P1 Password Recovery is **Done (FASE 23)**. P2 Audit Trail is **Done (FASE 24)**. Remaining P2 items remain tracked here until explicitly scheduled.
 - New production gaps discovered during FASE 16+ should be appended to this ADR or a successor backlog ADR — not silently ignored.
 
 ---

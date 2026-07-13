@@ -74,6 +74,8 @@ class InvitationAdministrationUseCaseImplTest {
     @Mock
     private SendInvitationEmailPort sendInvitationEmailPort;
     @Mock
+    private com.codecore.audit.contract.append.AuditAppendPort auditAppendPort;
+    @Mock
     private TransactionalOperator transactionalOperator;
 
     private InvitationAdministrationUseCaseImpl useCase;
@@ -94,11 +96,13 @@ class InvitationAdministrationUseCaseImplTest {
                 iamSystemRoleReferencePort,
                 tenantAccessProvisionPort,
                 sendInvitationEmailPort,
+                auditAppendPort,
                 transactionalOperator,
                 Duration.ofDays(7)
         );
         lenient().when(transactionalOperator.transactional(any(Mono.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        lenient().when(auditAppendPort.append(any())).thenReturn(Mono.just(UUID.randomUUID()));
     }
 
     @Test

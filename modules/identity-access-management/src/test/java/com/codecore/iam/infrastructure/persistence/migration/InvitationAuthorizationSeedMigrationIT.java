@@ -26,7 +26,7 @@ class InvitationAuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 55;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 56;
     private static final int EXPECTED_INVITATION_PERMISSION_COUNT = 3;
 
     private static final String V31_SEED_SQL = """
@@ -87,7 +87,7 @@ class InvitationAuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
         assertThat(countInvitationPermissions()).isEqualTo(EXPECTED_INVITATION_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("32");
+        assertThat(appliedMigrationVersion()).isEqualTo("34");
 
         executeUpdate(V31_SEED_SQL);
         executeUpdate(V31_SEED_SQL);

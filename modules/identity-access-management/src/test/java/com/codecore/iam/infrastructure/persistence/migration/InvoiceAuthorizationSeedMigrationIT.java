@@ -26,7 +26,7 @@ class InvoiceAuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 55;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 56;
     private static final int EXPECTED_INVOICE_PERMISSION_COUNT = 5;
 
     private static final String V27_SEED_SQL = """
@@ -89,7 +89,7 @@ class InvoiceAuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
         assertThat(countInvoicePermissions()).isEqualTo(EXPECTED_INVOICE_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("32");
+        assertThat(appliedMigrationVersion()).isEqualTo("34");
 
         executeUpdate(V27_SEED_SQL);
         executeUpdate(V27_SEED_SQL);

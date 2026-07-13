@@ -6,6 +6,7 @@ dependencies {
     implementation(projects.modules.accessManagement.accessDomain)
     implementation(projects.modules.accessManagement.accessApplication)
     implementation(projects.modules.accessManagement.accessContract)
+    implementation(projects.modules.auditManagement.auditContract)
     implementation(projects.modules.identityAccessManagement)
 
     implementation(libs.reactor.core)

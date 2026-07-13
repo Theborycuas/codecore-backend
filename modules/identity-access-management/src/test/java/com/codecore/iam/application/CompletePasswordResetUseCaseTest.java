@@ -54,6 +54,9 @@ class CompletePasswordResetUseCaseTest {
     private PasswordHasher passwordHasher;
 
     @Mock
+    private com.codecore.audit.contract.append.AuditAppendPort auditAppendPort;
+
+    @Mock
     private TransactionalOperator transactionalOperator;
 
     private CompletePasswordResetUseCaseImpl useCase;
@@ -67,10 +70,12 @@ class CompletePasswordResetUseCaseTest {
     void setUp() {
         lenient().when(transactionalOperator.transactional(any(Mono.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        lenient().when(auditAppendPort.append(any())).thenReturn(Mono.just(java.util.UUID.randomUUID()));
         useCase = new CompletePasswordResetUseCaseImpl(
                 passwordResetRepository,
                 identityRepository,
                 passwordHasher,
+                auditAppendPort,
                 transactionalOperator
         );
     }

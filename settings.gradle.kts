@@ -101,6 +101,13 @@ include(
 )
 
 include(
+    ":modules:audit-management:audit-domain",
+    ":modules:audit-management:audit-application",
+    ":modules:audit-management:audit-infrastructure",
+    ":modules:audit-management:audit-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

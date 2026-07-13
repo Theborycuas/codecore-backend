@@ -14,6 +14,7 @@ import com.codecore.access.application.port.out.SendInvitationEmailPort;
 import com.codecore.access.application.port.out.TenantContextAccessor;
 import com.codecore.access.infrastructure.adapters.IamMembershipContextAccessor;
 import com.codecore.access.infrastructure.adapters.IamTenantContextAccessor;
+import com.codecore.audit.contract.append.AuditAppendPort;
 import com.codecore.iam.application.port.out.AuthorizationContextAccessor;
 import com.codecore.iam.contract.provision.TenantAccessProvisionPort;
 import com.codecore.iam.contract.reference.IamActiveMembershipByEmailPort;
@@ -52,6 +53,7 @@ public class AccessAdministrationConfiguration {
             IamSystemRoleReferencePort iamSystemRoleReferencePort,
             TenantAccessProvisionPort tenantAccessProvisionPort,
             SendInvitationEmailPort sendInvitationEmailPort,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator
     ) {
         return new InvitationAdministrationUseCaseImpl(
@@ -65,6 +67,7 @@ public class AccessAdministrationConfiguration {
                 iamSystemRoleReferencePort,
                 tenantAccessProvisionPort,
                 sendInvitationEmailPort,
+                auditAppendPort,
                 transactionalOperator
         );
     }

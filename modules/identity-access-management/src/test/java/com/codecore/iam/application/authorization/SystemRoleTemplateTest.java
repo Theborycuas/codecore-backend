@@ -7,7 +7,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates platform RBAC matrix (Org + Patient + Appointment + Encounter + Item + Invoice + Payment + Invitation)
+ * Validates platform RBAC matrix (Org + Patient + Appointment + Encounter + Item + Invoice + Payment + Invitation + Audit)
  * without database.
  */
 class SystemRoleTemplateTest {
@@ -19,7 +19,7 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void adminShouldReceiveOrgPatientAppointmentEncounterItemInvoicePaymentInvitationAndIamAdminWithoutTenantGovernance() {
+    void adminShouldReceiveOrgPatientAppointmentEncounterItemInvoicePaymentInvitationAuditAndIamAdminWithoutTenantGovernance() {
         assertThat(SystemRoleTemplate.ADMIN.permissions())
                 .containsAll(IamPermissionCatalog.ADMIN_IAM)
                 .containsAll(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL)
@@ -30,6 +30,7 @@ class SystemRoleTemplateTest {
                 .containsAll(IamPermissionCatalog.INVOICE_PLATFORM_ALL)
                 .containsAll(IamPermissionCatalog.PAYMENT_PLATFORM_ALL)
                 .containsAll(IamPermissionCatalog.INVITATION_PLATFORM_ALL)
+                .containsAll(IamPermissionCatalog.AUDIT_PLATFORM_ALL)
                 .doesNotContain(
                         IamPermissionCatalog.TENANT_UPDATE,
                         IamPermissionCatalog.PERMISSION_READ
@@ -37,7 +38,7 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void managerShouldAdministerOfficesStaffPatientsAppointmentsEncountersItemsInvoicesPaymentsAndInvitationsButNotOrganizations() {
+    void managerShouldAdministerOfficesStaffPatientsAppointmentsEncountersItemsInvoicesPaymentsInvitationsAndAuditButNotOrganizations() {
         assertThat(SystemRoleTemplate.MANAGER.permissions())
                 .contains(
                         IamPermissionCatalog.ORGANIZATION_READ,
@@ -62,7 +63,8 @@ class SystemRoleTemplateTest {
                         IamPermissionCatalog.PAYMENT_CREATE,
                         IamPermissionCatalog.PAYMENT_VOID,
                         IamPermissionCatalog.INVITATION_CREATE,
-                        IamPermissionCatalog.INVITATION_REVOKE
+                        IamPermissionCatalog.INVITATION_REVOKE,
+                        IamPermissionCatalog.AUDIT_READ
                 )
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
@@ -73,7 +75,7 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void userShouldReadStructurePatientsAppointmentsEncountersItemsInvoicesPaymentsAndInvitationsOnly() {
+    void userShouldReadStructurePatientsAppointmentsEncountersItemsInvoicesPaymentsInvitationsAndAuditOnly() {
         assertThat(SystemRoleTemplate.USER.permissions())
                 .containsExactlyInAnyOrderElementsOf(
                         IamPermissionCatalog.union(
@@ -85,7 +87,8 @@ class SystemRoleTemplateTest {
                                 IamPermissionCatalog.ITEM_READ_ONLY,
                                 IamPermissionCatalog.INVOICE_READ_ONLY,
                                 IamPermissionCatalog.PAYMENT_READ_ONLY,
-                                IamPermissionCatalog.INVITATION_READ_ONLY
+                                IamPermissionCatalog.INVITATION_READ_ONLY,
+                                IamPermissionCatalog.AUDIT_READ_ONLY
                         )
                 );
     }
@@ -101,6 +104,7 @@ class SystemRoleTemplateTest {
                 .contains(IamPermissionCatalog.INVOICE_READ)
                 .contains(IamPermissionCatalog.PAYMENT_READ)
                 .contains(IamPermissionCatalog.INVITATION_READ)
+                .contains(IamPermissionCatalog.AUDIT_READ)
                 .doesNotContain(
                         IamPermissionCatalog.ORGANIZATION_CREATE,
                         IamPermissionCatalog.OFFICE_CREATE,
@@ -130,7 +134,7 @@ class SystemRoleTemplateTest {
     }
 
     @Test
-    void platformCatalogShouldIncludeOrganizationPatientAppointmentEncounterItemInvoicePaymentAndInvitationContracts() {
+    void platformCatalogShouldIncludeOrganizationPatientAppointmentEncounterItemInvoicePaymentInvitationAndAuditContracts() {
         assertThat(IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL).hasSize(12);
         assertThat(IamPermissionCatalog.PATIENT_PLATFORM_ALL).hasSize(4);
         assertThat(IamPermissionCatalog.APPOINTMENT_PLATFORM_ALL).hasSize(4);
@@ -139,6 +143,7 @@ class SystemRoleTemplateTest {
         assertThat(IamPermissionCatalog.INVOICE_PLATFORM_ALL).hasSize(5);
         assertThat(IamPermissionCatalog.PAYMENT_PLATFORM_ALL).hasSize(3);
         assertThat(IamPermissionCatalog.INVITATION_PLATFORM_ALL).hasSize(3);
-        assertThat(IamPermissionCatalog.ALL).hasSize(55);
+        assertThat(IamPermissionCatalog.AUDIT_PLATFORM_ALL).hasSize(1);
+        assertThat(IamPermissionCatalog.ALL).hasSize(56);
     }
 }

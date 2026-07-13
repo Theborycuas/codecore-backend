@@ -1,5 +1,6 @@
 package com.codecore.iam.configuration;
 
+import com.codecore.audit.contract.append.AuditAppendPort;
 import com.codecore.iam.application.CreateTenantUseCaseImpl;
 import com.codecore.iam.application.RegisterIdentityUseCaseImpl;
 import com.codecore.iam.application.CompletePasswordResetUseCaseImpl;
@@ -25,10 +26,14 @@ import com.codecore.iam.infrastructure.persistence.mapper.IamTenantMapper;
 import com.codecore.iam.infrastructure.persistence.mapper.IamUserMapper;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcPasswordResetRepository;
 import com.codecore.iam.infrastructure.persistence.repository.SpringDataIamPasswordResetRequestRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.transaction.reactive.TransactionalOperator;
+import reactor.core.publisher.Mono;
+
+import java.util.UUID;
 
 /**
  * IAM module Spring entry point. Registers persistence adapters and registration use case.
@@ -36,6 +41,16 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 @Configuration
 @EnableR2dbcRepositories(basePackages = "com.codecore.iam.infrastructure.persistence.repository")
 public class IamModuleConfiguration {
+
+    /**
+     * Fallback when Audit module is not on the classpath / not imported (unit/IT slices).
+     * Production {@code codecore-api} and AuditVerificationIT supply the real adapter bean.
+     */
+    @Bean
+    @ConditionalOnMissingBean(AuditAppendPort.class)
+    public AuditAppendPort noopAuditAppendPort() {
+        return cmd -> Mono.just(UUID.randomUUID());
+    }
 
     @Bean
     public IamUserMapper iamUserMapper() {
@@ -120,6 +135,7 @@ public class IamModuleConfiguration {
             MembershipRepository membershipRepository,
             PasswordResetRepository passwordResetRepository,
             SendPasswordResetEmailPort sendPasswordResetEmailPort,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator
     ) {
         return new RequestPasswordResetUseCaseImpl(
@@ -127,6 +143,7 @@ public class IamModuleConfiguration {
                 membershipRepository,
                 passwordResetRepository,
                 sendPasswordResetEmailPort,
+                auditAppendPort,
                 transactionalOperator
         );
     }
@@ -136,12 +153,14 @@ public class IamModuleConfiguration {
             PasswordResetRepository passwordResetRepository,
             IdentityRepository identityRepository,
             PasswordHasher passwordHasher,
+            AuditAppendPort auditAppendPort,
             TransactionalOperator transactionalOperator
     ) {
         return new CompletePasswordResetUseCaseImpl(
                 passwordResetRepository,
                 identityRepository,
                 passwordHasher,
+                auditAppendPort,
                 transactionalOperator
         );
     }
