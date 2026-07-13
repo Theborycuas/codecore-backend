@@ -87,6 +87,13 @@ include(
 )
 
 include(
+    ":modules:payment-management:payment-domain",
+    ":modules:payment-management:payment-application",
+    ":modules:payment-management:payment-infrastructure",
+    ":modules:payment-management:payment-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

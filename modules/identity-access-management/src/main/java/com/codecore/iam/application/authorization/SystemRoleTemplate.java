@@ -22,15 +22,19 @@ import static com.codecore.iam.application.authorization.IamPermissionCatalog.MA
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ITEM;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_ORGANIZATION;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_PATIENT;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.MANAGER_PAYMENT;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.ORGANIZATION_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.PATIENT_PLATFORM_ALL;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.PATIENT_READ_ONLY;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.PAYMENT_PLATFORM_ALL;
+import static com.codecore.iam.application.authorization.IamPermissionCatalog.PAYMENT_READ_ONLY;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.STRUCTURE_READ;
 import static com.codecore.iam.application.authorization.IamPermissionCatalog.union;
 
 /**
  * Tenant-scoped system role templates
- * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter + 20.5 item + 21.5 invoice).
+ * (FASE 14.8 + 16.3 org + 17.5 patient + 18.5 appointment + 19.5 encounter + 20.5 item + 21.5 invoice
+ * + 22.5 payment).
  */
 public enum SystemRoleTemplate {
 
@@ -49,7 +53,8 @@ public enum SystemRoleTemplate {
                     APPOINTMENT_PLATFORM_ALL,
                     ENCOUNTER_PLATFORM_ALL,
                     ITEM_PLATFORM_ALL,
-                    INVOICE_PLATFORM_ALL
+                    INVOICE_PLATFORM_ALL,
+                    PAYMENT_PLATFORM_ALL
             )
     ),
     MANAGER(
@@ -62,7 +67,8 @@ public enum SystemRoleTemplate {
                     MANAGER_APPOINTMENT,
                     MANAGER_ENCOUNTER,
                     MANAGER_ITEM,
-                    MANAGER_INVOICE
+                    MANAGER_INVOICE,
+                    MANAGER_PAYMENT
             )
     ),
     USER(
@@ -75,7 +81,8 @@ public enum SystemRoleTemplate {
                     APPOINTMENT_READ_ONLY,
                     ENCOUNTER_READ_ONLY,
                     ITEM_READ_ONLY,
-                    INVOICE_READ_ONLY
+                    INVOICE_READ_ONLY,
+                    PAYMENT_READ_ONLY
             )
     ),
     READ_ONLY(
@@ -92,7 +99,8 @@ public enum SystemRoleTemplate {
                     APPOINTMENT_READ_ONLY,
                     ENCOUNTER_READ_ONLY,
                     ITEM_READ_ONLY,
-                    INVOICE_READ_ONLY
+                    INVOICE_READ_ONLY,
+                    PAYMENT_READ_ONLY
             )
     );
 

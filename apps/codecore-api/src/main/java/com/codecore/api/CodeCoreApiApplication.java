@@ -11,7 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "com.codecore.appointment",
         "com.codecore.encounter",
         "com.codecore.inventory",
-        "com.codecore.billing"
+        "com.codecore.billing",
+        "com.codecore.payment"
 })
 public class CodeCoreApiApplication {
 

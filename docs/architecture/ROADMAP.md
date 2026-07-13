@@ -10,12 +10,14 @@
 **Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
 **Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
 **Billing:** ✅ **INVOICE SLICE CLOSED** (FASE 21 · ADR-017 frozen · [guía](BILLING-CONSUMPTION-GUIDE.md))  
+**Payments:** ✅ **PAYMENT SLICE CLOSED** (FASE 22 · ADR-018 frozen · [guía](PAYMENTS-CONSUMPTION-GUIDE.md))  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · review [CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
 **Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · cierre [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · guía [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
+**Planificación FASE 22:** [PASO-22.0](../audits/PASO-22.0-PAYMENTS-FOUNDATION-PLANNING.md) · cierre [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · guía [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md) · ADR [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -36,7 +38,8 @@
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
 | **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
 | **21** | Billing (Invoice) | ✅ Cerrada | 21.8 — Invoice slice estable (ADR-017) |
-| **22+** | Payments · Stock · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
+| **22** | Payments (Payment) | ✅ Cerrada | 22.8 — Payment slice estable (ADR-018) |
+| **23+** | Stock · Platform Services · Audit · Production Hardening · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -454,9 +457,10 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
 | **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
 | **21** | **Billing** (`Invoice`) | ✅ 21.8 Closed (Invoice) | Payments via InvoiceId · Stock (Inventory) en paralelo |
-| **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) · Subscriptions SaaS |
-| **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
-| **24** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
+| **22** | **Payments** (`Payment`) | ✅ 22.8 Closed | InvoiceId + InvoiceReferencePort · Refunds/PSP adapters vía PaymentReferencePort (futuro) |
+| **23** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) · Subscriptions SaaS |
+| **24** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
+| **25** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
 
 **Product packs** (Dental / PetNova / …): **después** de 17–19 (núcleo clínico estable). Componen BCs; no sustituyen FASE 17–19.
 
@@ -468,7 +472,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | ¿Consume StaffAssignment? | **No** |
 | ¿Aporta dominio clínico? | **No** |
 | ¿Bloquea Patient si se aplaza? | **No** |
-| ¿Qué es? | **Platform Service** (IAM-adjacent) → **FASE 22** |
+| ¿Qué es? | **Platform Service** (IAM-adjacent) → **FASE 23** |
 
 Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
@@ -476,7 +480,7 @@ Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 | Antes | Ahora | Rationale |
 |-------|-------|-----------|
-| 17 Invitations | **22 Platform Services** | No prueba ADR-011; onboarding de acceso ≠ clínica |
+| 17 Invitations | **23 Platform Services** | No prueba ADR-011; onboarding de acceso ≠ clínica |
 | 18 Business Module Framework | **Disuelto** | [DEVELOPMENT-POLICY-FASE-16-PLUS](DEVELOPMENT-POLICY-FASE-16-PLUS.md) ya es el framework |
 | 19 Dental / PetNova | Product packs post 17–19 | Verticales sobre BCs clínicos |
 | Patient “en FASE 19” | **FASE 17** | Primer consumer de Organization (ADR-011) |
@@ -485,14 +489,14 @@ Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 | Ítem | Origen | Cuándo |
 |------|--------|--------|
-| Password recovery | ADR-009 P1 | **FASE 22** Platform Services |
-| Invitations | Roadmap histórico | **FASE 22** Platform Services |
-| Audit trail | ADR-009 P2 | **FASE 23** |
-| JWT stale mitigation | ADR-009 P2 | **FASE 24** |
-| OpenAPI auth group | ADR-009 P2 | **FASE 24** |
-| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM / FASE 22+ |
+| Password recovery | ADR-009 P1 | **FASE 23** Platform Services |
+| Invitations | Roadmap histórico | **FASE 23** Platform Services |
+| Audit trail | ADR-009 P2 | **FASE 24** |
+| JWT stale mitigation | ADR-009 P2 | **FASE 25** |
+| OpenAPI auth group | ADR-009 P2 | **FASE 25** |
+| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM / FASE 23+ |
 | Consolidación datos 13.3 | Solo si prod duplicados | FUTURE-PROD |
-| JWT `tenantId` desde membership | Mejora opcional | FASE 22+ |
+| JWT `tenantId` desde membership | Mejora opcional | FASE 23+ |
 
 ---
 
@@ -744,6 +748,49 @@ No introducir: pagos · notas de crédito · impuestos · asientos contables (GL
 
 ---
 
+## FASE 22 — Payments (Payment slice) ✅
+
+**Estado:** ✅ Cerrada · **ADR-018 Accepted** (Payment frozen)  
+**Cierre:** [PASO-22.8-PAYMENTS-CLOSEOUT.md](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · consumo [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md)  
+**Plan:** [PASO-22.0](../audits/PASO-22.0-PAYMENTS-FOUNDATION-PLANNING.md) · [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md)
+
+### Primer Aggregate Root: `Payment`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | El registro de que un importe se aplicó hacia la liquidación de una Invoice bajo un Tenant |
+| ¿Por qué no Refund? | Refund es aggregate posterior (BC futuro) que referencia `PaymentId` |
+| ¿Por qué no PSP capture? | Orquestación de gateway externo; Payment solo registra el resultado |
+| Consume | `TenantId` · `InvoiceId` (ISSUED) — vía `InvoiceReferencePort.existsIssuedByIdAndTenant` (ADR-013) |
+| No conoce | Refund · impuestos · asientos contables · Subscription · `PAID` en Invoice |
+| Lifecycle | `(create) → RECORDED → void → VOIDED` — sin DRAFT, sin content update, sin un-void |
+
+### Pasos FASE 22
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **22.0** | Payments Foundation Planning | ✅ | [PASO-22.0](../audits/PASO-22.0-PAYMENTS-FOUNDATION-PLANNING.md) | — | BC Payments · primer root `Payment` |
+| **22.0.1** | Payment Aggregate Audit | ✅ | **Obligatoria** · [PASO-22.0.1](../audits/PASO-22.0.1-PAYMENT-AGGREGATE-AUDIT.md) | Prep. ADR-018 | Registro de liquidación; RECORDED/VOIDED |
+| **22.1** | Payment Model ADR | ✅ | [PASO-22.1](../audits/PASO-22.1-PAYMENT-MODEL-CONTRACT.md) | **ADR-018 Accepted** | Modelo **congelado** |
+| **22.2** | Payments Reference Readiness | ✅ | [PASO-22.2](../audits/PASO-22.2-PAYMENTS-REFERENCE-READINESS.md) | ADR-013 | `InvoiceReferencePort.existsIssuedByIdAndTenant` suficiente — **sin evolución** |
+| **22.3** | Payment Domain Foundation | ✅ | [PASO-22.3](../audits/PASO-22.3-PAYMENT-DOMAIN-FOUNDATION.md) | ADR-018 | Aggregate `Payment` + VOs + 20 domain tests |
+| **22.4** | Payment Persistence | ✅ | [PASO-22.4](../audits/PASO-22.4-PAYMENT-PERSISTENCE.md) | — | V28 `payments.payment` + R2DBC + ITs 6/6 |
+| **22.5** | Payment Authorization Contract | ✅ | [PASO-22.5](../audits/PASO-22.5-PAYMENT-AUTHORIZATION-CONTRACT.md) | — | `payment:*` + V29 + RBAC matrix (ALL 49→52) |
+| **22.5.1** | Payment Admin API Audit | ✅ | **Obligatoria** · [PASO-22.5.1](../audits/PASO-22.5.1-PAYMENT-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/payments` |
+| **22.6** | Payment Administration API | ✅ | [PASO-22.6](../audits/PASO-22.6-PAYMENT-ADMINISTRATION-API.md) | — | `/api/v1/payments` + `InvoiceReferencePort` · unit 5/5 |
+| **22.7** | Payment Verification | ✅ | [PASO-22.7](../audits/PASO-22.7-PAYMENT-VERIFICATION.md) | — | `PaymentVerificationIT` 8/8 |
+| **22.8** | Payments Closeout | ✅ | [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) | — | `PaymentReferencePort` · guía · FASE 22 ✅ |
+
+### Restricciones FASE 22
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010–018.
+
+**No modificar / no reabrir:** IAM · Organization · Patient · Appointment · Encounter · Inventory · Billing (`Invoice`) · ADR-010…017.
+
+No introducir: refund · captura PSP · impuestos · asientos contables (GL) · Subscriptions SaaS · `PAID` en Invoice · un-void · DELETE HTTP · org-scoped RBAC · event bus preventivo.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -765,6 +812,7 @@ No introducir: pagos · notas de crédito · impuestos · asientos contables (GL
 | ADR-015 | Encounter Domain Model | **Accepted** (19.1) — **frozen**; cambios → nuevo ADR |
 | ADR-016 | Item Domain Model | **Accepted** (20.1) — **frozen**; cambios → nuevo ADR |
 | ADR-017 | Invoice Domain Model | **Accepted** (21.1) — **frozen**; cambios → nuevo ADR |
+| ADR-018 | Payment Domain Model | **Accepted** (22.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -784,6 +832,8 @@ FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization 
 
 FASE 21 introduce **ADR-017 Accepted** (Invoice frozen) y **consume** Organization/Patient/Item/Encounter vía ADR-011/013 — sin modificar ADR-010…016 ni BCs previos.
 
+FASE 22 introduce **ADR-018 Accepted** (Payment frozen) y **consume** Billing (`Invoice`) vía `InvoiceReferencePort` (ADR-013) — sin modificar ADR-010…017 ni BCs previos, sin embeber `PAID` en Invoice.
+
 ---
 
 ## Proceso autónomo Cursor
@@ -797,9 +847,9 @@ FASE 21 introduce **ADR-017 Accepted** (Invoice frozen) y **consume** Organizati
 
 ### Siguiente acción
 
-**Payments** (consume `InvoiceId` + `InvoiceReferencePort`) y/o **Stock** (continuación Inventory) — **sin reabrir** ADR-016/017 ni FASE 16–21.
+**Stock** (continuación Inventory, FASE 20) y/o **Platform Services** (FASE 23 — Invitations, password recovery ADR-009, Subscriptions SaaS) — **sin reabrir** ADR-016/017/018 ni FASE 16–22.
 
-Referencias: [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md).
+Referencias: [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md) · [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md) · [CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md).
 
 ---
 
@@ -807,6 +857,18 @@ Referencias: [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · [BILLING-CO
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **22.8** | **PAYMENTS SLICE COMPLETE** — PaymentReferencePort · consumption guide · FASE 22 ✅ |
+| 2026-07-12 | **22.review** | Architecture Review Payments — **A** · 9.2/10 · [CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md) |
+| 2026-07-12 | **22.7** | Payment Verification — E2E 8/8 (journey, RBAC, cross-tenant, invoice inválida/DRAFT, void MANAGER, OpenAPI, 401) |
+| 2026-07-12 | **22.6** | Payment Administration API — `/api/v1/payments` + `InvoiceReferencePort` · unit 5/5 |
+| 2026-07-12 | **22.5.1** | Payment Admin API Audit — HTTP shape `/api/v1/payments`; default `status=RECORDED` |
+| 2026-07-12 | **22.5** | Payment Authorization Contract — `payment:*` + V29 + RBAC matrix (ALL 49→52) |
+| 2026-07-12 | **22.4** | Payment Persistence — V28 `payments.payment` + R2DBC ITs 6/6 |
+| 2026-07-12 | **22.3** | Payment Domain Foundation — aggregate + VOs + 20 domain tests (ADR-018) |
+| 2026-07-12 | **22.2** | Payments Reference Readiness — `InvoiceReferencePort.existsIssuedByIdAndTenant` suficiente; sin evolución |
+| 2026-07-12 | **22.1** | ADR-018 Accepted — Payment model frozen (*intentionally small*) |
+| 2026-07-12 | **22.0.1** | Payment Aggregate Audit — registro de liquidación; prep. ADR-018 |
+| 2026-07-12 | **22.0** | Payments Foundation Planning — BC Payments · primer root `Payment` |
 | 2026-07-12 | **21.8** | **BILLING INVOICE SLICE COMPLETE** — InvoiceReferencePort · consumption guide · FASE 21 ✅ |
 | 2026-07-12 | **21.7** | Invoice Verification — E2E 8/8 (journey, RBAC, cross-tenant, referencias inválidas, duplicado, OpenAPI, 401) |
 | 2026-07-12 | **21.6** | Invoice Administration API — `/api/v1/billing/invoices` + multi-ReferencePort (Org/Patient/Item/Encounter) · unit 14/14 |

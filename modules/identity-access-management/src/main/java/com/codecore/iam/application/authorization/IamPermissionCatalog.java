@@ -7,13 +7,14 @@ import com.codecore.iam.domain.valueobject.PermissionCode;
 import com.codecore.inventory.contract.authorization.ItemPermissionCatalog;
 import com.codecore.organization.contract.authorization.OrganizationPermissionCatalog;
 import com.codecore.patient.contract.authorization.PatientPermissionCatalog;
+import com.codecore.payment.contract.authorization.PaymentPermissionCatalog;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Platform permission contract: IAM + Organization + Patient + Appointment + Encounter + Item + Invoice.
+ * Platform permission contract: IAM + Organization + Patient + Appointment + Encounter + Item + Invoice + Payment.
  */
 public final class IamPermissionCatalog {
 
@@ -112,6 +113,13 @@ public final class IamPermissionCatalog {
     public static final PermissionCode INVOICE_VOID =
             PermissionCode.of(InvoicePermissionCatalog.INVOICE_VOID);
 
+    public static final PermissionCode PAYMENT_CREATE =
+            PermissionCode.of(PaymentPermissionCatalog.PAYMENT_CREATE);
+    public static final PermissionCode PAYMENT_READ =
+            PermissionCode.of(PaymentPermissionCatalog.PAYMENT_READ);
+    public static final PermissionCode PAYMENT_VOID =
+            PermissionCode.of(PaymentPermissionCatalog.PAYMENT_VOID);
+
     public static final Set<PermissionCode> IAM_FOUNDATION = Set.of(
             TENANT_READ,
             TENANT_UPDATE,
@@ -162,6 +170,11 @@ public final class IamPermissionCatalog {
             codesOf(InvoicePermissionCatalog.INVOICE_READ_ONLY);
     public static final Set<PermissionCode> INVOICE_PLATFORM_ALL = INVOICE_ALL;
 
+    public static final Set<PermissionCode> PAYMENT_ALL = codesOf(PaymentPermissionCatalog.ALL);
+    public static final Set<PermissionCode> PAYMENT_READ_ONLY =
+            codesOf(PaymentPermissionCatalog.PAYMENT_READ_ONLY);
+    public static final Set<PermissionCode> PAYMENT_PLATFORM_ALL = PAYMENT_ALL;
+
     public static final Set<PermissionCode> ALL = union(
             IAM_FOUNDATION,
             ORGANIZATION_PLATFORM_ALL,
@@ -169,7 +182,8 @@ public final class IamPermissionCatalog {
             APPOINTMENT_PLATFORM_ALL,
             ENCOUNTER_PLATFORM_ALL,
             ITEM_PLATFORM_ALL,
-            INVOICE_PLATFORM_ALL
+            INVOICE_PLATFORM_ALL,
+            PAYMENT_PLATFORM_ALL
     );
 
     public static final Set<PermissionCode> MEMBERSHIP_ALL = Set.of(
@@ -229,6 +243,9 @@ public final class IamPermissionCatalog {
 
     /** MANAGER Billing grants — full invoice commercial-claim lifecycle. */
     public static final Set<PermissionCode> MANAGER_INVOICE = INVOICE_ALL;
+
+    /** MANAGER Payments grants — full payment settlement-record lifecycle. */
+    public static final Set<PermissionCode> MANAGER_PAYMENT = PAYMENT_ALL;
 
     private IamPermissionCatalog() {
     }
