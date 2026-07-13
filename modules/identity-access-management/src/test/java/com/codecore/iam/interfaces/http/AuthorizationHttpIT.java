@@ -8,6 +8,7 @@ import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.application.port.out.PermissionRepository;
 import com.codecore.iam.application.port.out.RolePermissionRepository;
 import com.codecore.iam.application.port.out.RoleRepository;
+import com.codecore.iam.application.port.out.TenantRepository;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
@@ -15,6 +16,7 @@ import com.codecore.iam.domain.model.membership.MembershipRoleAssignment;
 import com.codecore.iam.domain.model.permission.Permission;
 import com.codecore.iam.domain.model.role.Role;
 import com.codecore.iam.domain.model.role.RolePermissionAssignment;
+import com.codecore.iam.domain.model.tenant.Tenant;
 import com.codecore.iam.domain.valueobject.CredentialId;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
@@ -24,6 +26,7 @@ import com.codecore.iam.domain.valueobject.PermissionCode;
 import com.codecore.iam.domain.valueobject.RoleCode;
 import com.codecore.iam.domain.valueobject.RoleName;
 import com.codecore.iam.domain.valueobject.TenantId;
+import com.codecore.iam.domain.valueobject.TenantName;
 import com.codecore.iam.interfaces.http.dto.LoginRequest;
 import com.codecore.iam.interfaces.http.AuthorizationProbeController;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
@@ -78,11 +81,15 @@ class AuthorizationHttpIT extends AbstractPostgresIntegrationTest {
     @Autowired
     private MembershipRoleRepository membershipRoleRepository;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     @Test
     void shouldReturn200WhenMembershipHasRequiredPermission() {
         TenantId tenantId = TenantId.generate();
         String suffix = UUID.randomUUID().toString().substring(0, 8);
         String email = "authz.ok.%s@codecore.local".formatted(suffix);
+        persistActiveTenant(tenantId).block();
         IdentityTenantMembership membership = persistIdentityWithMembership(tenantId, email).block();
         grantProbePermission(tenantId, suffix, membership, Instant.now());
 
@@ -102,6 +109,7 @@ class AuthorizationHttpIT extends AbstractPostgresIntegrationTest {
         TenantId tenantId = TenantId.generate();
         String suffix = UUID.randomUUID().toString().substring(0, 8);
         String email = "authz.denied.%s@codecore.local".formatted(suffix);
+        persistActiveTenant(tenantId).block();
         persistIdentityWithMembership(tenantId, email).block();
 
         String accessToken = loginAndExtractToken(tenantId, email);
@@ -111,6 +119,10 @@ class AuthorizationHttpIT extends AbstractPostgresIntegrationTest {
                 .header("Authorization", "Bearer " + accessToken)
                 .exchange()
                 .expectStatus().isForbidden();
+    }
+
+    private reactor.core.publisher.Mono<Tenant> persistActiveTenant(TenantId tenantId) {
+        return tenantRepository.save(Tenant.create(tenantId, TenantName.of("Tenant " + tenantId.value()), Instant.now()));
     }
 
     private void grantProbePermission(

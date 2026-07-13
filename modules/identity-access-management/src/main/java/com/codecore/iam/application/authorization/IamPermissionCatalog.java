@@ -1,6 +1,7 @@
 package com.codecore.iam.application.authorization;
 
 import com.codecore.appointment.contract.authorization.AppointmentPermissionCatalog;
+import com.codecore.billing.contract.authorization.InvoicePermissionCatalog;
 import com.codecore.encounter.contract.authorization.EncounterPermissionCatalog;
 import com.codecore.iam.domain.valueobject.PermissionCode;
 import com.codecore.inventory.contract.authorization.ItemPermissionCatalog;
@@ -12,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Platform permission contract: IAM + Organization + Patient + Appointment + Encounter + Item.
+ * Platform permission contract: IAM + Organization + Patient + Appointment + Encounter + Item + Invoice.
  */
 public final class IamPermissionCatalog {
 
@@ -100,6 +101,17 @@ public final class IamPermissionCatalog {
     public static final PermissionCode ITEM_ARCHIVE =
             PermissionCode.of(ItemPermissionCatalog.ITEM_ARCHIVE);
 
+    public static final PermissionCode INVOICE_CREATE =
+            PermissionCode.of(InvoicePermissionCatalog.INVOICE_CREATE);
+    public static final PermissionCode INVOICE_READ =
+            PermissionCode.of(InvoicePermissionCatalog.INVOICE_READ);
+    public static final PermissionCode INVOICE_UPDATE =
+            PermissionCode.of(InvoicePermissionCatalog.INVOICE_UPDATE);
+    public static final PermissionCode INVOICE_ISSUE =
+            PermissionCode.of(InvoicePermissionCatalog.INVOICE_ISSUE);
+    public static final PermissionCode INVOICE_VOID =
+            PermissionCode.of(InvoicePermissionCatalog.INVOICE_VOID);
+
     public static final Set<PermissionCode> IAM_FOUNDATION = Set.of(
             TENANT_READ,
             TENANT_UPDATE,
@@ -145,13 +157,19 @@ public final class IamPermissionCatalog {
     public static final Set<PermissionCode> ITEM_READ_ONLY = codesOf(ItemPermissionCatalog.ITEM_READ_ONLY);
     public static final Set<PermissionCode> ITEM_PLATFORM_ALL = ITEM_ALL;
 
+    public static final Set<PermissionCode> INVOICE_ALL = codesOf(InvoicePermissionCatalog.ALL);
+    public static final Set<PermissionCode> INVOICE_READ_ONLY =
+            codesOf(InvoicePermissionCatalog.INVOICE_READ_ONLY);
+    public static final Set<PermissionCode> INVOICE_PLATFORM_ALL = INVOICE_ALL;
+
     public static final Set<PermissionCode> ALL = union(
             IAM_FOUNDATION,
             ORGANIZATION_PLATFORM_ALL,
             PATIENT_PLATFORM_ALL,
             APPOINTMENT_PLATFORM_ALL,
             ENCOUNTER_PLATFORM_ALL,
-            ITEM_PLATFORM_ALL
+            ITEM_PLATFORM_ALL,
+            INVOICE_PLATFORM_ALL
     );
 
     public static final Set<PermissionCode> MEMBERSHIP_ALL = Set.of(
@@ -208,6 +226,9 @@ public final class IamPermissionCatalog {
 
     /** MANAGER Inventory grants — full item catalog lifecycle. */
     public static final Set<PermissionCode> MANAGER_ITEM = ITEM_ALL;
+
+    /** MANAGER Billing grants — full invoice commercial-claim lifecycle. */
+    public static final Set<PermissionCode> MANAGER_INVOICE = INVOICE_ALL;
 
     private IamPermissionCatalog() {
     }

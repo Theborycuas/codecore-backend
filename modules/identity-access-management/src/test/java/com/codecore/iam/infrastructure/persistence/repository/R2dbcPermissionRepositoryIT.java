@@ -25,7 +25,7 @@ class R2dbcPermissionRepositoryIT extends AbstractPostgresIntegrationTest {
 
     @Test
     void shouldPersistFindAndCheckExistsByCode() {
-        PermissionCode code = PermissionCode.of("user:update");
+        PermissionCode code = PermissionCode.of("test-fixture:update");
         Instant now = Instant.now();
         Permission permission = Permission.create(code, "Update users", now);
 
@@ -57,7 +57,7 @@ class R2dbcPermissionRepositoryIT extends AbstractPostgresIntegrationTest {
 
     @Test
     void shouldEnforceGloballyUniqueCode() {
-        PermissionCode code = PermissionCode.of("user:delete");
+        PermissionCode code = PermissionCode.of("test-fixture:delete");
         Instant now = Instant.now();
 
         StepVerifier.create(permissionRepository.save(
@@ -74,8 +74,8 @@ class R2dbcPermissionRepositoryIT extends AbstractPostgresIntegrationTest {
     @Test
     void shouldPersistSystemPermission() {
         Permission permission = Permission.createSystemPermission(
-                PermissionCode.of("patient:create"),
-                "Create patients",
+                PermissionCode.of("test-fixture:create"),
+                "Create test fixtures",
                 Instant.now()
         );
 
@@ -83,7 +83,7 @@ class R2dbcPermissionRepositoryIT extends AbstractPostgresIntegrationTest {
                 .assertNext(saved -> assertThat(saved.systemPermission()).isTrue())
                 .verifyComplete();
 
-        StepVerifier.create(permissionRepository.findByCode(PermissionCode.of("patient:create")))
+        StepVerifier.create(permissionRepository.findByCode(PermissionCode.of("test-fixture:create")))
                 .assertNext(found -> assertThat(found.systemPermission()).isTrue())
                 .verifyComplete();
     }

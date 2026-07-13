@@ -80,6 +80,13 @@ include(
 )
 
 include(
+    ":modules:billing-management:billing-domain",
+    ":modules:billing-management:billing-application",
+    ":modules:billing-management:billing-infrastructure",
+    ":modules:billing-management:billing-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

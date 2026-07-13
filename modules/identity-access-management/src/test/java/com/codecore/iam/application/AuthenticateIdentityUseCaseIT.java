@@ -10,6 +10,7 @@ import com.codecore.iam.application.port.out.PasswordHasher;
 import com.codecore.iam.domain.exception.IdentityNotMemberOfTenantException;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.configuration.IamAuthenticationConfiguration;
+import com.codecore.iam.configuration.IamBootstrapConfiguration;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.domain.exception.IdentityNotAllowedToAuthenticateException;
 import com.codecore.iam.domain.exception.InvalidCredentialsException;
@@ -50,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         IamModuleConfiguration.class,
         IamR2dbcTestConfiguration.class,
         IamAuthenticationConfiguration.class,
+        IamBootstrapConfiguration.class,
         R2dbcIdentityRepository.class,
         R2dbcMembershipRepository.class,
         R2dbcTenantRepository.class,

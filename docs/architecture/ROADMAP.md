@@ -8,12 +8,13 @@
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
 **Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
-**Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
+**Billing:** 🟡 **EN CURSO** (FASE 21 · 21.7 ✅ Verification — siguiente 21.8 Closeout)  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
-**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md)  
+**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · review [CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
+**Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · audit [PASO-21.0.1](../audits/PASO-21.0.1-INVOICE-AGGREGATE-AUDIT.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -33,7 +34,8 @@
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
 | **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
-| **21+** | Billing · Stock · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
+| **21** | Billing (Invoice) | 🟡 En curso | 21.7 ✅ Verification · siguiente 21.8 Closeout |
+| **22+** | Payments · Stock · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -450,8 +452,8 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
 | **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
 | **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
-| **21** | **Billing & Subscriptions** | ⏳ | OrganizationId · Membership seats |
-| **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) |
+| **21** | **Billing** (`Invoice`) | 🟡 21.7 done | Operativo — **no** Subscriptions; **ADR-017 Accepted** (frozen) |
+| **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) · Subscriptions SaaS |
 | **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
 | **24** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
 
@@ -698,6 +700,48 @@ No introducir: Stock/qty en Item · precios · BOM · lotes · ports clínicos p
 
 ---
 
+## FASE 21 — Billing (Invoice slice) 🟡
+
+**Estado:** 🟡 En curso · **ADR-017 Accepted** (Invoice frozen) · 21.0–21.7 ✅ · siguiente 21.8 Closeout  
+**Plan:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)
+
+### Primer Aggregate Root: `Invoice`
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | El reclamo comercial de que un monto es debido por un deudor a una organización emisora, dentro de un Tenant |
+| ¿Por qué no Payment? | Payment es aggregate posterior (BC Payments) que referencia `InvoiceId` |
+| ¿Por qué no Subscription? | Subscriptions es SaaS billing de la plataforma (FASE 22), no facturación clínica/comercial del Tenant |
+| Consume | `TenantId` · `OrganizationId` (issuer) · `BillToPatientId` \| `BillToOrganizationId` · `ItemId?` · `EncounterId?` — todos vía ReferencePorts (ADR-013) |
+| No conoce | Pagos · impuestos · asientos contables · Stock · Appointment · cantidades/UoM en línea |
+| Lifecycle | `DRAFT → ISSUED → VOIDED` — sin `PAID`, sin delete físico, sin un-void |
+
+### Pasos FASE 21
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **21.0** | Billing Foundation Planning | ✅ | [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) | — | BC Billing · primer root `Invoice` |
+| **21.0.1** | Invoice Aggregate Audit | ✅ | **Obligatoria** · [PASO-21.0.1](../audits/PASO-21.0.1-INVOICE-AGGREGATE-AUDIT.md) | Prep. ADR-017 | Bill-to Patient\|Org; DRAFT/ISSUED/VOIDED |
+| **21.1** | Invoice Model ADR | ✅ | [PASO-21.1](../audits/PASO-21.1-INVOICE-MODEL-CONTRACT.md) | **ADR-017 Accepted** | Modelo **congelado** |
+| **21.2** | Billing Reference Readiness | ✅ | [PASO-21.2](../audits/PASO-21.2-BILLING-REFERENCE-READINESS.md) | ADR-013 | Org/Patient/Item/Encounter ports suficientes — **sin evolución** |
+| **21.3** | Invoice Domain Foundation | ✅ | [PASO-21.3](../audits/PASO-21.3-INVOICE-DOMAIN-FOUNDATION.md) | ADR-017 | Aggregate `Invoice` + `InvoiceLine` + VOs + 38 domain tests |
+| **21.4** | Invoice Persistence | ✅ | [PASO-21.4](../audits/PASO-21.4-INVOICE-PERSISTENCE.md) | — | V26 `billing.invoice`+`invoice_line` + R2DBC + ITs 10/10 |
+| **21.5** | Invoice Authorization Contract | ✅ | [PASO-21.5](../audits/PASO-21.5-INVOICE-AUTHORIZATION-CONTRACT.md) | — | `invoice:*` + V27 + RBAC matrix (ALL 44→49) |
+| **21.5.1** | Invoice Admin API Audit | ✅ | **Obligatoria** · [PASO-21.5.1](../audits/PASO-21.5.1-INVOICE-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/billing/invoices` |
+| **21.6** | Invoice Administration API | ✅ | [PASO-21.6](../audits/PASO-21.6-INVOICE-ADMINISTRATION-API.md) | — | `/api/v1/billing/invoices` + multi-ReferencePort + unit 14/14 |
+| **21.7** | Invoice Verification | ✅ | [PASO-21.7](../audits/PASO-21.7-INVOICE-VERIFICATION.md) | — | `InvoiceVerificationIT` 8/8 |
+| **21.8** | Billing Closeout (Invoice) | ⏳ Pendiente | — | — | `InvoiceReferencePort` (si aplica) · guía · FASE 21 ✅ |
+
+### Restricciones FASE 21
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010–017.
+
+**No modificar / no reabrir:** IAM · Organization · Patient · Appointment · Encounter · Inventory · ADR-010…016.
+
+No introducir: pagos · notas de crédito · impuestos · asientos contables (GL) · Subscriptions SaaS · un-void · `PAID` · delete físico · org-scoped RBAC · event bus preventivo.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -718,6 +762,7 @@ No introducir: Stock/qty en Item · precios · BOM · lotes · ports clínicos p
 | ADR-014 | Appointment Domain Model | **Accepted** (18.1) — **frozen**; cambios → nuevo ADR |
 | ADR-015 | Encounter Domain Model | **Accepted** (19.1) — **frozen**; cambios → nuevo ADR |
 | ADR-016 | Item Domain Model | **Accepted** (20.1) — **frozen**; cambios → nuevo ADR |
+| ADR-017 | Invoice Domain Model | **Accepted** (21.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -735,6 +780,8 @@ FASE 17 introduce **ADR-012 Accepted** (Patient frozen), **ADR-013** (Reference 
 
 FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization vía ADR-011/013 — sin modificar ADR-010…015 ni BCs clínicos.
 
+FASE 21 introduce **ADR-017 Accepted** (Invoice frozen) y **consume** Organization/Patient/Item/Encounter vía ADR-011/013 — sin modificar ADR-010…016 ni BCs previos.
+
 ---
 
 ## Proceso autónomo Cursor
@@ -748,9 +795,9 @@ FASE 20 introduce **ADR-016 Accepted** (Item frozen) y **consume** Organization 
 
 ### Siguiente acción
 
-**Stock (mismo BC Inventory)** o **FASE 21 — Billing** — consumen `ItemId` + `ItemReferencePort` **sin reabrir** ADR-016 ni FASE 16–20 Item.
+**PASO 21.8 — Billing Closeout (Invoice)** — cierre de FASE 21: `InvoiceReferencePort` (solo si algún consumidor lo requiere), consumption guide, architecture review, y marcar Billing como BC estable.
 
-Referencias: [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md).
+Referencias: [PASO-21.7](../audits/PASO-21.7-INVOICE-VERIFICATION.md) · [PASO-21.6](../audits/PASO-21.6-INVOICE-ADMINISTRATION-API.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md).
 
 ---
 
@@ -758,6 +805,16 @@ Referencias: [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · [INVENTOR
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **21.7** | Invoice Verification — E2E 8/8 (journey, RBAC, cross-tenant, referencias inválidas, duplicado, OpenAPI, 401) |
+| 2026-07-12 | **21.6** | Invoice Administration API — `/api/v1/billing/invoices` + multi-ReferencePort (Org/Patient/Item/Encounter) · unit 14/14 |
+| 2026-07-12 | **21.5.1** | Invoice Admin API Audit — HTTP shape `/api/v1/billing/invoices`; lifecycle propio (no soft-entity) |
+| 2026-07-12 | **21.5** | Invoice Authorization Contract — `invoice:*` + V27 + RBAC matrix (ALL 44→49) |
+| 2026-07-12 | **21.4** | Invoice Persistence — V26 `billing.invoice`+`invoice_line` + R2DBC ITs 10/10 |
+| 2026-07-12 | **21.3** | Invoice Domain Foundation — aggregate + `InvoiceLine` + VOs + 38 domain tests (ADR-017) |
+| 2026-07-12 | **21.2** | Billing Reference Readiness — Org/Patient/Item/Encounter ports suficientes; sin evolución |
+| 2026-07-12 | **21.1** | ADR-017 Accepted — Invoice model frozen (*intentionally small*) |
+| 2026-07-12 | **21.0.1** | Invoice Aggregate Audit — bill-to Patient\|Org; DRAFT/ISSUED/VOIDED; prep. ADR-017 |
+| 2026-07-12 | **21.0** | Billing Foundation Planning — BC Billing · primer root `Invoice` (≠ Subscriptions) |
 | 2026-07-12 | **20.8** | **INVENTORY ITEM SLICE COMPLETE** — ItemReferencePort · consumption guide · FASE 20 ✅ |
 | 2026-07-12 | **20.7** | Item Verification — E2E 8/8 + Core validation |
 | 2026-07-12 | **20.6** | Item Administration API — `/api/v1/inventory/items` + unit 3/3 · IT 6/6 |

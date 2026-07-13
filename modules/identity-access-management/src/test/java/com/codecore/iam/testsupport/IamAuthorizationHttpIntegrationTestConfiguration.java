@@ -3,6 +3,7 @@ package com.codecore.iam.testsupport;
 import com.codecore.iam.application.ReactorAuthorizationContextAccessor;
 import com.codecore.iam.configuration.IamAuthenticationConfiguration;
 import com.codecore.iam.configuration.IamAuthorizationConfiguration;
+import com.codecore.iam.configuration.IamBootstrapConfiguration;
 import com.codecore.iam.configuration.IamModuleConfiguration;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcAuthorizationQueryRepository;
 import com.codecore.iam.infrastructure.persistence.repository.R2dbcIdentityRepository;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Import;
         IamModuleConfiguration.class,
         IamAuthenticationConfiguration.class,
         IamAuthorizationConfiguration.class,
+        IamBootstrapConfiguration.class,
         IamR2dbcTestConfiguration.class,
         R2dbcIdentityRepository.class,
         R2dbcTenantRepository.class,

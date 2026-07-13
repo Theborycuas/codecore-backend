@@ -10,7 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         "com.codecore.patient",
         "com.codecore.appointment",
         "com.codecore.encounter",
-        "com.codecore.inventory"
+        "com.codecore.inventory",
+        "com.codecore.billing"
 })
 public class CodeCoreApiApplication {
 
