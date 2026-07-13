@@ -1,28 +1,71 @@
 # CodeCore — Roadmap de implementación
 
-**Última actualización:** 2026-07-12  
-**Módulos de plataforma:** `identity-access-management` · `organization-management`  
-**Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith  
-**IAM:** ✅ **FOUNDATION COMPLETE** (FASE 15 + 15.9.2–15.9.4)  
-**Organization Management:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 16 + ADR-010/011)  
-**Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
-**Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
-**Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
-**Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
-**Billing:** ✅ **INVOICE SLICE CLOSED** (FASE 21 · ADR-017 frozen · [guía](BILLING-CONSUMPTION-GUIDE.md))  
-**Payments:** ✅ **PAYMENT SLICE CLOSED** (FASE 22 · ADR-018 frozen · [guía](PAYMENTS-CONSUMPTION-GUIDE.md))  
-**Platform Services:** ✅ **ACCESS / INVITATION SLICE CLOSED** (FASE 23 · ADR-019 frozen · [guía](ACCESS-CONSUMPTION-GUIDE.md)) · Password Recovery **Done** · Subscription **después**  
-**Audit:** ✅ **AUDITENTRY SLICE CLOSED** (FASE 24 · ADR-020 frozen · [guía](AUDIT-CONSUMPTION-GUIDE.md)) · Observability **después**  
+**Última actualización:** 2026-07-13  
+**Arquitectura:** Spring Boot 3 · Java 21 · WebFlux · R2DBC · DDD · Hexagonal · Modular Monolith · Multi-Tenant  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
-**Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
-**Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
-**Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
-**Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · review [CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
-**Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · cierre [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · guía [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
-**Planificación FASE 22:** [PASO-22.0](../audits/PASO-22.0-PAYMENTS-FOUNDATION-PLANNING.md) · cierre [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · guía [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md) · ADR [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md)  
-**Planificación FASE 23:** [PASO-23.0](../audits/PASO-23.0-PLATFORM-SERVICES-FOUNDATION-PLANNING.md) · cierre [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · guía [ACCESS-CONSUMPTION-GUIDE.md](ACCESS-CONSUMPTION-GUIDE.md) · ADR [ADR-019](ADR-019-INVITATION-DOMAIN-MODEL.md) · review [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md)  
-**Planificación FASE 24:** [PASO-24.0](../audits/PASO-24.0-AUDIT-FOUNDATION-PLANNING.md) · cierre [PASO-24.8](../audits/PASO-24.8-AUDIT-CLOSEOUT.md) · guía [AUDIT-CONSUMPTION-GUIDE.md](AUDIT-CONSUMPTION-GUIDE.md) · ADR [ADR-020](ADR-020-AUDIT-ENTRY-DOMAIN-MODEL.md) · review [CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md)  
-**Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
+**Patrón cross-BC:** [ADR-013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md) (IDs + ReferencePorts)
+
+**IAM (10–15):** ✅ FOUNDATION COMPLETE  
+**Organization (16):** ✅ CLOSED · [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md)/[011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) · [guía](ORGANIZATION-CONSUMPTION-GUIDE.md)  
+**Clinical Foundation (17):** ✅ CLOSED · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md)/[013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md) · [guía](PATIENT-CONSUMPTION-GUIDE.md)  
+**Scheduling (18):** ✅ CLOSED · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [guía](SCHEDULING-CONSUMPTION-GUIDE.md) · [review](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md)  
+**Clinical Records (19):** ✅ CLOSED · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [guía](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md) · [review](CODECORE-CLINICAL-RECORDS-ARCHITECTURE-REVIEW-2026-07.md)  
+**Inventory Item (20):** ✅ CLOSED · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · [guía](INVENTORY-CONSUMPTION-GUIDE.md) · [review](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
+**Billing Invoice (21):** ✅ CLOSED · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md) · [guía](BILLING-CONSUMPTION-GUIDE.md) · [review](CODECORE-BILLING-ARCHITECTURE-REVIEW-2026-07.md)  
+**Payments (22):** ✅ CLOSED · [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md) · [guía](PAYMENTS-CONSUMPTION-GUIDE.md) · [review](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md)  
+**Access Invitation (23):** ✅ CLOSED · [ADR-019](ADR-019-INVITATION-DOMAIN-MODEL.md) · [guía](ACCESS-CONSUMPTION-GUIDE.md) · [review](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md) · Password Recovery **Done**  
+**Audit (24):** ✅ CLOSED · [ADR-020](ADR-020-AUDIT-ENTRY-DOMAIN-MODEL.md) · [guía](AUDIT-CONSUMPTION-GUIDE.md) · [review](CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md)  
+
+**Planificación / cierre (16–24):** ver § Estado por fase y cada `PASO-*.0` / `PASO-*.8` en `docs/audits/`.  
+**Architecture Review (plataforma):** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
+
+---
+
+# Estado actual del Core Platform
+
+CodeCore es el **corazón** (Core Platform) sobre el que viven productos SaaS (Dental, Veterinaria, Hospitales, Laboratorios, ERP, Retail, Manufactura, …).  
+Las fases 16–24 están **completamente cerradas**: ADR frozen · dominio · persistencia · authorization · API · verification · consumption guide · closeout · architecture review independiente (veredicto **A**).
+
+**No reabrir** ADR-010…020 ni BCs cerrados salvo error P0/P1.
+
+```text
+IAM (10–15)                    ✅ CLOSED
+ ↓
+Organization (16)              ✅ CLOSED
+ ↓
+Patient (17)                   ✅ CLOSED
+ ↓
+Appointment (18)               ✅ CLOSED
+ ↓
+Encounter (19)                 ✅ CLOSED
+ ↓
+Item (20)                      ✅ CLOSED
+ ↓
+Invoice (21)                   ✅ CLOSED
+ ↓
+Payment (22)                   ✅ CLOSED
+ ↓
+Invitation / Access (23)       ✅ CLOSED   (+ Password Recovery IAM Done)
+ ↓
+AuditEntry / Audit (24)        ✅ CLOSED
+```
+
+| Capa | BC / foco | Root publicado | Contrato de consumo |
+|------|-----------|----------------|---------------------|
+| Plataforma | IAM | Identity · Membership · Tenant | JWT · permisos · (contract ports IAM) |
+| Estructura | Organization | Organization · Office · StaffAssignment | [ORGANIZATION-CONSUMPTION-GUIDE](ORGANIZATION-CONSUMPTION-GUIDE.md) |
+| Clínica | Clinical Foundation | Patient | [PATIENT-CONSUMPTION-GUIDE](PATIENT-CONSUMPTION-GUIDE.md) |
+| Agenda | Scheduling | Appointment | [SCHEDULING-CONSUMPTION-GUIDE](SCHEDULING-CONSUMPTION-GUIDE.md) |
+| Episodio | Clinical Records | Encounter | [CLINICAL-RECORDS-CONSUMPTION-GUIDE](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md) |
+| Catálogo | Inventory | Item | [INVENTORY-CONSUMPTION-GUIDE](INVENTORY-CONSUMPTION-GUIDE.md) |
+| Claim | Billing | Invoice | [BILLING-CONSUMPTION-GUIDE](BILLING-CONSUMPTION-GUIDE.md) |
+| Liquidación | Payments | Payment | [PAYMENTS-CONSUMPTION-GUIDE](PAYMENTS-CONSUMPTION-GUIDE.md) |
+| Acceso | Access | Invitation | [ACCESS-CONSUMPTION-GUIDE](ACCESS-CONSUMPTION-GUIDE.md) |
+| Accountability | Audit | AuditEntry | [AUDIT-CONSUMPTION-GUIDE](AUDIT-CONSUMPTION-GUIDE.md) |
+
+**Cadena económica:** `Encounter?` / `Item?` → `Invoice` → `Payment` (sin `PAID` en Invoice).  
+**Cadena de acceso:** `Invitation` → Membership (IAM) → StaffAssignment (Org, opcional).  
+**Accountability:** BCs append vía `AuditAppendPort` (Invitation + PasswordReset ya cableados).
 
 ---
 
@@ -43,9 +86,14 @@
 | **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
 | **21** | Billing (Invoice) | ✅ Cerrada | 21.8 — Invoice slice estable (ADR-017) |
 | **22** | Payments (Payment) | ✅ Cerrada | 22.8 — Payment slice estable (ADR-018) |
-| **23** | Platform Services (Access / Invitation) | ✅ Cerrada | 23.8 — Invitation slice estable (ADR-019) · Password Recovery Done · Subscription después |
-| **24** | Audit (AuditEntry) | ✅ Cerrada | 24.8 — AuditEntry slice estable (ADR-020) · Observability después |
-| **25+** | Stock · Production Hardening · Subscription · Observability · … | ⏳ Pendiente | Ver § Roadmap por BC |
+| **23** | Platform Services (Access / Invitation) | ✅ Cerrada | 23.8 — Invitation (ADR-019) · Password Recovery Done |
+| **24** | Audit (AuditEntry) | ✅ Cerrada | 24.8 — AuditEntry estable (ADR-020) |
+| **25** | Observability Foundation | 🟡 Pendiente | Ver § Roadmap futuro Core |
+| **26** | Subscription & Plans | 🟡 Pendiente | Ver § Roadmap futuro Core |
+| **27** | Inventory Stock | 🟡 Pendiente | Continuación BC Inventory |
+| **28** | Notifications | 🟡 Pendiente | Ver § Roadmap futuro Core |
+| **29** | Reporting | 🟡 Pendiente | Ver § Roadmap futuro Core |
+| **30** | Integration Platform | 🟡 Pendiente | Ver § Roadmap futuro Core |
 
 ---
 
@@ -59,6 +107,15 @@
 | **13** | Identity Global + Membership (ADR-006) | `docs/audits/PASO-13.*` |
 | **14** | RBAC membership-scoped, AuthorizationService, seeds V13 (ADR-007) | `docs/audits/PASO-14.*` · [ADR-007](ADR-007-AUTHORIZATION-MODEL.md) |
 | **15** | IAM Administration HTTP completa (ADR-008), OpenAPI, verificación E2E | `docs/audits/PASO-15.*` · [ADR-008](ADR-008-IAM-ADMINISTRATION-API.md) |
+| **16** | Organization · Office · StaffAssignment | [PASO-16.10](../audits/PASO-16.10-ORGANIZATION-MANAGEMENT-CLOSEOUT.md) · [ADR-010](ADR-010-ORGANIZATIONS-MODEL.md)/[011](ADR-011-ORGANIZATION-INTEGRATION-PATTERNS.md) · [guía](ORGANIZATION-CONSUMPTION-GUIDE.md) |
+| **17** | Patient | [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md) · [ADR-012](ADR-012-PATIENT-DOMAIN-MODEL.md)/[013](ADR-013-BOUNDED-CONTEXT-REFERENCE-CONTRACTS.md) · [guía](PATIENT-CONSUMPTION-GUIDE.md) |
+| **18** | Appointment | [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · [ADR-014](ADR-014-APPOINTMENT-DOMAIN-MODEL.md) · [guía](SCHEDULING-CONSUMPTION-GUIDE.md) · [review](CODECORE-SCHEDULING-ARCHITECTURE-REVIEW-2026-07.md) |
+| **19** | Encounter | [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · [ADR-015](ADR-015-ENCOUNTER-DOMAIN-MODEL.md) · [guía](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md) · [review](CODECORE-CLINICAL-RECORDS-ARCHITECTURE-REVIEW-2026-07.md) |
+| **20** | Item | [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · [guía](INVENTORY-CONSUMPTION-GUIDE.md) · [review](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md) |
+| **21** | Invoice | [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md) · [guía](BILLING-CONSUMPTION-GUIDE.md) · [review](CODECORE-BILLING-ARCHITECTURE-REVIEW-2026-07.md) |
+| **22** | Payment | [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md) · [guía](PAYMENTS-CONSUMPTION-GUIDE.md) · [review](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md) |
+| **23** | Invitation (+ Password Recovery IAM) | [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · [ADR-019](ADR-019-INVITATION-DOMAIN-MODEL.md) · [guía](ACCESS-CONSUMPTION-GUIDE.md) · [review](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md) |
+| **24** | AuditEntry | [PASO-24.8](../audits/PASO-24.8-AUDIT-CLOSEOUT.md) · [ADR-020](ADR-020-AUDIT-ENTRY-DOMAIN-MODEL.md) · [guía](AUDIT-CONSUMPTION-GUIDE.md) · [review](CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md) |
 
 ### FASE 14 — entregables clave
 
@@ -458,17 +515,22 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 |------|-----------------|--------|-------------------|
 | **10–15** | IAM (plataforma) | ✅ | — |
 | **16** | Organization Management | ✅ | IAM Foundation |
-| **17** | **Clinical Foundation** (`Patient`) | ✅ Cerrada | Organization + ADR-012/013 |
-| **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
-| **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
-| **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
-| **21** | **Billing** (`Invoice`) | ✅ 21.8 Closed (Invoice) | Payments via InvoiceId · Stock (Inventory) en paralelo |
-| **22** | **Payments** (`Payment`) | ✅ 22.8 Closed | InvoiceId + InvoiceReferencePort · Refunds/PSP adapters vía PaymentReferencePort (futuro) |
-| **23** | **Platform Services** (umbrella) | ✅ Access/Invitation 23.8 Closed | Password Recovery **Done** · Subscription **después** (BC propio) |
-| **24** | **Audit & Observability** | ✅ Audit/AuditEntry 24.8 Closed | Observability stack **después** (ADR-009 P2 remaining) |
-| **25** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
+| **17** | Clinical Foundation (`Patient`) | ✅ | Organization + ADR-012/013 |
+| **18** | Scheduling (`Appointment`) | ✅ | Patient + StaffAssignment + Org/Office |
+| **19** | Clinical Records (`Encounter`) | ✅ | Patient + Org + Appointment? |
+| **20** | Inventory (`Item`) | ✅ | Organization? · Stock **después** (FASE 27) |
+| **21** | Billing (`Invoice`) | ✅ | Org + Patient? + Item? + Encounter? |
+| **22** | Payments (`Payment`) | ✅ | InvoiceId + InvoiceReferencePort |
+| **23** | Access (`Invitation`) + Password Recovery | ✅ | IAM contracts · Subscription **FASE 26** |
+| **24** | Audit (`AuditEntry`) | ✅ | AuditAppendPort · Observability **FASE 25** |
+| **25** | Observability Foundation | 🟡 | ADR-009 P2 restante (metrics/tracing · JWT stale · OpenAPI) |
+| **26** | Subscription & Plans | 🟡 | IAM Membership seats · ≠ Billing operativo |
+| **27** | Inventory Stock | 🟡 | Mismo BC Inventory · consume `ItemId` |
+| **28** | Notifications | 🟡 | Ports de entrega · ≠ Audit · ≠ Invitation |
+| **29** | Reporting | 🟡 | Read-models sobre IDs publicados |
+| **30** | Integration Platform | 🟡 | Webhooks / adapters externos · sin Event Bus preventivo |
 
-**Product packs** (Dental / PetNova / …): **después** de 17–19 (núcleo clínico estable). Componen BCs; no sustituyen FASE 17–19.
+**Product packs** (Dental / PetNova / …): **después** del núcleo clínico 17–19 (y según producto, Billing/Payments). Componen BCs del Core; **no** los sustituyen.
 
 ### Por qué no Invitations como FASE 17
 
@@ -478,7 +540,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | ¿Consume StaffAssignment? | **No** |
 | ¿Aporta dominio clínico? | **No** |
 | ¿Bloquea Patient si se aplaza? | **No** |
-| ¿Qué es? | **Platform Service** (IAM-adjacent) → **FASE 23** |
+| ¿Qué es? | **Platform Service** (IAM-adjacent) → **FASE 23** ✅ Done |
 
 Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
@@ -486,23 +548,30 @@ Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 | Antes | Ahora | Rationale |
 |-------|-------|-----------|
-| 17 Invitations | **23 Platform Services** | No prueba ADR-011; onboarding de acceso ≠ clínica |
+| 17 Invitations | **23 Access** ✅ | No prueba ADR-011; onboarding de acceso ≠ clínica |
 | 18 Business Module Framework | **Disuelto** | [DEVELOPMENT-POLICY-FASE-16-PLUS](DEVELOPMENT-POLICY-FASE-16-PLUS.md) ya es el framework |
 | 19 Dental / PetNova | Product packs post 17–19 | Verticales sobre BCs clínicos |
-| Patient “en FASE 19” | **FASE 17** | Primer consumer de Organization (ADR-011) |
+| Patient “en FASE 19” | **FASE 17** ✅ | Primer consumer de Organization (ADR-011) |
+| 24 = Audit & Observability juntos | **24 Audit** ✅ · **25 Observability** | Evita God BC ops+compliance |
 
 ### Deuda técnica programada
 
 | Ítem | Origen | Cuándo |
 |------|--------|--------|
-| Password recovery | ADR-009 P1 | **Done (FASE 23)** — HTTP/DB/use cases IAM |
-| Invitations | Roadmap histórico | **Done (FASE 23)** — Access slice 23.8 |
-| Audit trail | ADR-009 P2 | **Done (FASE 24)** — AuditEntry slice 24.8 |
-| JWT stale mitigation | ADR-009 P2 | **FASE 25** |
-| OpenAPI auth group | ADR-009 P2 | **FASE 25** |
-| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM / FASE 23+ |
+| Password recovery | ADR-009 P1 | **Done (FASE 23)** |
+| Invitations | Roadmap histórico | **Done (FASE 23)** |
+| Audit trail | ADR-009 P2 | **Done (FASE 24)** |
+| Logging / metrics / tracing | ADR-009 P2 | **FASE 25** Observability Foundation |
+| JWT stale mitigation | ADR-009 P2 | **FASE 25** (hardening dentro de Observability) |
+| OpenAPI auth group improvements | ADR-009 P2 | **FASE 25** |
+| Subscription / Plans / Seats | Política Billing ≠ Subscription | **FASE 26** |
+| Stock (qty / movements) | Continuación Inventory | **FASE 27** |
+| Notifications BC / inbox | Ports hoy; BC si hace falta | **FASE 28** |
+| Reporting / statements | Read-models | **FASE 29** |
+| Integration Platform | Webhooks / adapters | **FASE 30** |
+| Drop `iam_user.tenant_id` | PASO 13.6 | Post-admin IAM / cuando toque IAM packaging |
+| Extraer `iam-contract` Gradle | Access Review P1 | Pre-Subscription o al tocar IAM |
 | Consolidación datos 13.3 | Solo si prod duplicados | FUTURE-PROD |
-| JWT `tenantId` desde membership | Mejora opcional | FASE 23+ |
 
 ---
 
@@ -877,7 +946,42 @@ No introducir en Invitation: Subscription / seats · StaffAssignment · Notifica
 | **24.7** | Verification | ✅ | [PASO-24.7](../audits/PASO-24.7-AUDIT-VERIFICATION.md) |
 | **24.8** | Closeout | ✅ | [PASO-24.8](../audits/PASO-24.8-AUDIT-CLOSEOUT.md) |
 
-**Observability** (metrics/tracing/SIEM) = **fuera** de AuditEntry — track ADR-009 P2 restante / FASE 25+.
+**Observability** (metrics/tracing/SIEM) = **fuera** de AuditEntry — **FASE 25**.
+
+---
+
+# Roadmap futuro del Core Platform (FASE 25–30)
+
+Solo fases que **fortalecen el corazón** CodeCore. No verticales. No packs Dental/Vet.  
+Cada fase seguirá el ciclo: Planning → Aggregate Audit → ADR → Domain → Persistence → Auth → API Audit → API → Verification → Guide → Closeout → Architecture Review.
+
+| Fase | Nombre | Estado | Objetivo Core | Qué NO es |
+|------|--------|--------|---------------|-----------|
+| **25** | **Observability Foundation** | 🟡 | Métricas, tracing, logging estructurado, JWT stale mitigation, OpenAPI auth DX (ADR-009 P2 restante) | SIEM producto · mezclar con AuditEntry |
+| **26** | **Subscription & Plans** | 🟡 | Modelo comercial SaaS (Plan / Subscription / Seat) sobre Membership — BC **propio** | Billing operativo (`Invoice`) · embeber en Access |
+| **27** | **Inventory Stock** | 🟡 | Cantidades / movimientos bajo `ItemId` + locus (`OfficeId`) — **mismo** BC Inventory | Reabrir ADR-016 Item · WMS completo |
+| **28** | **Notifications** | 🟡 | Orquestación de entrega (email/SMS/push) como BC o foundation de ports reutilizables | Inbox de producto · Audit trail · Invitation God mailer |
+| **29** | **Reporting** | 🟡 | Read-models / projections sobre IDs + ReferencePorts publicados | OLAP vertical · reabrir aggregates |
+| **30** | **Integration Platform** | 🟡 | Webhooks, adapters externos, contratos de integración estables | Microservicios por defecto · Event Bus preventivo |
+
+### Orden y dependencias
+
+```text
+FASE 24 Audit ✅
+    ↓
+FASE 25 Observability     ← cierra deuda ops ADR-009; no bloquea 26–27
+    ↓
+FASE 26 Subscription      ← seats sobre Membership; tras Access estable
+FASE 27 Stock             ← puede ir en paralelo de producto con 26
+    ↓
+FASE 28 Notifications     ← Delivery foundation (Invitation/PasswordReset ya usan ports mínimos)
+    ↓
+FASE 29 Reporting         ← consume cadena clínica + económica + audit
+    ↓
+FASE 30 Integration       ← borde del Core hacia ecosistemas externos
+```
+
+**Regla:** ninguna fase futura reabre ADR-010…020. Stock no modifica Item; Subscription no modifica Invoice/Invitation; Observability no engorda AuditEntry.
 
 ---
 
@@ -928,6 +1032,8 @@ FASE 22 introduce **ADR-018 Accepted** (Payment frozen) y **consume** Billing (`
 
 FASE 23 introduce **ADR-019 Accepted** (Invitation frozen) y **consume** IAM vía contract ports + `TenantAccessProvisionPort` — sin modificar ADR-010…018 ni BCs clínicos/económicos; Subscription **fuera** del slice.
 
+FASE 24 introduce **ADR-020 Accepted** (AuditEntry frozen) y **consume** IAM solo para actor opcional; productores Access/IAM vía `AuditAppendPort` **sin** reabrir ADR-019; Observability **fuera** (FASE 25).
+
 ---
 
 ## Proceso autónomo Cursor
@@ -941,13 +1047,13 @@ FASE 23 introduce **ADR-019 Accepted** (Invitation frozen) y **consume** IAM ví
 
 ### Siguiente acción
 
-**Subscription Foundation Planning** (BC propio, **después** de Access 23.8) — o **Stock** (continuación Inventory) en paralelo de producto.
+**FASE 25 — Observability Foundation** — planning (`PASO-25.0`) cuando se abra la fase: metrics/tracing/logging estructurado + ítems ADR-009 P2 restantes (JWT stale, OpenAPI auth DX).
 
-Password Recovery (ADR-009 P1) = **Done**. Access/Invitation = **cerrado**.
+En paralelo de producto (sin bloquear 25): preparar **FASE 26 Subscription** y/o **FASE 27 Stock** según prioridad de negocio Core — **sin** reabrir ADR-016…020.
 
-**Sin reabrir** ADR-012…019 ni FASE 16–23 Invitation slice.
+**Sin reabrir** FASE 16–24 ni ADR-010…020.
 
-Referencias: [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · [ACCESS-CONSUMPTION-GUIDE.md](ACCESS-CONSUMPTION-GUIDE.md) · [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md).
+Referencias cierre reciente: [PASO-24.8](../audits/PASO-24.8-AUDIT-CLOSEOUT.md) · [AUDIT-CONSUMPTION-GUIDE.md](AUDIT-CONSUMPTION-GUIDE.md) · [CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md) · § Estado actual del Core Platform.
 
 ---
 
@@ -955,6 +1061,10 @@ Referencias: [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · [ACCESS-CONS
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-13 | **24.8** | **AUDIT SLICE COMPLETE** — AuditAppendPort · AuditReferencePort · guía · FASE 24 ✅ |
+| 2026-07-13 | **24.review** | Architecture Review Audit — **A** · ~9.2/10 · [CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-AUDIT-ARCHITECTURE-REVIEW-2026-07.md) |
+| 2026-07-13 | **24.0** | Audit Foundation Planning — BC Audit · root `AuditEntry` (≠ Observability) |
+| 2026-07-13 | **ROADMAP** | Estado actual Core 16–24 CLOSED · futuro 25–30 (Observability → Integration) |
 | 2026-07-12 | **23.8** | **ACCESS INVITATION SLICE COMPLETE** — InvitationReferencePort · consumption guide · Password Recovery Done · FASE 23 Access ✅ |
 | 2026-07-12 | **23.review** | Architecture Review Access — **A** · 9.2/10 · [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md) |
 | 2026-07-12 | **23.7** | Invitation Verification — E2E 8/8 (journey, RBAC, cross-tenant, OWNER, duplicate, revoke MANAGER, expired accept, OpenAPI) |
