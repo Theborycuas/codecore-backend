@@ -3,12 +3,12 @@ package com.codecore.billing.contract;
 /**
  * Billing contract surface for cross-BC consumers (ADR-017 / ADR-013).
  * <p>
- * Published surface (FASE 21 in progress — Invoice slice):
+ * Published surface (FASE 21 closed — Invoice slice):
  * <ul>
  *   <li>{@link com.codecore.billing.domain.valueobject.InvoiceId} (via {@code api} on billing-domain)</li>
  *   <li>{@link com.codecore.billing.contract.authorization.InvoicePermissionCatalog}</li>
+ *   <li>{@link com.codecore.billing.contract.reference.InvoiceReferencePort}</li>
  * </ul>
- * {@code InvoiceReferencePort} is published at closeout (PASO 21.8).
  * Consumers depend on {@code billing-contract} only — never billing-application
  * or billing-infrastructure.
  */

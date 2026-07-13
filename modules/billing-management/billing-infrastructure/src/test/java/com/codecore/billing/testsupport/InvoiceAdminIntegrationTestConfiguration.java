@@ -1,6 +1,7 @@
 package com.codecore.billing.testsupport;
 
 import com.codecore.billing.configuration.BillingModuleConfiguration;
+import com.codecore.billing.infrastructure.adapters.R2dbcInvoiceReferenceAdapter;
 import com.codecore.billing.infrastructure.persistence.repository.R2dbcInvoiceAdminQueryRepository;
 import com.codecore.billing.infrastructure.persistence.repository.R2dbcInvoiceRepository;
 import com.codecore.billing.interfaces.http.InvoiceHttpExceptionHandler;
@@ -106,6 +107,7 @@ import org.springframework.context.annotation.Import;
         R2dbcEncounterReferenceAdapter.class,
         R2dbcInvoiceRepository.class,
         R2dbcInvoiceAdminQueryRepository.class,
+        R2dbcInvoiceReferenceAdapter.class,
         R2dbcIdentityRepository.class,
         R2dbcIdentityAdminQueryRepository.class,
         R2dbcMembershipAdminQueryRepository.class,

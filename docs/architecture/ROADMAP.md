@@ -8,13 +8,14 @@
 **Clinical Foundation:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 17 + ADR-012/013)  
 **Scheduling:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 18 + ADR-014)  
 **Clinical Records:** ✅ **BOUNDED CONTEXT CLOSED** (FASE 19 + ADR-015)  
-**Billing:** 🟡 **EN CURSO** (FASE 21 · 21.7 ✅ Verification — siguiente 21.8 Closeout)  
+**Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
+**Billing:** ✅ **INVOICE SLICE CLOSED** (FASE 21 · ADR-017 frozen · [guía](BILLING-CONSUMPTION-GUIDE.md))  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 19:** [PASO-19.0](../audits/PASO-19.0-CLINICAL-RECORDS-FOUNDATION-PLANNING.md) · cierre [PASO-19.8](../audits/PASO-19.8-CLINICAL-RECORDS-CLOSEOUT.md) · guía [CLINICAL-RECORDS-CONSUMPTION-GUIDE.md](CLINICAL-RECORDS-CONSUMPTION-GUIDE.md)  
 **Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · review [CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
-**Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · audit [PASO-21.0.1](../audits/PASO-21.0.1-INVOICE-AGGREGATE-AUDIT.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
+**Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · cierre [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · guía [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -34,7 +35,7 @@
 | **18** | Scheduling | ✅ Cerrada | 18.8 — BC estable (ADR-014) |
 | **19** | Clinical Records | ✅ Cerrada | 19.8 — BC estable (ADR-015) |
 | **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
-| **21** | Billing (Invoice) | 🟡 En curso | 21.7 ✅ Verification · siguiente 21.8 Closeout |
+| **21** | Billing (Invoice) | ✅ Cerrada | 21.8 — Invoice slice estable (ADR-017) |
 | **22+** | Payments · Stock · Platform · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
@@ -452,7 +453,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **18** | **Scheduling** (`Appointment`) | ✅ Cerrada | Patient + StaffAssignment + Org/Office |
 | **19** | **Clinical Records** (`Encounter`) | ✅ 19.8 Closed | Notes / Labs / Billing via EncounterId |
 | **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
-| **21** | **Billing** (`Invoice`) | 🟡 21.7 done | Operativo — **no** Subscriptions; **ADR-017 Accepted** (frozen) |
+| **21** | **Billing** (`Invoice`) | ✅ 21.8 Closed (Invoice) | Payments via InvoiceId · Stock (Inventory) en paralelo |
 | **22** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) · Subscriptions SaaS |
 | **23** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
 | **24** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
@@ -700,9 +701,10 @@ No introducir: Stock/qty en Item · precios · BOM · lotes · ports clínicos p
 
 ---
 
-## FASE 21 — Billing (Invoice slice) 🟡
+## FASE 21 — Billing (Invoice slice) ✅
 
-**Estado:** 🟡 En curso · **ADR-017 Accepted** (Invoice frozen) · 21.0–21.7 ✅ · siguiente 21.8 Closeout  
+**Estado:** ✅ Cerrada · **ADR-017 Accepted** (Invoice frozen)  
+**Cierre:** [PASO-21.8-BILLING-CLOSEOUT.md](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · consumo [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md)  
 **Plan:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)
 
 ### Primer Aggregate Root: `Invoice`
@@ -730,7 +732,7 @@ No introducir: Stock/qty en Item · precios · BOM · lotes · ports clínicos p
 | **21.5.1** | Invoice Admin API Audit | ✅ | **Obligatoria** · [PASO-21.5.1](../audits/PASO-21.5.1-INVOICE-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/billing/invoices` |
 | **21.6** | Invoice Administration API | ✅ | [PASO-21.6](../audits/PASO-21.6-INVOICE-ADMINISTRATION-API.md) | — | `/api/v1/billing/invoices` + multi-ReferencePort + unit 14/14 |
 | **21.7** | Invoice Verification | ✅ | [PASO-21.7](../audits/PASO-21.7-INVOICE-VERIFICATION.md) | — | `InvoiceVerificationIT` 8/8 |
-| **21.8** | Billing Closeout (Invoice) | ⏳ Pendiente | — | — | `InvoiceReferencePort` (si aplica) · guía · FASE 21 ✅ |
+| **21.8** | Billing Closeout (Invoice) | ✅ | [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) | — | `InvoiceReferencePort` · guía · FASE 21 ✅ |
 
 ### Restricciones FASE 21
 
@@ -795,9 +797,9 @@ FASE 21 introduce **ADR-017 Accepted** (Invoice frozen) y **consume** Organizati
 
 ### Siguiente acción
 
-**PASO 21.8 — Billing Closeout (Invoice)** — cierre de FASE 21: `InvoiceReferencePort` (solo si algún consumidor lo requiere), consumption guide, architecture review, y marcar Billing como BC estable.
+**Payments** (consume `InvoiceId` + `InvoiceReferencePort`) y/o **Stock** (continuación Inventory) — **sin reabrir** ADR-016/017 ni FASE 16–21.
 
-Referencias: [PASO-21.7](../audits/PASO-21.7-INVOICE-VERIFICATION.md) · [PASO-21.6](../audits/PASO-21.6-INVOICE-ADMINISTRATION-API.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md).
+Referencias: [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md).
 
 ---
 
@@ -805,6 +807,7 @@ Referencias: [PASO-21.7](../audits/PASO-21.7-INVOICE-VERIFICATION.md) · [PASO-2
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **21.8** | **BILLING INVOICE SLICE COMPLETE** — InvoiceReferencePort · consumption guide · FASE 21 ✅ |
 | 2026-07-12 | **21.7** | Invoice Verification — E2E 8/8 (journey, RBAC, cross-tenant, referencias inválidas, duplicado, OpenAPI, 401) |
 | 2026-07-12 | **21.6** | Invoice Administration API — `/api/v1/billing/invoices` + multi-ReferencePort (Org/Patient/Item/Encounter) · unit 14/14 |
 | 2026-07-12 | **21.5.1** | Invoice Admin API Audit — HTTP shape `/api/v1/billing/invoices`; lifecycle propio (no soft-entity) |

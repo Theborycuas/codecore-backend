@@ -86,4 +86,4 @@ Ambos fixes son puramente de configuración/fixtures de test IAM, sin tocar el m
 
 ## Siguiente paso
 
-**PASO 21.8 — Billing Closeout** (arquitectura, consumption guide, `InvoiceReferencePort` si algún consumidor lo requiere).
+**PASO 21.8 — Billing Closeout** — ✅ [PASO-21.8](PASO-21.8-BILLING-CLOSEOUT.md). **FASE 21 Invoice slice ✅**.
