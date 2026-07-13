@@ -94,6 +94,13 @@ include(
 )
 
 include(
+    ":modules:access-management:access-domain",
+    ":modules:access-management:access-application",
+    ":modules:access-management:access-infrastructure",
+    ":modules:access-management:access-contract"
+)
+
+include(
     ":modules:tenant-management:tenant-domain",
     ":modules:tenant-management:tenant-application",
     ":modules:tenant-management:tenant-infrastructure",

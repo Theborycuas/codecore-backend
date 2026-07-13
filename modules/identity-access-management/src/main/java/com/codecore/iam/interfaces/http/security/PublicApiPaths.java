@@ -25,6 +25,15 @@ public final class PublicApiPaths {
         if (method == HttpMethod.POST && "/api/v1/auth/login".equals(path)) {
             return true;
         }
+        if (method == HttpMethod.POST && "/api/v1/auth/forgot-password".equals(path)) {
+            return true;
+        }
+        if (method == HttpMethod.POST && "/api/v1/auth/reset-password".equals(path)) {
+            return true;
+        }
+        if (method == HttpMethod.POST && "/api/v1/access/invitations/accept".equals(path)) {
+            return true;
+        }
         return false;
     }
 }

@@ -1,0 +1,21 @@
+package com.codecore.access.infrastructure.adapters;
+
+import com.codecore.access.application.port.out.TenantContextAccessor;
+import com.codecore.access.domain.valueobject.TenantId;
+import com.codecore.iam.application.port.out.AuthorizationContextAccessor;
+import reactor.core.publisher.Mono;
+
+public final class IamTenantContextAccessor implements TenantContextAccessor {
+
+    private final AuthorizationContextAccessor authorizationContextAccessor;
+
+    public IamTenantContextAccessor(AuthorizationContextAccessor authorizationContextAccessor) {
+        this.authorizationContextAccessor = authorizationContextAccessor;
+    }
+
+    @Override
+    public Mono<TenantId> currentTenantId() {
+        return authorizationContextAccessor.current()
+                .map(ctx -> new TenantId(ctx.tenantId().value()));
+    }
+}

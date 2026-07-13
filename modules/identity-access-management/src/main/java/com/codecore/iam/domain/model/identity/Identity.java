@@ -6,6 +6,7 @@ import com.codecore.iam.domain.model.loginattempt.LoginAttemptTracker;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
+import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
 
 import java.time.Instant;
@@ -165,6 +166,30 @@ public final class Identity extends AggregateRoot {
 
     public void attachCredential(Credential newCredential) {
         this.credential = Objects.requireNonNull(newCredential, "newCredential");
+        touch();
+        bumpVersion();
+    }
+
+    /**
+     * Rotates the password hash and clears password-reset / must-change flags.
+     * When status is {@link IdentityStatus#PASSWORD_RESET_REQUIRED}, restores {@link IdentityStatus#ACTIVE}.
+     */
+    public void changePassword(PasswordHash newHash, Instant at) {
+        Objects.requireNonNull(newHash, "newHash");
+        Objects.requireNonNull(at, "at");
+        if (credential == null) {
+            throw new AuthenticationNotPermittedException("Credential is missing");
+        }
+        if (status == IdentityStatus.DISABLED) {
+            throw new AuthenticationNotPermittedException("Identity is disabled");
+        }
+        if (status == IdentityStatus.LOCKED) {
+            throw new AuthenticationNotPermittedException("Identity is locked");
+        }
+        credential.rotatePassword(newHash, at);
+        if (status == IdentityStatus.PASSWORD_RESET_REQUIRED) {
+            this.status = IdentityStatus.ACTIVE;
+        }
         touch();
         bumpVersion();
     }

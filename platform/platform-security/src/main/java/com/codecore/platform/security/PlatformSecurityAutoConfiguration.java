@@ -46,6 +46,9 @@ public class PlatformSecurityAutoConfiguration {
                     exchanges
                             .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/api/v1/auth/forgot-password").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/api/v1/auth/reset-password").permitAll()
+                            .pathMatchers(HttpMethod.POST, "/api/v1/access/invitations/accept").permitAll()
                             .pathMatchers(HttpMethod.GET, "/actuator/health").permitAll();
                     ReactiveAuthorizationManager<AuthorizationContext> manager =
                             authorizationManagerProvider.getIfAvailable();

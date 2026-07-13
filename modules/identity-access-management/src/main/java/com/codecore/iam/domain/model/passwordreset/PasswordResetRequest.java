@@ -49,6 +49,31 @@ public final class PasswordResetRequest extends AggregateRoot {
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt");
     }
 
+    /**
+     * Creates a pending password reset request (token hash only — never store the raw token).
+     */
+    public static PasswordResetRequest create(
+            TenantId tenantId,
+            IdentityId identityId,
+            ResetTokenHash resetTokenHash,
+            TokenExpiration expiration,
+            Instant now
+    ) {
+        Objects.requireNonNull(now, "now");
+        return new PasswordResetRequest(
+                PasswordResetRequestId.generate(),
+                tenantId,
+                identityId,
+                resetTokenHash,
+                expiration,
+                PasswordResetStatus.PENDING,
+                null,
+                now,
+                now,
+                0L
+        );
+    }
+
     public PasswordResetRequestId id() {
         return id;
     }

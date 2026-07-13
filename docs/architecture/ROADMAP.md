@@ -11,6 +11,7 @@
 **Inventory:** ✅ **ITEM SLICE CLOSED** (FASE 20 · ADR-016 frozen · [guía](INVENTORY-CONSUMPTION-GUIDE.md))  
 **Billing:** ✅ **INVOICE SLICE CLOSED** (FASE 21 · ADR-017 frozen · [guía](BILLING-CONSUMPTION-GUIDE.md))  
 **Payments:** ✅ **PAYMENT SLICE CLOSED** (FASE 22 · ADR-018 frozen · [guía](PAYMENTS-CONSUMPTION-GUIDE.md))  
+**Platform Services:** ✅ **ACCESS / INVITATION SLICE CLOSED** (FASE 23 · ADR-019 frozen · [guía](ACCESS-CONSUMPTION-GUIDE.md)) · Password Recovery **Done** · Subscription **después**  
 **Metodología FASE 16+:** [DEVELOPMENT-POLICY-FASE-16-PLUS.md](DEVELOPMENT-POLICY-FASE-16-PLUS.md)  
 **Planificación FASE 17:** [PASO-17.0](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md) · cierre [PASO-17.8](../audits/PASO-17.8-CLINICAL-FOUNDATION-CLOSEOUT.md)  
 **Planificación FASE 18:** [PASO-18.0](../audits/PASO-18.0-SCHEDULING-FOUNDATION-PLANNING.md) · cierre [PASO-18.8](../audits/PASO-18.8-SCHEDULING-CLOSEOUT.md) · guía [SCHEDULING-CONSUMPTION-GUIDE.md](SCHEDULING-CONSUMPTION-GUIDE.md)  
@@ -18,6 +19,7 @@
 **Planificación FASE 20:** [PASO-20.0](../audits/PASO-20.0-INVENTORY-FOUNDATION-PLANNING.md) · cierre [PASO-20.8](../audits/PASO-20.8-INVENTORY-CLOSEOUT.md) · guía [INVENTORY-CONSUMPTION-GUIDE.md](INVENTORY-CONSUMPTION-GUIDE.md) · ADR [ADR-016](ADR-016-ITEM-DOMAIN-MODEL.md) · review [CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-INVENTORY-ARCHITECTURE-REVIEW-2026-07.md)  
 **Planificación FASE 21:** [PASO-21.0](../audits/PASO-21.0-BILLING-FOUNDATION-PLANNING.md) · cierre [PASO-21.8](../audits/PASO-21.8-BILLING-CLOSEOUT.md) · guía [BILLING-CONSUMPTION-GUIDE.md](BILLING-CONSUMPTION-GUIDE.md) · ADR [ADR-017](ADR-017-INVOICE-DOMAIN-MODEL.md)  
 **Planificación FASE 22:** [PASO-22.0](../audits/PASO-22.0-PAYMENTS-FOUNDATION-PLANNING.md) · cierre [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · guía [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md) · ADR [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md)  
+**Planificación FASE 23:** [PASO-23.0](../audits/PASO-23.0-PLATFORM-SERVICES-FOUNDATION-PLANNING.md) · cierre [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · guía [ACCESS-CONSUMPTION-GUIDE.md](ACCESS-CONSUMPTION-GUIDE.md) · ADR [ADR-019](ADR-019-INVITATION-DOMAIN-MODEL.md) · review [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md)  
 **Architecture Review:** [CODECORE-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ARCHITECTURE-REVIEW-2026-07.md)
 
 ---
@@ -39,7 +41,8 @@
 | **20** | Inventory (Item) | ✅ Cerrada | 20.8 — Item slice estable (ADR-016) |
 | **21** | Billing (Invoice) | ✅ Cerrada | 21.8 — Invoice slice estable (ADR-017) |
 | **22** | Payments (Payment) | ✅ Cerrada | 22.8 — Payment slice estable (ADR-018) |
-| **23+** | Stock · Platform Services · Audit · Production Hardening · … | ⏳ Pendiente | Ver § Roadmap por BC |
+| **23** | Platform Services (Access / Invitation) | ✅ Cerrada | 23.8 — Invitation slice estable (ADR-019) · Password Recovery Done · Subscription después |
+| **24+** | Stock · Audit · Production Hardening · Subscription · … | ⏳ Pendiente | Ver § Roadmap por BC |
 
 ---
 
@@ -231,7 +234,7 @@ Flujo **vía HTTP real** (no solo tests internos):
 
 FASE 15 + pasos 15.9.2–15.9.4 cierran la **base IAM** para módulos de negocio.
 
-Deuda de producción diferida registrada en [ADR-009](ADR-009-PRODUCTION-READINESS-BACKLOG.md) (Password Recovery, Audit, JWT stale, OpenAPI, Observability).
+Deuda de producción en [ADR-009](ADR-009-PRODUCTION-READINESS-BACKLOG.md): Password Recovery **Done (FASE 23)**; P2 restante (Audit, JWT stale, OpenAPI, Observability).
 
 ---
 
@@ -458,7 +461,7 @@ Planificación: [PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md](../audits/PASO-17.0-
 | **20** | **Inventory** (`Item`) | ✅ 20.8 Closed (Item) | Stock (mismo BC) · Billing material lines via ItemId |
 | **21** | **Billing** (`Invoice`) | ✅ 21.8 Closed (Invoice) | Payments via InvoiceId · Stock (Inventory) en paralelo |
 | **22** | **Payments** (`Payment`) | ✅ 22.8 Closed | InvoiceId + InvoiceReferencePort · Refunds/PSP adapters vía PaymentReferencePort (futuro) |
-| **23** | **Platform Services** | ⏳ | IAM — Invitations, password recovery (ADR-009) · Subscriptions SaaS |
+| **23** | **Platform Services** (umbrella) | ✅ Access/Invitation 23.8 Closed | Password Recovery **Done** · Subscription **después** (BC propio) |
 | **24** | **Audit & Observability** | ⏳ | Transversal (ADR-009 P2) |
 | **25** | **Production Hardening** | ⏳ | Transversal (ADR-009) |
 
@@ -489,8 +492,8 @@ Detalle: [PASO-17.0 §1](../audits/PASO-17.0-CLINICAL-FOUNDATION-PLANNING.md).
 
 | Ítem | Origen | Cuándo |
 |------|--------|--------|
-| Password recovery | ADR-009 P1 | **FASE 23** Platform Services |
-| Invitations | Roadmap histórico | **FASE 23** Platform Services |
+| Password recovery | ADR-009 P1 | **Done (FASE 23)** — HTTP/DB/use cases IAM |
+| Invitations | Roadmap histórico | **Done (FASE 23)** — Access slice 23.8 |
 | Audit trail | ADR-009 P2 | **FASE 24** |
 | JWT stale mitigation | ADR-009 P2 | **FASE 25** |
 | OpenAPI auth group | ADR-009 P2 | **FASE 25** |
@@ -791,6 +794,56 @@ No introducir: refund · captura PSP · impuestos · asientos contables (GL) · 
 
 ---
 
+## FASE 23 — Platform Services (Access / Invitation slice) ✅
+
+**Estado:** ✅ Cerrada (slice Invitation) · **ADR-019 Accepted** (Invitation frozen) · Password Recovery **Done**  
+**Cierre:** [PASO-23.8-ACCESS-CLOSEOUT.md](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · consumo [ACCESS-CONSUMPTION-GUIDE.md](ACCESS-CONSUMPTION-GUIDE.md)  
+**Plan:** [PASO-23.0](../audits/PASO-23.0-PLATFORM-SERVICES-FOUNDATION-PLANNING.md) · [ADR-019](ADR-019-INVITATION-DOMAIN-MODEL.md)  
+**Review:** [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md) — **A** · ~9.2/10
+
+### Primer Aggregate Root: `Invitation` (BC Access)
+
+| Pregunta | Respuesta |
+|----------|-----------|
+| One-sentence | La intención de otorgar Membership en un Tenant a un email |
+| ¿Por qué no Membership? | Membership es IAM; Invitation solo el join-intent |
+| ¿Por qué no Subscription? | Comercial SaaS — BC **distinto**, **después** de 23.8 |
+| Consume | IAM via reference ports + `TenantAccessProvisionPort` (accept) |
+| No conoce | StaffAssignment · seats/plans · Notification inbox · PasswordReset |
+| Lifecycle | `(create) → PENDING → accept\|revoke\|expire` — sin DRAFT, sin content update |
+
+### Track A — Password Recovery ✅ Done
+
+IAM completion (ADR-009 P1): V32 `iam.password_reset_request` + `POST /api/v1/auth/forgot-password` · `/reset-password`. **No** es el BC Access.
+
+### Pasos FASE 23
+
+| Paso | Nombre | Estado | Auditoría | ADR | Entregable principal |
+|------|--------|--------|-----------|-----|----------------------|
+| **23.0** | Platform Services Foundation Planning | ✅ | [PASO-23.0](../audits/PASO-23.0-PLATFORM-SERVICES-FOUNDATION-PLANNING.md) | — | Umbrella · BC Access · root `Invitation` |
+| **23.0.1** | Invitation Aggregate Audit | ✅ | **Obligatoria** · [PASO-23.0.1](../audits/PASO-23.0.1-INVITATION-AGGREGATE-AUDIT.md) | Prep. ADR-019 | Opción A · PENDING→ACCEPTED\|REVOKED\|EXPIRED |
+| **23.1** | Invitation Model ADR | ✅ | [PASO-23.1](../audits/PASO-23.1-INVITATION-MODEL-CONTRACT.md) | **ADR-019 Accepted** | Modelo **congelado** |
+| **23.2** | Access / IAM Reference Readiness | ✅ | [PASO-23.2](../audits/PASO-23.2-ACCESS-REFERENCE-READINESS.md) | ADR-013 | IAM contract ports + `TenantAccessProvisionPort` |
+| **23.3** | Invitation Domain Foundation | ✅ | [PASO-23.3](../audits/PASO-23.3-INVITATION-DOMAIN-FOUNDATION.md) | ADR-019 | Aggregate `Invitation` + VOs + 28 domain tests |
+| **23.4** | Invitation Persistence | ✅ | [PASO-23.4](../audits/PASO-23.4-INVITATION-PERSISTENCE.md) | — | V30 `access.invitation` + R2DBC + ITs 3/3 |
+| **23.5** | Invitation Authorization Contract | ✅ | [PASO-23.5](../audits/PASO-23.5-INVITATION-AUTHORIZATION-CONTRACT.md) | — | `invitation:*` + V31 + RBAC matrix (ALL 52→55) |
+| **23.5.1** | Invitation Admin/Public API Audit | ✅ | **Obligatoria** · [PASO-23.5.1](../audits/PASO-23.5.1-INVITATION-ADMINISTRATION-API-AUDIT.md) | — | HTTP shape `/api/v1/access/invitations` + accept público |
+| **23.6** | Invitation Administration API | ✅ | [PASO-23.6](../audits/PASO-23.6-INVITATION-ADMINISTRATION-API.md) | — | Admin + accept · unit 10/10 |
+| **23.7** | Invitation Verification | ✅ | [PASO-23.7](../audits/PASO-23.7-INVITATION-VERIFICATION.md) | — | `InvitationVerificationIT` 8/8 |
+| **23.8** | Access Closeout | ✅ | [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) | — | `InvitationReferencePort` · guía · slice ✅ |
+
+### Restricciones FASE 23
+
+Mantener: DDD · Hexagonal · Modular Monolith · WebFlux · R2DBC · ADR-003/006/007/010–019.
+
+**No modificar / no reabrir:** IAM foundation (salvo seeds + Password Recovery track + contract ports) · Organization · Patient · Appointment · Encounter · Inventory · Billing · Payments · ADR-010…018.
+
+No introducir en Invitation: Subscription / seats · StaffAssignment · Notification BC · Org-scoped invites · custom roles · un-revoke · DELETE HTTP · event bus preventivo.
+
+**Subscription** = planning **después** de 23.8 — nunca dentro de Access.
+
+---
+
 ## ADRs vigentes
 
 | ADR | Tema | Estado |
@@ -813,6 +866,7 @@ No introducir: refund · captura PSP · impuestos · asientos contables (GL) · 
 | ADR-016 | Item Domain Model | **Accepted** (20.1) — **frozen**; cambios → nuevo ADR |
 | ADR-017 | Invoice Domain Model | **Accepted** (21.1) — **frozen**; cambios → nuevo ADR |
 | ADR-018 | Payment Domain Model | **Accepted** (22.1) — **frozen**; cambios → nuevo ADR |
+| ADR-019 | Invitation Domain Model | **Accepted** (23.1) — **frozen**; cambios → nuevo ADR |
 
 **Ubicación:** `docs/architecture/ADR-*.md`
 
@@ -834,6 +888,8 @@ FASE 21 introduce **ADR-017 Accepted** (Invoice frozen) y **consume** Organizati
 
 FASE 22 introduce **ADR-018 Accepted** (Payment frozen) y **consume** Billing (`Invoice`) vía `InvoiceReferencePort` (ADR-013) — sin modificar ADR-010…017 ni BCs previos, sin embeber `PAID` en Invoice.
 
+FASE 23 introduce **ADR-019 Accepted** (Invitation frozen) y **consume** IAM vía contract ports + `TenantAccessProvisionPort` — sin modificar ADR-010…018 ni BCs clínicos/económicos; Subscription **fuera** del slice.
+
 ---
 
 ## Proceso autónomo Cursor
@@ -847,9 +903,13 @@ FASE 22 introduce **ADR-018 Accepted** (Payment frozen) y **consume** Billing (`
 
 ### Siguiente acción
 
-**Stock** (continuación Inventory, FASE 20) y/o **Platform Services** (FASE 23 — Invitations, password recovery ADR-009, Subscriptions SaaS) — **sin reabrir** ADR-016/017/018 ni FASE 16–22.
+**Subscription Foundation Planning** (BC propio, **después** de Access 23.8) — o **Stock** (continuación Inventory) en paralelo de producto.
 
-Referencias: [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · [PAYMENTS-CONSUMPTION-GUIDE.md](PAYMENTS-CONSUMPTION-GUIDE.md) · [ADR-018](ADR-018-PAYMENT-DOMAIN-MODEL.md) · [CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md).
+Password Recovery (ADR-009 P1) = **Done**. Access/Invitation = **cerrado**.
+
+**Sin reabrir** ADR-012…019 ni FASE 16–23 Invitation slice.
+
+Referencias: [PASO-23.8](../audits/PASO-23.8-ACCESS-CLOSEOUT.md) · [ACCESS-CONSUMPTION-GUIDE.md](ACCESS-CONSUMPTION-GUIDE.md) · [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md).
 
 ---
 
@@ -857,8 +917,19 @@ Referencias: [PASO-22.8](../audits/PASO-22.8-PAYMENTS-CLOSEOUT.md) · [PAYMENTS-
 
 | Fecha | Fase | Evento |
 |-------|------|--------|
+| 2026-07-12 | **23.8** | **ACCESS INVITATION SLICE COMPLETE** — InvitationReferencePort · consumption guide · Password Recovery Done · FASE 23 Access ✅ |
+| 2026-07-12 | **23.review** | Architecture Review Access — **A** · 9.2/10 · [CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-ACCESS-ARCHITECTURE-REVIEW-2026-07.md) |
+| 2026-07-12 | **23.7** | Invitation Verification — E2E 8/8 (journey, RBAC, cross-tenant, OWNER, duplicate, revoke MANAGER, expired accept, OpenAPI) |
+| 2026-07-12 | **23.6** | Invitation Administration API — `/api/v1/access/invitations` + accept · unit 10/10 |
+| 2026-07-12 | **23.5** | Invitation Authorization Contract — `invitation:*` + V31 + RBAC matrix (ALL 52→55) |
+| 2026-07-12 | **23.4** | Invitation Persistence — V30 `access.invitation` + R2DBC ITs 3/3 |
+| 2026-07-12 | **23.3** | Invitation Domain Foundation — aggregate + VOs + 28 domain tests (ADR-019) |
+| 2026-07-12 | **23.2** | Access / IAM Reference Readiness — IAM contract ports + `TenantAccessProvisionPort` listos |
+| 2026-07-12 | **23.1** | ADR-019 Accepted — Invitation model frozen (*intentionally small*) |
 | 2026-07-12 | **22.8** | **PAYMENTS SLICE COMPLETE** — PaymentReferencePort · consumption guide · FASE 22 ✅ |
 | 2026-07-12 | **22.review** | Architecture Review Payments — **A** · 9.2/10 · [CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md](CODECORE-PAYMENTS-ARCHITECTURE-REVIEW-2026-07.md) |
+| 2026-07-12 | **23.0** | Platform Services Foundation Planning — umbrella · BC Access · root `Invitation` (≠ Subscription) |
+| 2026-07-12 | **23.0.1** | Invitation Aggregate Audit — Opción A · PENDING→ACCEPTED\|REVOKED\|EXPIRED · prep. ADR-019 |
 | 2026-07-12 | **22.7** | Payment Verification — E2E 8/8 (journey, RBAC, cross-tenant, invoice inválida/DRAFT, void MANAGER, OpenAPI, 401) |
 | 2026-07-12 | **22.6** | Payment Administration API — `/api/v1/payments` + `InvoiceReferencePort` · unit 5/5 |
 | 2026-07-12 | **22.5.1** | Payment Admin API Audit — HTTP shape `/api/v1/payments`; default `status=RECORDED` |

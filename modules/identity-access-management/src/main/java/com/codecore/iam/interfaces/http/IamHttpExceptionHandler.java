@@ -1,8 +1,10 @@
 package com.codecore.iam.interfaces.http;
 
 import com.codecore.iam.domain.exception.AuthorizationDeniedException;
+import com.codecore.iam.domain.exception.AuthenticationNotPermittedException;
 import com.codecore.iam.domain.exception.IdentityAlreadyExistsException;
 import com.codecore.iam.domain.exception.IdentityNotFoundException;
+import com.codecore.iam.domain.exception.InvalidTokenException;
 import com.codecore.iam.domain.exception.MembershipAlreadyExistsException;
 import com.codecore.iam.domain.exception.MembershipNotFoundException;
 import com.codecore.iam.domain.exception.OwnershipDeniedException;
@@ -59,6 +61,16 @@ public class IamHttpExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public Mono<ResponseEntity<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public Mono<ResponseEntity<Void>> handleInvalidToken(InvalidTokenException ex) {
+        return Mono.just(ResponseEntity.badRequest().build());
+    }
+
+    @ExceptionHandler(AuthenticationNotPermittedException.class)
+    public Mono<ResponseEntity<Void>> handleAuthenticationNotPermitted(AuthenticationNotPermittedException ex) {
+        return Mono.just(ResponseEntity.badRequest().build());
     }
 
     @ExceptionHandler(IdentityNotAllowedToAuthenticateException.class)

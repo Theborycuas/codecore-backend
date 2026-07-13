@@ -3,15 +3,18 @@ package com.codecore.iam.interfaces.http;
 import com.codecore.iam.application.port.out.IdentityRepository;
 import com.codecore.iam.application.port.out.MembershipRepository;
 import com.codecore.iam.application.port.out.PasswordHasher;
+import com.codecore.iam.application.port.out.TenantRepository;
 import com.codecore.iam.domain.model.membership.IdentityTenantMembership;
 import com.codecore.iam.domain.model.identity.Credential;
 import com.codecore.iam.domain.model.identity.Identity;
+import com.codecore.iam.domain.model.tenant.Tenant;
 import com.codecore.iam.domain.valueobject.CredentialId;
 import com.codecore.iam.domain.valueobject.EmailAddress;
 import com.codecore.iam.domain.valueobject.IdentityId;
 import com.codecore.iam.domain.valueobject.IdentityStatus;
 import com.codecore.iam.domain.valueobject.PasswordHash;
 import com.codecore.iam.domain.valueobject.TenantId;
+import com.codecore.iam.domain.valueobject.TenantName;
 import com.codecore.iam.interfaces.http.dto.LoginRequest;
 import com.codecore.iam.testsupport.AbstractPostgresIntegrationTest;
 import com.codecore.iam.testsupport.IamLoginHttpIntegrationTestConfiguration;
@@ -52,9 +55,13 @@ class AuthenticationControllerIT extends AbstractPostgresIntegrationTest {
     @Autowired
     private MembershipRepository membershipRepository;
 
+    @Autowired
+    private TenantRepository tenantRepository;
+
     @Test
     void shouldReturn200WithAccessTokenWhenCredentialsValid() {
         TenantId tenantId = TenantId.generate();
+        persistTenant(tenantId).block();
         String email = "login.ok.%s@codecore.local".formatted(tenantId.value());
         persistIdentity(tenantId, email, IdentityStatus.ACTIVE, PASSWORD).block();
 
@@ -204,6 +211,15 @@ class AuthenticationControllerIT extends AbstractPostgresIntegrationTest {
                     );
                     return membershipRepository.save(membership).thenReturn(saved);
                 });
+    }
+
+    private reactor.core.publisher.Mono<Tenant> persistTenant(TenantId tenantId) {
+        Instant now = Instant.now();
+        return tenantRepository.save(Tenant.create(
+                tenantId,
+                TenantName.of("Login-IT-" + tenantId.value()),
+                now
+        ));
     }
 
     private reactor.core.publisher.Mono<Identity> persistIdentityWithoutMembership(

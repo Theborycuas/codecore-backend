@@ -35,7 +35,7 @@ Adopt a formal backlog with three priority tiers. Items closed in PASO 15.9.2–
 |------|--------|------------|-------|
 | **Tenant Status Enforcement** — ACTIVE / SUSPENDED / DISABLED semantics at runtime | **Done (15.9.3)** | PASO-15.9.3 | Login + AuthorizationContext; reactivation path for SUSPENDED |
 | **Identity Disable Semantics** — tenant offboarding vs global disable | **Done (15.9.4)** | PASO-15.9.4 | `DELETE /users` = membership deactivate; global via `PUT` status |
-| **Password Recovery** | Deferred | FASE 21+ or pre-pilot | Ports exist; no HTTP/DB implementation |
+| **Password Recovery** | **Done (FASE 23)** | IAM track (FASE 23) | `PasswordResetRequest` + V32 `iam.password_reset_request` + `RequestPasswordResetUseCase` / `CompletePasswordResetUseCase` + `POST /api/v1/auth/forgot-password` · `/reset-password` · logging email adapter |
 
 ---
 
@@ -62,7 +62,7 @@ Adopt a formal backlog with three priority tiers. Items closed in PASO 15.9.2–
 ## Consequences
 
 - FASE 16 may start when 15.9.2–15.9.4 are closed and IAM is marked **FOUNDATION COMPLETE**.
-- P1 Password Recovery and all P2 items remain tracked here until explicitly scheduled.
+- P1 Password Recovery is **Done (FASE 23)**. All P2 items remain tracked here until explicitly scheduled.
 - New production gaps discovered during FASE 16+ should be appended to this ADR or a successor backlog ADR — not silently ignored.
 
 ---

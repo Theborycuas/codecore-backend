@@ -26,7 +26,7 @@ class PaymentAuthorizationSeedMigrationIT {
             .withUsername("codecore")
             .withPassword("codecore0803861400");
 
-    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 52;
+    private static final int EXPECTED_TOTAL_PERMISSION_COUNT = 55;
     private static final int EXPECTED_PAYMENT_PERMISSION_COUNT = 3;
 
     private static final String V29_SEED_SQL = """
@@ -87,7 +87,7 @@ class PaymentAuthorizationSeedMigrationIT {
 
         assertThat(countPermissions()).isEqualTo(EXPECTED_TOTAL_PERMISSION_COUNT);
         assertThat(countPaymentPermissions()).isEqualTo(EXPECTED_PAYMENT_PERMISSION_COUNT);
-        assertThat(appliedMigrationVersion()).isEqualTo("29");
+        assertThat(appliedMigrationVersion()).isEqualTo("32");
 
         executeUpdate(V29_SEED_SQL);
         executeUpdate(V29_SEED_SQL);

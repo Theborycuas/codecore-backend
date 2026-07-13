@@ -87,7 +87,7 @@ class IamPermissionAdminControllerIT extends AbstractPostgresIntegrationTest {
         String token = login(tenantId, ownerEmail);
 
         webTestClient.get()
-                .uri(IamAdminApiPaths.PERMISSIONS + "?page=0&size=50&sort=code,asc")
+                .uri(IamAdminApiPaths.PERMISSIONS + "?page=0&size=100&sort=code,asc")
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk()

@@ -16,6 +16,7 @@ dependencies {
     implementation(projects.modules.inventoryManagement.inventoryContract)
     implementation(projects.modules.billingManagement.billingContract)
     implementation(projects.modules.paymentManagement.paymentContract)
+    implementation(projects.modules.accessManagement.accessContract)
 
     // Outbound persistence adapters (R2DBC — infrastructure only)
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
